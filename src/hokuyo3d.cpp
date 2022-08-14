@@ -12,3 +12,15 @@ int main(int argc, char *argv[]) {
   rclcpp::shutdown();
   return 0;
 }
+
+/*
+int main(int argc, char** argv)
+{
+  ros::init(argc, argv, "hokuyo3d");
+  Hokuyo3dNode node;
+
+  node.spin();
+
+  return 1;
+}
+*/
