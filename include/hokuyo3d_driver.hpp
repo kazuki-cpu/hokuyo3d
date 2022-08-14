@@ -20,7 +20,7 @@ extern "C" {
   #else
     #define HOKUYO3D_PUBLIC HOKUYO3D_IMPORT
   #endif
-  #define HOKUYO3D_PUBLIC_TYPE _PUBLIC
+  #define HOKUYO3D_PUBLIC_TYPE HOKUYO3D_PUBLIC
   #define HOKUYO3D_LOCAL
 #else
   #define HOKUYO3D_EXPORT __attribute__ ((visibility("default")))
@@ -39,3 +39,11 @@ extern "C" {
 }  // extern "C"
 #endif
 
+
+
+namespace hokuyo3d
+{
+class Hokuyo3dNode : public rclcpp::Node
+{
+}
+}
