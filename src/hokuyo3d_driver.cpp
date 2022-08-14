@@ -28,7 +28,8 @@
  */
 
 #include <boost/bind.hpp>
-#include <boost/chrono.hpp>
+#include <chrono> //変更8.15
+#include <memory> //追加8.15
 #include <boost/thread.hpp>
 #include <boost/thread/lock_guard.hpp>
 #include <boost/thread/mutex.hpp>
@@ -38,7 +39,7 @@
 #include <deque>
 #include <string>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp> //変更8.15
 #include <sensor_msgs/PointCloud.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/point_cloud2_iterator.h>
@@ -48,10 +49,10 @@
 
 #include <vssp.h>
 
-class Hokuyo3dNode
+namespace Hokuyo3d
 {
-public:
-  void cbPoint(
+
+void Hokuyo3dNode::cbPoint(
       const vssp::Header& header,
       const vssp::RangeHeader& range_header,
       const vssp::RangeIndex& range_index,
@@ -153,14 +154,14 @@ public:
       line_ = range_header.line;
     }
   }
-  void cbError(
+  void Hokuyo3dNode::cbError(
       const vssp::Header& header,
       const std::string& message,
       const boost::posix_time::ptime& time_read)
   {
     ROS_ERROR("%s", message.c_str());
   }
-  void cbPing(
+  void Hokuyo3dNode::cbPing(
       const vssp::Header& header,
       const boost::posix_time::ptime& time_read)
   {
@@ -183,7 +184,7 @@ public:
 
     ROS_DEBUG("timestamp_base: %lf", timestamp_base_.toSec());
   }
-  void cbAux(
+  void Hokuyo3dNode::cbAux(
       const vssp::Header& header,
       const vssp::AuxHeader& aux_header,
       const boost::shared_array<vssp::Aux>& auxs,
@@ -241,7 +242,7 @@ public:
       }
     }
   }
-  void cbConnect(bool success)
+  void Hokuyo3dNode::cbConnect(bool success)
   {
     if (success)
     {
@@ -263,7 +264,8 @@ public:
       ROS_ERROR("Connection failed");
     }
   }
-  Hokuyo3dNode()
+  Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
+  : Node("hokuyo3d", options)
     : pnh_("~")
     , timestamp_base_(0)
     , timer_(io_, boost::posix_time::milliseconds(500))
@@ -347,7 +349,7 @@ public:
     driver_.poll();
     ROS_INFO("Communication stoped");
   }
-  void cbSubscriber()
+  void Hokuyo3dNode::cbSubscriber()
   {
     boost::lock_guard<boost::mutex> lock(connect_mutex_);
     if (pub_pc_.getNumSubscribers() > 0)
@@ -371,7 +373,7 @@ public:
       ROS_DEBUG("PointCloud2 output disabled");
     }
   }
-  bool poll()
+  bool Hokuyo3dNode::poll()
   {
     if (driver_.poll())
     {
@@ -380,7 +382,7 @@ public:
     ROS_INFO("Connection closed");
     return false;
   }
-  void cbTimer(const boost::system::error_code& error)
+  void Hokuyo3dNode::cbTimer(const boost::system::error_code& error)
   {
     if (error)
       return;
@@ -397,7 +399,7 @@ public:
       timer_.async_wait(boost::bind(&Hokuyo3dNode::cbTimer, this, _1));
     }
   }
-  void spin()
+  void Hokuyo3dNode::spin()
   {
     timer_.async_wait(boost::bind(&Hokuyo3dNode::cbTimer, this, _1));
     boost::thread thread(
@@ -410,7 +412,7 @@ public:
     timer_.cancel();
     ROS_INFO("Connection closed");
   }
-  void ping()
+  void Hokuyo3dNode::ping()
   {
     driver_.requestPing();
     time_ping_ = ros::Time::now();
