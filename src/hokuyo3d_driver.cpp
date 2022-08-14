@@ -341,7 +341,7 @@ void Hokuyo3dNode::cbPoint(
     // Start communication with the sensor
     driver_.connect(ip_.c_str(), port_, boost::bind(&Hokuyo3dNode::cbConnect, this, _1));
   }
-  ~Hokuyo3dNode()
+  Hokuyo3dNode::~Hokuyo3dNode()
   {
     driver_.requestAuxData(false);
     driver_.requestData(true, false);
