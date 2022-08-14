@@ -47,5 +47,23 @@ namespace hokuyo3d
 {
 class Hokuyo3dNode : public rclcpp::Node
 {
-}
-}
+public:
+  HOKUYO3D_PUBLIC explicit HOKUYO3D(const rclcpp::NodeOptions & options);
+  
+  
+  void cbPoint();
+  void cbError();
+  void cbPing();
+  void cbAux();
+  void cbConnect();
+  void cbSubscriber();
+  bool poll();
+  void cbTimer();
+  void spin();
+  void ping();
+  
+};
+  
+} //namespace Hokuyo3d
+
+#endif // HOKUYO3D__HOKUYO3D_DRIVER_HPP_
