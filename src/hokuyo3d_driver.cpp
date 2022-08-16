@@ -272,27 +272,27 @@ void Hokuyo3dNode::cbPoint(
   {
     if (pnh_.hasParam("horizontal_interlace") || !pnh_.hasParam("interlace"))
     {
-      pnh_.param("horizontal_interlace", horizontal_interlace_, 4);
+      horizontal_interlace_ = this->declare_parameter<int>("horizontal_interlace", 4);//変更8.17
     }
     else if (pnh_.hasParam("interlace"))
     {
       ROS_WARN("'interlace' parameter is deprecated. Use horizontal_interlace instead.");
-      pnh_.param("interlace", horizontal_interlace_, 4);
+      horizontal_interlace_ = this->declare_parameter<int>("interlace", 4);//変更8.17
     }
-    pnh_.param("vertical_interlace", vertical_interlace_, 1);
-    pnh_.param("ip", ip_, std::string("192.168.0.10"));
-    pnh_.param("port", port_, 10940);
-    pnh_.param("frame_id", frame_id_, std::string("hokuyo3d"));
-    pnh_.param("imu_frame_id", imu_frame_id_, frame_id_ + "_imu");
-    pnh_.param("mag_frame_id", mag_frame_id_, frame_id_ + "_mag");
-    pnh_.param("range_min", range_min_, 0.0);
+    vertical_interlace_ = this->declare_parameter<int>("vertical_interlace", 1);//変更8.17
+    ip_ = this->declare_parameter<std::string>("ip", "192.168.0.10");//変更8.17
+    port_ = this->declare_parameter<int>("port", 10940);//変更8.17
+    frame_id_ = this->declare_parameter<std::string>("frame_id", "hokuyo3d");//変更8.17
+    imu_frame_id_ = this->declare_parameter<std::string>("imu_frame_id", frame_id_ + "_imu");//変更8.17
+    mag_frame_id_ = this->declare_parameter<std::string>("mag_frame_id", frame_id_ + "_mag");//変更8.17
+    range_min_ = this->declare_parameter<double>("range_min", 0.0);//変更8.17
     set_auto_reset_ = pnh_.hasParam("auto_reset");
-    pnh_.param("auto_reset", auto_reset_, false);
+    auto_reset_ = this->declare_parameter<bool>("auto_reset", false);//変更8.17
 
-    pnh_.param("allow_jump_back", allow_jump_back_, false);
+    allow_jump_back_ = this->declare_parameter<bool>("allow_jump_back", false);//変更8.17
 
     std::string output_cycle;
-    pnh_.param("output_cycle", output_cycle, std::string("field"));
+    output_cycle = this->declare_parameter<std::string>("output_cycle", "field");//変更8.17
 
     if (output_cycle.compare("frame") == 0)
       cycle_ = CYCLE_FRAME;
