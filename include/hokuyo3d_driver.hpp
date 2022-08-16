@@ -50,7 +50,6 @@ class Hokuyo3dNode : public rclcpp::Node
 public:
   HOKUYO3D_PUBLIC explicit HOKUYO3D(const rclcpp::NodeOptions & options);
   
-  
   void cbPoint();
   void cbError();
   void cbPing();
@@ -62,6 +61,9 @@ public:
   void spin();
   void ping();
   
+private:
+
+
 };
   
 } //namespace Hokuyo3d
