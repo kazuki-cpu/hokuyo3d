@@ -127,7 +127,7 @@ void Hokuyo3dNode::cbPoint(
         }
         else
         {
-          pub_pc_.publish(cloud_);
+          pub_pc_->publish(cloud_);//9.2変更
         }
         cloud_stamp_last_ = cloud_.header.stamp;
         cloud_.points.clear();
@@ -142,7 +142,7 @@ void Hokuyo3dNode::cbPoint(
         }
         else
         {
-          pub_pc2_.publish(cloud2_);
+          pub_pc2_->publish(cloud2_);//9.2変更
         }
         cloud_stamp_last_ = cloud2_.header.stamp;
         cloud2_.data.clear();
@@ -328,15 +328,15 @@ void Hokuyo3dNode::cbPoint(
                                       sensor_msgs::PointField::FLOAT32, "z", 1, sensor_msgs::PointField::FLOAT32,
                                       "intensity", 1, sensor_msgs::PointField::FLOAT32);
 
-    pub_imu_ = pnh_.advertise<sensor_msgs::Imu>("imu", 5);
-    pub_mag_ = pnh_.advertise<sensor_msgs::MagneticField>("mag", 5);
+    pub_imu_ = this->create_publisher<sensor_msgs::Imu>("imu", 5);//9.2変更
+    pub_mag_ = this->create_publisher<sensor_msgs::MagneticField>("mag", 5);//9.2変更
 
     enable_pc_ = enable_pc2_ = false;
     ros::SubscriberStatusCallback cb_con = boost::bind(&Hokuyo3dNode::cbSubscriber, this);
 
     boost::lock_guard<boost::mutex> lock(connect_mutex_);
-    pub_pc_ = pnh_.advertise<sensor_msgs::PointCloud>("hokuyo_cloud", 5, cb_con, cb_con);
-    pub_pc2_ = pnh_.advertise<sensor_msgs::PointCloud2>("hokuyo_cloud2", 5, cb_con, cb_con);
+    pub_pc_ = this->create_publisher<sensor_msgs::PointCloud>("hokuyo_cloud", 5, cb_con, cb_con);//9.2変更
+    pub_pc2_ = this->create_publisher<sensor_msgs::PointCloud2>("hokuyo_cloud2", 5, cb_con, cb_con);//9.2変更
 
     // Start communication with the sensor
     driver_.connect(ip_.c_str(), port_, boost::bind(&Hokuyo3dNode::cbConnect, this, _1));
@@ -419,11 +419,11 @@ void Hokuyo3dNode::cbPoint(
   }
 
 protected:
-  ros::NodeHandle pnh_;
-  ros::Publisher pub_pc_;
-  ros::Publisher pub_pc2_;
-  ros::Publisher pub_imu_;
-  ros::Publisher pub_mag_;
+  //ノードハンドル9.2消去
+  rclcpp::Publisher<sensor_msgs::PointCloud>SharedPtr pub_pc_;//9.2変更
+  rclcpp::Publisher<sensor_msgs::PointCloud2>SharedPtr pub_pc2_;//9.2変更
+  rclcpp::Publisher<sensor_msgs::Imu>SharedPtr pub_imu_;//9.2変更
+  rclcpp::Publisher<sensor_msgs::MagneticField>SharedPtr pub_mag_;//9.2変更
   vssp::VsspDriver driver_;
   sensor_msgs::PointCloud cloud_;
   sensor_msgs::PointCloud2 cloud2_;
