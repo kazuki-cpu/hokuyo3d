@@ -435,12 +435,12 @@ protected:
   bool allow_jump_back_;
   boost::mutex connect_mutex_;
 
-  ros::Time time_ping_;
-  ros::Time timestamp_base_;
-  std::deque<ros::Time> timestamp_base_buffer_;
-  ros::Time imu_stamp_last_;
-  ros::Time mag_stamp_last_;
-  ros::Time cloud_stamp_last_;
+  rclcpp::Time time_ping_; //変更9.17
+  rclcpp::Time timestamp_base_; //変更9.17
+  std::deque<rclcpp::Time> timestamp_base_buffer_; //変更9.17
+  rclcpp::Time imu_stamp_last_; //変更9.17
+  rclcpp::Time mag_stamp_last_; //変更9.17
+  rclcpp::Time cloud_stamp_last_; //変更9.17
 
   boost::asio::io_service io_;
   boost::asio::deadline_timer timer_;
