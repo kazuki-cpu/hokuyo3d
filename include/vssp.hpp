@@ -33,12 +33,12 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 #include <boost/format.hpp>
-#include <boost/bind.hpp>
+//#include <boost/bind.hpp> 消去9.17
 #include <boost/serialization/access.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/shared_array.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/chrono.hpp>
+#include <chrono>//変更9.17
 
 #include <vector>
 #include <string>
@@ -56,27 +56,27 @@ private:
   bool closed_;
   AuxFactorArray aux_factor_;
 
-  boost::function<void(
+  std::function<void(//変更9.17
       const vssp::Header&,
       const vssp::RangeHeader&,
       const vssp::RangeIndex&,
       const boost::shared_array<uint16_t>&,
       const boost::shared_array<vssp::XYZI>&,
       const boost::posix_time::ptime&)> cb_point_;
-  boost::function<void(
+  std::function<void(//変更9.17
       const vssp::Header&,
       const vssp::AuxHeader&,
       const boost::shared_array<vssp::Aux>&,
       const boost::posix_time::ptime&)> cb_aux_;
-  boost::function<void(
+  std::function<void(//変更9.17
       const vssp::Header&,
       const boost::posix_time::ptime&)> cb_ping_;
-  boost::function<void(
+  std::function<void(//変更9.17
       const vssp::Header&,
       const std::string&,
       const boost::posix_time::ptime&)> cb_error_;
-  boost::function<void(bool)> cb_connect_;
-  boost::shared_array<const double> tbl_h_;
+  std::function<void(bool)> cb_connect_;//変更9.17
+  std::shared_array<const double> tbl_h_;//変更9.17
   std::vector<boost::shared_array<const TableSincos>> tbl_v_;
   bool tbl_h_loaded_;
   bool tbl_v_loaded_;
