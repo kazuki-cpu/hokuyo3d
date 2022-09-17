@@ -27,12 +27,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <boost/bind.hpp>
+//#include <boost/bind.hpp> 消去9.17
 #include <chrono> //変更8.15
 #include <memory> //追加8.15
-#include <boost/thread.hpp>
-#include <boost/thread/lock_guard.hpp>
-#include <boost/thread/mutex.hpp>
+#include <thread> //変更9.17
+//#include <boost/thread/lock_guard.hpp> 消去9.17
+#include <mutex> //変更9.17
 #include <boost/asio.hpp>
 
 #include <algorithm>
@@ -165,10 +165,10 @@ void Hokuyo3dNode::cbPoint(
       const vssp::Header& header,
       const boost::posix_time::ptime& time_read)
   {
-    const ros::Time now = ros::Time::fromBoost(time_read);
+    const r::Time now = ros::Time::fromBoost(time_read);//一部変更9.17
     const ros::Duration delay =
         ((now - time_ping_) - ros::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
-    const ros::Time base = time_ping_ + delay - ros::Duration(header.received_time_ms * 0.001);
+    const rclcpp::Time base = time_ping_ + delay - ros::Duration(header.received_time_ms * 0.001);//一部変更9.17
 
     timestamp_base_buffer_.push_back(base);
     if (timestamp_base_buffer_.size() > 5)
@@ -192,7 +192,7 @@ void Hokuyo3dNode::cbPoint(
   {
     if (timestamp_base_ == ros::Time(0))
       return;
-    ros::Time stamp = timestamp_base_ + ros::Duration(aux_header.timestamp_ms * 0.001);
+    rclcpp::Time stamp = timestamp_base_ + ros::Duration(aux_header.timestamp_ms * 0.001);//一部変更9.17
 
     if ((aux_header.data_bitfield & (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC)) ==
         (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC))
@@ -308,10 +308,10 @@ void Hokuyo3dNode::cbPoint(
 
     driver_.setTimeout(2.0);
     ROS_INFO("Connecting to %s", ip_.c_str());
-    driver_.registerCallback(boost::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4, _5, _6));
-    driver_.registerAuxCallback(boost::bind(&Hokuyo3dNode::cbAux, this, _1, _2, _3, _4));
-    driver_.registerPingCallback(boost::bind(&Hokuyo3dNode::cbPing, this, _1, _2));
-    driver_.registerErrorCallback(boost::bind(&Hokuyo3dNode::cbError, this, _1, _2, _3));
+    driver_.registerCallback(std::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4, _5, _6));//変更9.17
+    driver_.registerAuxCallback(std::bind(&Hokuyo3dNode::cbAux, this, _1, _2, _3, _4));//変更9.17
+    driver_.registerPingCallback(std::bind(&Hokuyo3dNode::cbPing, this, _1, _2));//変更9.17
+    driver_.registerErrorCallback(std::bind(&Hokuyo3dNode::cbError, this, _1, _2, _3));//変更9.17
     field_ = 0;
     frame_ = 0;
     line_ = 0;
@@ -332,14 +332,14 @@ void Hokuyo3dNode::cbPoint(
     pub_mag_ = this->create_publisher<sensor_msgs::msg::MagneticField>("mag", 5);//更新9.17(9.2)
 
     enable_pc_ = enable_pc2_ = false;
-    ros::SubscriberStatusCallback cb_con = boost::bind(&Hokuyo3dNode::cbSubscriber, this);
+    ros::SubscriberStatusCallback cb_con = std::bind(&Hokuyo3dNode::cbSubscriber, this);//一部変更9.17
 
-    boost::lock_guard<boost::mutex> lock(connect_mutex_);
+    std::lock_guard<std::mutex> lock(connect_mutex_);//変更9.17
     pub_pc_ = this->create_publisher<sensor_msgs::msg::PointCloud>("hokuyo_cloud", 5, cb_con, cb_con);//更新9.17(9.2)
     pub_pc2_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("hokuyo_cloud2", 5, cb_con, cb_con);//更新9.17(9.2)
 
     // Start communication with the sensor
-    driver_.connect(ip_.c_str(), port_, boost::bind(&Hokuyo3dNode::cbConnect, this, _1));
+    driver_.connect(ip_.c_str(), port_, std::bind(&Hokuyo3dNode::cbConnect, this, _1));//変更9.17
   }
   Hokuyo3dNode::~Hokuyo3dNode()
   {
@@ -351,7 +351,7 @@ void Hokuyo3dNode::cbPoint(
   }
   void Hokuyo3dNode::cbSubscriber()
   {
-    boost::lock_guard<boost::mutex> lock(connect_mutex_);
+    std::lock_guard<std::mutex> lock(connect_mutex_);//変更9.17
     if (pub_pc_.getNumSubscribers() > 0)
     {
       enable_pc_ = true;
@@ -387,7 +387,7 @@ void Hokuyo3dNode::cbPoint(
     if (error)
       return;
 
-    if (!ros::ok())
+    if (!rclcpp::ok())//変更9.17
     {
       driver_.stop();
     }
@@ -396,14 +396,14 @@ void Hokuyo3dNode::cbPoint(
       timer_.expires_at(
           timer_.expires_at() +
           boost::posix_time::milliseconds(500));
-      timer_.async_wait(boost::bind(&Hokuyo3dNode::cbTimer, this, _1));
+      timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));//変更9.17
     }
   }
   void Hokuyo3dNode::spin()
   {
-    timer_.async_wait(boost::bind(&Hokuyo3dNode::cbTimer, this, _1));
-    boost::thread thread(
-        boost::bind(&boost::asio::io_service::run, &io_));
+    timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));//変更9.17
+    std::thread thread(//変更9.17
+        std::bind(&boost::asio::io_service::run, &io_));//変更9.17
 
     ros::AsyncSpinner spinner(1);
     spinner.start();
@@ -433,7 +433,7 @@ protected:
   bool enable_pc_;
   bool enable_pc2_;
   bool allow_jump_back_;
-  boost::mutex connect_mutex_;
+  std::mutex connect_mutex_;//変更9.17
 
   rclcpp::Time time_ping_; //変更9.17
   rclcpp::Time timestamp_base_; //変更9.17
