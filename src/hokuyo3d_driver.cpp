@@ -42,7 +42,7 @@
 #include <rclcpp/rclcpp.hpp> //変更8.15
 #include <sensor_msgs/msg/PointCloud.hpp> //変更9.17
 #include <sensor_msgs/msg/PointCloud2.hpp> //変更9.17
-#include <sensor_msgs//msg/point_cloud2_iterator.hpp> //変更9.17
+#include <sensor_msgs/msg/point_cloud2_iterator.hpp> //変更9.17
 #include <sensor_msgs/msg/MagneticField.hpp> //変更9.17
 #include <sensor_msgs/msg/Imu.hpp> //変更9.17
 #include <sensor_msgs/msg/point_cloud_conversion.hpp> //変更9.17
@@ -78,7 +78,7 @@ void Hokuyo3dNode::cbPoint(
         {
           continue;
         }
-        geometry_msgs::Point32 point;
+        geometry_msgs::msg::Point32 point;//変更9.17
         point.x = points[i].x;
         point.y = points[i].y;
         point.z = points[i].z;
@@ -323,20 +323,20 @@ void Hokuyo3dNode::cbPoint(
     cloud2_.height = 1;
     cloud2_.is_bigendian = false;
     cloud2_.is_dense = false;
-    sensor_msgs::PointCloud2Modifier pc2_modifier(cloud2_);
+    sensor_msgs::PointCloud2Modifier pc2_modifier(cloud2_);//この関数は::msg::でもちゃんとある？
     pc2_modifier.setPointCloud2Fields(4, "x", 1, sensor_msgs::PointField::FLOAT32, "y", 1,
                                       sensor_msgs::PointField::FLOAT32, "z", 1, sensor_msgs::PointField::FLOAT32,
                                       "intensity", 1, sensor_msgs::PointField::FLOAT32);
 
-    pub_imu_ = this->create_publisher<sensor_msgs::Imu>("imu", 5);//9.2変更
-    pub_mag_ = this->create_publisher<sensor_msgs::MagneticField>("mag", 5);//9.2変更
+    pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 5);//更新9.17(9.2)
+    pub_mag_ = this->create_publisher<sensor_msgs::msg::MagneticField>("mag", 5);//更新9.17(9.2)
 
     enable_pc_ = enable_pc2_ = false;
     ros::SubscriberStatusCallback cb_con = boost::bind(&Hokuyo3dNode::cbSubscriber, this);
 
     boost::lock_guard<boost::mutex> lock(connect_mutex_);
-    pub_pc_ = this->create_publisher<sensor_msgs::PointCloud>("hokuyo_cloud", 5, cb_con, cb_con);//9.2変更
-    pub_pc2_ = this->create_publisher<sensor_msgs::PointCloud2>("hokuyo_cloud2", 5, cb_con, cb_con);//9.2変更
+    pub_pc_ = this->create_publisher<sensor_msgs::msg::PointCloud>("hokuyo_cloud", 5, cb_con, cb_con);//更新9.17(9.2)
+    pub_pc2_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("hokuyo_cloud2", 5, cb_con, cb_con);//更新9.17(9.2)
 
     // Start communication with the sensor
     driver_.connect(ip_.c_str(), port_, boost::bind(&Hokuyo3dNode::cbConnect, this, _1));
@@ -420,15 +420,15 @@ void Hokuyo3dNode::cbPoint(
 
 protected:
   //ノードハンドル9.2消去
-  rclcpp::Publisher<sensor_msgs::PointCloud>SharedPtr pub_pc_;//9.2変更
-  rclcpp::Publisher<sensor_msgs::PointCloud2>SharedPtr pub_pc2_;//9.2変更
-  rclcpp::Publisher<sensor_msgs::Imu>SharedPtr pub_imu_;//9.2変更
-  rclcpp::Publisher<sensor_msgs::MagneticField>SharedPtr pub_mag_;//9.2変更
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud>SharedPtr pub_pc_; //更新9.17(9.2)
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>SharedPtr pub_pc2_; //更新9.17(9.2)
+  rclcpp::Publisher<sensor_msgs::msg::Imu>SharedPtr pub_imu_; //更新9.17(9.2)
+  rclcpp::Publisher<sensor_msgs::msg::MagneticField>SharedPtr pub_mag_; //更新9.17(9.2)
   vssp::VsspDriver driver_;
-  sensor_msgs::PointCloud cloud_;
-  sensor_msgs::PointCloud2 cloud2_;
-  sensor_msgs::Imu imu_;
-  sensor_msgs::MagneticField mag_;
+  sensor_msgs::msg::PointCloud cloud_; //変更9.17
+  sensor_msgs::msg::PointCloud2 cloud2_; //変更9.17
+  sensor_msgs::msg::Imu imu_; //変更9.17
+  sensor_msgs::msg::MagneticField mag_; //変更9.17
 
   bool enable_pc_;
   bool enable_pc2_;
