@@ -40,12 +40,12 @@
 #include <string>
 
 #include <rclcpp/rclcpp.hpp> //変更8.15
-#include <sensor_msgs/PointCloud.h>
-#include <sensor_msgs/PointCloud2.h>
-#include <sensor_msgs/point_cloud2_iterator.h>
-#include <sensor_msgs/MagneticField.h>
-#include <sensor_msgs/Imu.h>
-#include <sensor_msgs/point_cloud_conversion.h>
+#include <sensor_msgs/msg/PointCloud.hpp> //変更9.17
+#include <sensor_msgs/msg/PointCloud2.hpp> //変更9.17
+#include <sensor_msgs//msg/point_cloud2_iterator.hpp> //変更9.17
+#include <sensor_msgs/msg/MagneticField.hpp> //変更9.17
+#include <sensor_msgs/msg/Imu.hpp> //変更9.17
+#include <sensor_msgs/msg/point_cloud_conversion.hpp> //変更9.17
 
 #include <vssp.h>
 
