@@ -266,20 +266,11 @@ void Hokuyo3dNode::cbPoint(
   }
   Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
   : Node("hokuyo3d", options)
-    : pnh_("~")
     , timestamp_base_(0)
     , timer_(io_, boost::posix_time::milliseconds(500))
   {
-   // if (pnh_.hasParam("horizontal_interlace") || !pnh_.hasParam("interlace"))
-   // {
+
     horizontal_interlace_ = this->declare_parameter<int>("horizontal_interlace", 4);//変更8.17
-   // }
-   /* else if (pnh_.hasParam("interlace"))
-    {
-      ROS_WARN("'interlace' parameter is deprecated. Use horizontal_interlace instead.");
-      horizontal_interlace_ = this->declare_parameter<int>("interlace", 4);//変更8.17
-    }
-   */
     vertical_interlace_ = this->declare_parameter<int>("vertical_interlace", 1);//変更8.17
     ip_ = this->declare_parameter<std::string>("ip", "192.168.0.10");//変更8.17
     port_ = this->declare_parameter<int>("port", 10940);//変更8.17
@@ -304,7 +295,7 @@ void Hokuyo3dNode::cbPoint(
     else
     {
       ROS_ERROR("Unknown output_cycle value %s", output_cycle.c_str());
-      ros::shutdown();
+      rclcpp::shutdown();
     }
 
     driver_.setTimeout(2.0);
@@ -317,27 +308,27 @@ void Hokuyo3dNode::cbPoint(
     frame_ = 0;
     line_ = 0;
 
-    sensor_msgs::ChannelFloat32 channel;
+    sensor_msgs::msg::ChannelFloat32 channel;
     channel.name = std::string("intensity");
     cloud_.channels.push_back(channel);
 
     cloud2_.height = 1;
     cloud2_.is_bigendian = false;
     cloud2_.is_dense = false;
-    sensor_msgs::PointCloud2Modifier pc2_modifier(cloud2_);//この関数は::msg::でもちゃんとある？
-    pc2_modifier.setPointCloud2Fields(4, "x", 1, sensor_msgs::PointField::FLOAT32, "y", 1,
-                                      sensor_msgs::PointField::FLOAT32, "z", 1, sensor_msgs::PointField::FLOAT32,
-                                      "intensity", 1, sensor_msgs::PointField::FLOAT32);
+    sensor_msgs::msg::PointCloud2Modifier pc2_modifier(cloud2_);//この関数は::msg::でもちゃんと動く？
+    pc2_modifier.setPointCloud2Fields(4, "x", 1, sensor_msgs::msg::PointField::FLOAT32, "y", 1,
+                                      sensor_msgs::msg::PointField::FLOAT32, "z", 1, sensor_msgs::msg::PointField::FLOAT32,
+                                      "intensity", 1, sensor_msgs::msg::PointField::FLOAT32);
 
     pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 5);//更新9.17(9.2)
     pub_mag_ = this->create_publisher<sensor_msgs::msg::MagneticField>("mag", 5);//更新9.17(9.2)
 
-    enable_pc_ = enable_pc2_ = false;
-    ros::SubscriberStatusCallback cb_con = std::bind(&Hokuyo3dNode::cbSubscriber, this);//一部変更9.17
+    enable_pc_ = enable_pc2_ = true;//
+    //ros::SubscriberStatusCallback cb_con = std::bind(&Hokuyo3dNode::cbSubscriber, this);//一部変更9.17
 
     std::lock_guard<std::mutex> lock(connect_mutex_);//変更9.17
-    pub_pc_ = this->create_publisher<sensor_msgs::msg::PointCloud>("hokuyo_cloud", 5, cb_con, cb_con);//更新9.17(9.2)
-    pub_pc2_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("hokuyo_cloud2", 5, cb_con, cb_con);//更新9.17(9.2)
+    pub_pc_ = this->create_publisher<sensor_msgs::msg::PointCloud>("hokuyo_cloud", 5);//更新9.17(9.2)
+    pub_pc2_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("hokuyo_cloud2", 5);//更新9.17(9.2)
 
     // Start communication with the sensor
     driver_.connect(ip_.c_str(), port_, std::bind(&Hokuyo3dNode::cbConnect, this, _1));//変更9.17
@@ -350,7 +341,7 @@ void Hokuyo3dNode::cbPoint(
     driver_.poll();
     ROS_INFO("Communication stoped");
   }
-  void Hokuyo3dNode::cbSubscriber()
+/*  void Hokuyo3dNode::cbSubscriber()
   {
     std::lock_guard<std::mutex> lock(connect_mutex_);//変更9.17
     if (pub_pc_.getNumSubscribers() > 0)
@@ -374,6 +365,7 @@ void Hokuyo3dNode::cbPoint(
       ROS_DEBUG("PointCloud2 output disabled");
     }
   }
+*/
   bool Hokuyo3dNode::poll()
   {
     if (driver_.poll())
