@@ -39,8 +39,18 @@ extern "C" {
 }  // extern "C"
 #endif
 
+#include <mutex> 
+#include <boost/asio.hpp>
+#include <deque>
+#include <string>//std_msgs/msg/string.hppかも
 #include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/PointCloud.hpp> //変更9.17
+#include <sensor_msgs/msg/PointCloud2.hpp> //変更9.17
+#include <sensor_msgs/msg/Imu.hpp> //変更9.17
+#include <sensor_msgs/msg/MagneticField.hpp> //変更9.17
 
+
+#include <vssp.h>
 
 namespace hokuyo3d
 {
