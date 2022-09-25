@@ -272,13 +272,12 @@ void Hokuyo3dNode::cbPoint(
     imu_frame_id_ = this->declare_parameter<std::string>("imu_frame_id", frame_id_ + "_imu");//変更8.17
     mag_frame_id_ = this->declare_parameter<std::string>("mag_frame_id", frame_id_ + "_mag");//変更8.17
     range_min_ = this->declare_parameter<double>("range_min", 0.0);//変更8.17
-    set_auto_reset_ = pnh_.hasParam("auto_reset");
     auto_reset_ = this->declare_parameter<bool>("auto_reset", false);//変更8.17
-
     allow_jump_back_ = this->declare_parameter<bool>("allow_jump_back", false);//変更8.17
 
     std::string output_cycle;
     output_cycle = this->declare_parameter<std::string>("output_cycle", "field");//変更8.17
+        
 
     if (output_cycle.compare("frame") == 0)
       cycle_ = CYCLE_FRAME;
@@ -418,3 +417,6 @@ int main(int argc, char** argv)
   return 1;
 }
 */
+
+#include "rclcpp_components/register_node_macro.hpp"
+RCLCPP_COMPONENTS_REGISTER_NODE(Hokuyo3d::Hokuyo3dNode)
