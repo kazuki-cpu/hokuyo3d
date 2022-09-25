@@ -44,6 +44,7 @@ extern "C" {
 #include <deque>
 #include <string>//std_msgs/msg/string.hppかも
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp/time.hpp>
 #include <sensor_msgs/msg/PointCloud.hpp> //変更9.17
 #include <sensor_msgs/msg/PointCloud2.hpp> //変更9.17
 #include <sensor_msgs/msg/Imu.hpp> //変更9.17
