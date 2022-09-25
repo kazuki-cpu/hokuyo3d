@@ -37,7 +37,7 @@
 
 #include <algorithm>
 #include <deque>
-#include <string>
+#include <string>//std_msgs/msg/string.hppかも
 
 #include <rclcpp/rclcpp.hpp> //変更8.15
 #include <sensor_msgs/msg/PointCloud.hpp> //変更9.17
@@ -60,7 +60,7 @@ void Hokuyo3dNode::cbPoint(
       const boost::shared_array<vssp::XYZI>& points,
       const boost::posix_time::ptime& time_read)
   {
-    if (timestamp_base_ == ros::Time(0))
+    if (timestamp_base_ == rclcpp::Time(0))//変更9.25
       return;
     // Pack scan data
     if (enable_pc_)
@@ -69,7 +69,7 @@ void Hokuyo3dNode::cbPoint(
       {
         // Start packing PointCloud message
         cloud_.header.frame_id = frame_id_;
-        cloud_.header.stamp = timestamp_base_ + ros::Duration(range_header.line_head_timestamp_ms * 0.001);
+        cloud_.header.stamp = timestamp_base_ + rclcpp::Duration(range_header.line_head_timestamp_ms * 0.001);
       }
       // Pack PointCloud message
       for (int i = 0; i < index[range_index.nspots]; i++)
@@ -92,7 +92,7 @@ void Hokuyo3dNode::cbPoint(
       {
         // Start packing PointCloud2 message
         cloud2_.header.frame_id = frame_id_;
-        cloud2_.header.stamp = timestamp_base_ + ros::Duration(range_header.line_head_timestamp_ms * 0.001);
+        cloud2_.header.stamp = timestamp_base_ + rclcpp::Duration(range_header.line_head_timestamp_ms * 0.001);
         cloud2_.row_step = 0;
         cloud2_.width = 0;
       }
@@ -165,7 +165,7 @@ void Hokuyo3dNode::cbPoint(
       const vssp::Header& header,
       const boost::posix_time::ptime& time_read)
   {
-    const r::Time now = ros::Time::fromBoost(time_read);//一部変更9.17
+    const rclcpp::Time now = ros::Time::fromBoost(time_read);//一部変更9.17
     const ros::Duration delay =
         ((now - time_ping_) - ros::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
     const rclcpp::Time base = time_ping_ + delay - ros::Duration(header.received_time_ms * 0.001);//一部変更9.17
@@ -270,15 +270,16 @@ void Hokuyo3dNode::cbPoint(
     , timestamp_base_(0)
     , timer_(io_, boost::posix_time::milliseconds(500))
   {
-    if (pnh_.hasParam("horizontal_interlace") || !pnh_.hasParam("interlace"))
-    {
-      horizontal_interlace_ = this->declare_parameter<int>("horizontal_interlace", 4);//変更8.17
-    }
-    else if (pnh_.hasParam("interlace"))
+   // if (pnh_.hasParam("horizontal_interlace") || !pnh_.hasParam("interlace"))
+   // {
+    horizontal_interlace_ = this->declare_parameter<int>("horizontal_interlace", 4);//変更8.17
+   // }
+   /* else if (pnh_.hasParam("interlace"))
     {
       ROS_WARN("'interlace' parameter is deprecated. Use horizontal_interlace instead.");
       horizontal_interlace_ = this->declare_parameter<int>("interlace", 4);//変更8.17
     }
+   */
     vertical_interlace_ = this->declare_parameter<int>("vertical_interlace", 1);//変更8.17
     ip_ = this->declare_parameter<std::string>("ip", "192.168.0.10");//変更8.17
     port_ = this->declare_parameter<int>("port", 10940);//変更8.17
