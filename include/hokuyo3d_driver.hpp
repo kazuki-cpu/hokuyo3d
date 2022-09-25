@@ -53,7 +53,7 @@ extern "C" {
 
 #include <vssp.h>
 
-namespace hokuyo3d
+namespace Hokuyo3d
 {
 class Hokuyo3dNode : public rclcpp::Node
 {
@@ -124,6 +124,6 @@ protected:
 
 };
   
-} //namespace hokuyo3d
+} //namespace Hokuyo3d
 
 #endif // HOKUYO3D__HOKUYO3D_DRIVER_HPP_
