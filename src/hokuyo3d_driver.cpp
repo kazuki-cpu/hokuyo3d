@@ -27,24 +27,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-//#include <boost/bind.hpp> 消去9.17
 #include <chrono> //変更8.15
 #include <memory> //追加8.15
 #include <thread> //変更9.17
-//#include <boost/thread/lock_guard.hpp> 消去9.17
 #include <mutex> //変更9.17
 #include <boost/asio.hpp>
 
 #include <algorithm>
-#include <deque>
-#include <string>//std_msgs/msg/string.hppかも
+//#include <deque>
+//#include <string>//std_msgs/msg/string.hppかも
 
 #include <rclcpp/rclcpp.hpp> //変更8.15
-#include <sensor_msgs/msg/PointCloud.hpp> //変更9.17
-#include <sensor_msgs/msg/PointCloud2.hpp> //変更9.17
 #include <sensor_msgs/msg/point_cloud2_iterator.hpp> //変更9.17
-#include <sensor_msgs/msg/MagneticField.hpp> //変更9.17
-#include <sensor_msgs/msg/Imu.hpp> //変更9.17
 #include <sensor_msgs/msg/point_cloud_conversion.hpp> //変更9.17
 
 #include <vssp.h>
@@ -410,57 +404,10 @@ void Hokuyo3dNode::cbPoint(
     driver_.requestPing();
     time_ping_ = ros::Time::now();
   }
-
-protected:
-  //ノードハンドル9.2消去
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud>SharedPtr pub_pc_; //更新9.17(9.2)
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>SharedPtr pub_pc2_; //更新9.17(9.2)
-  rclcpp::Publisher<sensor_msgs::msg::Imu>SharedPtr pub_imu_; //更新9.17(9.2)
-  rclcpp::Publisher<sensor_msgs::msg::MagneticField>SharedPtr pub_mag_; //更新9.17(9.2)
-  vssp::VsspDriver driver_;
-  sensor_msgs::msg::PointCloud cloud_; //変更9.17
-  sensor_msgs::msg::PointCloud2 cloud2_; //変更9.17
-  sensor_msgs::msg::Imu imu_; //変更9.17
-  sensor_msgs::msg::MagneticField mag_; //変更9.17
-
-  bool enable_pc_;
-  bool enable_pc2_;
-  bool allow_jump_back_;
-  std::mutex connect_mutex_;//変更9.17
-
-  rclcpp::Time time_ping_; //変更9.17
-  rclcpp::Time timestamp_base_; //変更9.17
-  std::deque<rclcpp::Time> timestamp_base_buffer_; //変更9.17
-  rclcpp::Time imu_stamp_last_; //変更9.17
-  rclcpp::Time mag_stamp_last_; //変更9.17
-  rclcpp::Time cloud_stamp_last_; //変更9.17
-
-  boost::asio::io_service io_;
-  boost::asio::deadline_timer timer_;
-
-  int field_;
-  int frame_;
-  int line_;
-
-  enum PublishCycle
-  {
-    CYCLE_FIELD,
-    CYCLE_FRAME,
-    CYCLE_LINE
-  };
-  PublishCycle cycle_;
-  std::string ip_;
-  int port_;
-  int horizontal_interlace_;
-  int vertical_interlace_;
-  double range_min_;
-  std::string frame_id_;
-  std::string imu_frame_id_;
-  std::string mag_frame_id_;
-  bool auto_reset_;
-  bool set_auto_reset_;
+ 
 };
 
+/*
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "hokuyo3d");
@@ -470,3 +417,4 @@ int main(int argc, char** argv)
 
   return 1;
 }
+*/
