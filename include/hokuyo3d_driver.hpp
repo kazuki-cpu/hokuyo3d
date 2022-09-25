@@ -64,7 +64,7 @@ public:
   void cbPing();
   void cbAux();
   void cbConnect();
-  void cbSubscriber();
+  //void cbSubscriber();
   bool poll();
   void cbTimer();
   void spin();
