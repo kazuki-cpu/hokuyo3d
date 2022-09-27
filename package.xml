@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>raspimouse</name>
-  <version>1.0.2</version>
-  <description>RaspiMouse ROS 2 node</description>
-  <maintainer email="shop@rt-net.jp">RT Corporation</maintainer>
-  <license>Apache License 2.0</license>
+  <name>hokuyo3d</name>
+  <version>1.0.0</version>
+  <description>ROS2 driver node for HOKUYO 3D LIDARs</description>
+  <maintainer email="Kazuki-Fujiwara@outlook.com">kindai university</maintainer> //後で大学のメールアドレスに変更
+  <license>BSD</license>
 
-  <author email="git@killbots.net">Geoffrey Biggs</author>
+  <author email="Kazuki-Fujiwara@outlook.com">Kazuki Fujiwara</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
