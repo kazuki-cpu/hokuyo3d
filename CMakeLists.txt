@@ -30,38 +30,31 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 
-add_library(raspimouse_component SHARED src/raspimouse_component.cpp)
-target_compile_definitions(raspimouse_component PRIVATE "RASPIMOUSE_BUILDING_DLL")
-ament_target_dependencies(raspimouse_component
+add_library(hokuyo3d_driver SHARED src/hokuyo3d_driver.cpp)
+target_compile_definitions(hokuyo3d_driver PRIVATE "HOKUYO3D_BUILDING_DLL")
+ament_target_dependencies(hokuyo3d_driver
   rclcpp
   rclcpp_components
   sensor_msgs
   )
-rclcpp_components_register_nodes(raspimouse_component "raspimouse::Raspimouse")
+rclcpp_components_register_nodes(hokuyo3d_driver "hokuyo3d::Hokuyo3dNode")//コンポーネント　名前空間::クラスノード名
 
 add_executable(hokuyo3d src/hokuyo3d.cpp)
-target_link_libraries(raspimouse raspimouse_component)
-ament_target_dependencies(raspimouse
+target_link_libraries(hokuyo3d hokuyo3d_driver)
+ament_target_dependencies(hokuyo3d
   rclcpp
   class_loader
   sensor_msgs)
 
 ament_export_targets(export_raspimouse_component HAS_LIBRARY_TARGET)
 
-ament_export_dependencies(rosidl_default_runtime)
 ament_export_dependencies(rclcpp)
-ament_export_dependencies(rclcpp_lifecycle)
 ament_export_dependencies(rclcpp_components)
-ament_export_dependencies(std_msgs)
-ament_export_dependencies(std_srvs)
-ament_export_dependencies(geometry_msgs)
-ament_export_dependencies(nav_msgs)
-ament_export_dependencies(tf2)
-ament_export_dependencies(tf2_ros)
-ament_export_dependencies(raspimouse_msgs)
+ament_export_dependencies(sensor_msgs)
+
 
 ament_export_include_directories(include)
-ament_export_libraries(raspimouse_component)
+ament_export_libraries(hokuyo3d_driver)
 
 install(
   DIRECTORY include/
@@ -69,19 +62,14 @@ install(
 )
 
 install(
-  TARGETS raspimouse_component
+  TARGETS hokuyo3d_driver
   EXPORT export_raspimouse_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
   INCLUDES DESTINATION include)
-install(TARGETS
-  raspimouse
+install(
+  TARGETS hokuyo3d
   DESTINATION lib/${PROJECT_NAME})
-
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
-endif()
 
 ament_package()
