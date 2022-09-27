@@ -1,3 +1,6 @@
+################################################################################
+# Set minimum required version of cmake, project name and compile options
+################################################################################
 cmake_minimum_required(VERSION 3.5)
 project(hokuyo3d)
 
@@ -10,48 +13,38 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+################################################################################
+# Find ament packages and libraries for ament and system dependencies
+################################################################################
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclcpp_lifecycle REQUIRED)
 find_package(rclcpp_components REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(std_srvs REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(nav_msgs REQUIRED)
-find_package(tf2 REQUIRED)
-find_package(tf2_ros REQUIRED)
-find_package(raspimouse_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(Boost REQUIRED system)
 
-include_directories(include)
+################################################################################
+# Build
+################################################################################
+include_directories(
+  include 
+  ${Boost_INCLUDE_DIRS}
+)
 
 add_library(raspimouse_component SHARED src/raspimouse_component.cpp)
 target_compile_definitions(raspimouse_component PRIVATE "RASPIMOUSE_BUILDING_DLL")
 ament_target_dependencies(raspimouse_component
   rclcpp
-  rclcpp_lifecycle
   rclcpp_components
-  std_msgs
-  std_srvs
-  geometry_msgs
-  nav_msgs
-  tf2
-  tf2_ros
-  raspimouse_msgs)
+  sensor_msgs
+  )
 rclcpp_components_register_nodes(raspimouse_component "raspimouse::Raspimouse")
 
-add_executable(raspimouse src/raspimouse.cpp)
+add_executable(hokuyo3d src/hokuyo3d.cpp)
 target_link_libraries(raspimouse raspimouse_component)
 ament_target_dependencies(raspimouse
   rclcpp
-  rclcpp_lifecycle
   class_loader
-  std_msgs
-  std_srvs
-  geometry_msgs
-  nav_msgs
-  tf2
-  tf2_ros
-  raspimouse_msgs)
+  sensor_msgs)
 
 ament_export_targets(export_raspimouse_component HAS_LIBRARY_TARGET)
 
