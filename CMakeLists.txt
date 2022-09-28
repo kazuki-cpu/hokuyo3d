@@ -37,7 +37,7 @@ ament_target_dependencies(hokuyo3d_driver
   rclcpp_components
   sensor_msgs
   )
-rclcpp_components_register_nodes(hokuyo3d_driver "hokuyo3d::Hokuyo3dNode")//コンポーネント　名前空間::クラスノード名
+rclcpp_components_register_nodes(hokuyo3d_driver "hokuyo3d::Hokuyo3dNode")
 
 add_executable(hokuyo3d src/hokuyo3d.cpp)
 target_link_libraries(hokuyo3d hokuyo3d_driver)
@@ -46,7 +46,7 @@ ament_target_dependencies(hokuyo3d
   class_loader
   sensor_msgs)
 
-ament_export_targets(export_raspimouse_component HAS_LIBRARY_TARGET)
+ament_export_targets(export_hokuyo3d_driver HAS_LIBRARY_TARGET)
 
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(rclcpp_components)
@@ -63,7 +63,7 @@ install(
 
 install(
   TARGETS hokuyo3d_driver
-  EXPORT export_raspimouse_component
+  EXPORT export_hokuyo3d_driver
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
