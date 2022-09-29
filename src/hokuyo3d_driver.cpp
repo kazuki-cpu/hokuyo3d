@@ -272,6 +272,7 @@ void Hokuyo3dNode::cbPoint(
     imu_frame_id_ = this->declare_parameter<std::string>("imu_frame_id", frame_id_ + "_imu");//変更8.17
     mag_frame_id_ = this->declare_parameter<std::string>("mag_frame_id", frame_id_ + "_mag");//変更8.17
     range_min_ = this->declare_parameter<double>("range_min", 0.0);//変更8.17
+    set_auto_reset_ = true;
     auto_reset_ = this->declare_parameter<bool>("auto_reset", false);//変更8.17
     allow_jump_back_ = this->declare_parameter<bool>("allow_jump_back", false);//変更8.17
 
