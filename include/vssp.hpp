@@ -108,8 +108,8 @@ public:
     cb_connect_ = cb;
     boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
     timer_.expires_from_now(timeout_);
-    timer_.async_wait(boost::bind(&VsspDriver::onTimeoutConnect, this, boost::asio::placeholders::error));
-    socket_.async_connect(endpoint, boost::bind(&vssp::VsspDriver::onConnect, this, boost::asio::placeholders::error));
+    timer_.async_wait(std::bind(&VsspDriver::onTimeoutConnect, this, boost::asio::placeholders::error));
+    socket_.async_connect(endpoint, std::bind(&vssp::VsspDriver::onConnect, this, boost::asio::placeholders::error));
   }
   void registerErrorCallback(decltype(cb_error_) cb)
   {
@@ -190,11 +190,11 @@ public:
   {
     timer_.cancel();
     timer_.expires_from_now(timeout_);
-    timer_.async_wait(boost::bind(&VsspDriver::onTimeout, this, boost::asio::placeholders::error));
+    timer_.async_wait(std::bind(&VsspDriver::onTimeout, this, boost::asio::placeholders::error));
     // Read at least 4 bytes.
     // In most case, callback function will be called for each VSSP line.
     boost::asio::async_read(socket_, buf_, boost::asio::transfer_at_least(4),
-                            boost::bind(&VsspDriver::onRead, this, boost::asio::placeholders::error));
+                            std::bind(&VsspDriver::onRead, this, boost::asio::placeholders::error));
   }
   bool poll()
   {
