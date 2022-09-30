@@ -402,7 +402,7 @@ void Hokuyo3dNode::cbPoint(
   void Hokuyo3dNode::ping()
   {
     driver_.requestPing();
-    time_ping_ = ros::Time::now();
+    time_ping_ = rclcpp::Time::now();
   }
  
 };
