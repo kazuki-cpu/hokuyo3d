@@ -159,10 +159,10 @@ void Hokuyo3dNode::cbPoint(
       const vssp::Header& header,
       const boost::posix_time::ptime& time_read)
   {
-    const rclcpp::Time now = ros::Time::fromBoost(time_read);//一部変更9.17
-    const ros::Duration delay =
-        ((now - time_ping_) - ros::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
-    const rclcpp::Time base = time_ping_ + delay - ros::Duration(header.received_time_ms * 0.001);//一部変更9.17
+    const rclcpp::Time now = ros::Time::fromBoost(time_read);//★
+    const rclcpp::Duration delay =
+        ((now - time_ping_) - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
+    const rclcpp::Time base = time_ping_ + delay - rclcpp::Duration(header.received_time_ms * 0.001);//一部変更9.17
 
     timestamp_base_buffer_.push_back(base);
     if (timestamp_base_buffer_.size() > 5)
@@ -171,7 +171,7 @@ void Hokuyo3dNode::cbPoint(
     auto sorted_timstamp_base = timestamp_base_buffer_;
     std::sort(sorted_timstamp_base.begin(), sorted_timstamp_base.end());
 
-    if (timestamp_base_ == ros::Time(0))
+    if (timestamp_base_ == rclcpp::Time(0))
       timestamp_base_ = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
     else
       timestamp_base_ += (sorted_timstamp_base[sorted_timstamp_base.size() / 2] - timestamp_base_) * 0.1;
@@ -184,9 +184,9 @@ void Hokuyo3dNode::cbPoint(
       const boost::shared_array<vssp::Aux>& auxs,
       const boost::posix_time::ptime& time_read)
   {
-    if (timestamp_base_ == ros::Time(0))
+    if (timestamp_base_ == rclcpp::Time(0))
       return;
-    rclcpp::Time stamp = timestamp_base_ + ros::Duration(aux_header.timestamp_ms * 0.001);//一部変更9.17
+    rclcpp::Time stamp = timestamp_base_ + rclcpp::Duration(aux_header.timestamp_ms * 0.001);//一部変更9.17
 
     if ((aux_header.data_bitfield & (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC)) ==
         (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC))
@@ -211,7 +211,7 @@ void Hokuyo3dNode::cbPoint(
           pub_imu_.publish(imu_);
         }
         imu_stamp_last_ = imu_.header.stamp;
-        imu_.header.stamp += ros::Duration(aux_header.data_ms * 0.001);
+        imu_.header.stamp += rclcpp::Duration(aux_header.data_ms * 0.001);
       }
     }
     if ((aux_header.data_bitfield & vssp::AX_MASK_MAG) == vssp::AX_MASK_MAG)
@@ -232,7 +232,7 @@ void Hokuyo3dNode::cbPoint(
           pub_mag_.publish(mag_);
         }
         mag_stamp_last_ = imu_.header.stamp;
-        mag_.header.stamp += ros::Duration(aux_header.data_ms * 0.001);
+        mag_.header.stamp += rclcpp::Duration(aux_header.data_ms * 0.001);
       }
     }
   }
