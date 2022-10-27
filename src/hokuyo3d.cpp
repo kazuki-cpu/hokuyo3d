@@ -48,6 +48,58 @@
 
 #include <vssp.h>
 
+boost::posix_time::time_duration timeout_;
+
+class YVTcommunication
+{
+	
+	
+public:
+
+	boost::asio::io_service io_;
+  	boost::asio::deadline_timer timer_;
+	vssp::VsspDriver driver_;
+
+	YVTcommunication()
+	{
+	int horizontal_interlace_ = 4;
+	int horizontal_interlace_ = 1;
+	std::string ip_ = "192.168.11.100";
+	int port_ = 10940;
+
+	boost::asio::ip::tcp::socket socket(io_);
+	driver_.setTimeout(2.0);
+	}	
+
+
+	void tcp_ip_connect()
+	{
+		boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
+		timer_.expires_from_now(timeout_);
+    		timer_.async_wait(std::bind(&VsspDriver::onTimeoutConnect, driver_, boost::asio::placeholders::error));
+    		socket_.async_connect(endpoint, std::bind(&YVTcommunication::vssp_connect, this, boost::asio::placeholders::error));
+	}
+	
+	void vssp_connect()
+	{
+		driver_.requestPing();
+		driver_.setAutoReset(false);
+      		driver_.setHorizontalInterlace(horizontal_interlace_);
+      		driver_.requestHorizontalTable();
+      		driver_.setVerticalInterlace(vertical_interlace_);
+      		driver_.requestVerticalTable(vertical_interlace_);
+      		driver_.requestData(true, true);
+      		driver_.requestAuxData();
+
+		receivePackets()		
+     	}
+	
+	
+};//YVTcommunication
+
+
+
+
 class Hokuyo3dNode
 {
 public:
@@ -153,13 +205,7 @@ public:
       line_ = range_header.line;
     }
   }
-  void cbError(
-      const vssp::Header& header,
-      const std::string& message,
-      const boost::posix_time::ptime& time_read)
-  {
-    ROS_ERROR("%s", message.c_str());
-  }
+ 
   void cbPing(
       const vssp::Header& header,
       const boost::posix_time::ptime& time_read)
@@ -183,112 +229,15 @@ public:
 
     ROS_DEBUG("timestamp_base: %lf", timestamp_base_.toSec());
   }
-  void cbAux(
-      const vssp::Header& header,
-      const vssp::AuxHeader& aux_header,
-      const boost::shared_array<vssp::Aux>& auxs,
-      const boost::posix_time::ptime& time_read)
-  {
-    if (timestamp_base_ == ros::Time(0))
-      return;
-    ros::Time stamp = timestamp_base_ + ros::Duration(aux_header.timestamp_ms * 0.001);
+ 
 
-    if ((aux_header.data_bitfield & (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC)) ==
-        (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC))
-    {
-      imu_.header.frame_id = imu_frame_id_;
-      imu_.header.stamp = stamp;
-      for (int i = 0; i < aux_header.data_count; i++)
-      {
-        imu_.orientation_covariance[0] = -1.0;
-        imu_.angular_velocity.x = auxs[i].ang_vel.x;
-        imu_.angular_velocity.y = auxs[i].ang_vel.y;
-        imu_.angular_velocity.z = auxs[i].ang_vel.z;
-        imu_.linear_acceleration.x = auxs[i].lin_acc.x;
-        imu_.linear_acceleration.y = auxs[i].lin_acc.y;
-        imu_.linear_acceleration.z = auxs[i].lin_acc.z;
-        if (imu_stamp_last_ > imu_.header.stamp && !allow_jump_back_)
-        {
-          ROS_INFO("Dropping timestamp jump backed imu");
-        }
-        else
-        {
-          pub_imu_.publish(imu_);
-        }
-        imu_stamp_last_ = imu_.header.stamp;
-        imu_.header.stamp += ros::Duration(aux_header.data_ms * 0.001);
-      }
-    }
-    if ((aux_header.data_bitfield & vssp::AX_MASK_MAG) == vssp::AX_MASK_MAG)
-    {
-      mag_.header.frame_id = mag_frame_id_;
-      mag_.header.stamp = stamp;
-      for (int i = 0; i < aux_header.data_count; i++)
-      {
-        mag_.magnetic_field.x = auxs[i].mag.x;
-        mag_.magnetic_field.y = auxs[i].mag.y;
-        mag_.magnetic_field.z = auxs[i].mag.z;
-        if (mag_stamp_last_ > imu_.header.stamp && !allow_jump_back_)
-        {
-          ROS_INFO("Dropping timestamp jump backed mag");
-        }
-        else
-        {
-          pub_mag_.publish(mag_);
-        }
-        mag_stamp_last_ = imu_.header.stamp;
-        mag_.header.stamp += ros::Duration(aux_header.data_ms * 0.001);
-      }
-    }
-  }
-  void cbConnect(bool success)
-  {
-    if (success)
-    {
-      ROS_INFO("Connection established");
-      ping();
-      if (set_auto_reset_)
-        driver_.setAutoReset(auto_reset_);
-      driver_.setHorizontalInterlace(horizontal_interlace_);
-      driver_.requestHorizontalTable();
-      driver_.setVerticalInterlace(vertical_interlace_);
-      driver_.requestVerticalTable(vertical_interlace_);
-      driver_.requestData(true, true);
-      driver_.requestAuxData();
-      driver_.receivePackets();
-      ROS_INFO("Communication started");
-    }
-    else
-    {
-      ROS_ERROR("Connection failed");
-    }
-  }
   Hokuyo3dNode()
     : pnh_("~")
     , timestamp_base_(0)
     , timer_(io_, boost::posix_time::milliseconds(500))
   {
-    if (pnh_.hasParam("horizontal_interlace") || !pnh_.hasParam("interlace"))
-    {
-      pnh_.param("horizontal_interlace", horizontal_interlace_, 4);
-    }
-    else if (pnh_.hasParam("interlace"))
-    {
-      ROS_WARN("'interlace' parameter is deprecated. Use horizontal_interlace instead.");
-      pnh_.param("interlace", horizontal_interlace_, 4);
-    }
-    pnh_.param("vertical_interlace", vertical_interlace_, 1);
-    pnh_.param("ip", ip_, std::string("192.168.0.10"));
-    pnh_.param("port", port_, 10940);
-    pnh_.param("frame_id", frame_id_, std::string("hokuyo3d"));
-    pnh_.param("imu_frame_id", imu_frame_id_, frame_id_ + "_imu");
-    pnh_.param("mag_frame_id", mag_frame_id_, frame_id_ + "_mag");
-    pnh_.param("range_min", range_min_, 0.0);
-    set_auto_reset_ = pnh_.hasParam("auto_reset");
-    pnh_.param("auto_reset", auto_reset_, false);
-
-    pnh_.param("allow_jump_back", allow_jump_back_, false);
-
+ 
+   
     std::string output_cycle;
     pnh_.param("output_cycle", output_cycle, std::string("field"));
 
@@ -298,25 +247,15 @@ public:
       cycle_ = CYCLE_FIELD;
     else if (output_cycle.compare("line") == 0)
       cycle_ = CYCLE_LINE;
-    else
-    {
-      ROS_ERROR("Unknown output_cycle value %s", output_cycle.c_str());
-      ros::shutdown();
-    }
+    
 
     driver_.setTimeout(2.0);
     ROS_INFO("Connecting to %s", ip_.c_str());
-    driver_.registerCallback(boost::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4, _5, _6));
-    driver_.registerAuxCallback(boost::bind(&Hokuyo3dNode::cbAux, this, _1, _2, _3, _4));
-    driver_.registerPingCallback(boost::bind(&Hokuyo3dNode::cbPing, this, _1, _2));
-    driver_.registerErrorCallback(boost::bind(&Hokuyo3dNode::cbError, this, _1, _2, _3));
+
     field_ = 0;
     frame_ = 0;
     line_ = 0;
 
-    sensor_msgs::ChannelFloat32 channel;
-    channel.name = std::string("intensity");
-    cloud_.channels.push_back(channel);
 
     cloud2_.height = 1;
     cloud2_.is_bigendian = false;
@@ -326,15 +265,8 @@ public:
                                       sensor_msgs::PointField::FLOAT32, "z", 1, sensor_msgs::PointField::FLOAT32,
                                       "intensity", 1, sensor_msgs::PointField::FLOAT32);
 
-    pub_imu_ = pnh_.advertise<sensor_msgs::Imu>("imu", 5);
-    pub_mag_ = pnh_.advertise<sensor_msgs::MagneticField>("mag", 5);
-
-    enable_pc_ = enable_pc2_ = false;
-    ros::SubscriberStatusCallback cb_con = boost::bind(&Hokuyo3dNode::cbSubscriber, this);
 
     boost::lock_guard<boost::mutex> lock(connect_mutex_);
-    pub_pc_ = pnh_.advertise<sensor_msgs::PointCloud>("hokuyo_cloud", 5, cb_con, cb_con);
-    pub_pc2_ = pnh_.advertise<sensor_msgs::PointCloud2>("hokuyo_cloud2", 5, cb_con, cb_con);
 
     // Start communication with the sensor
     driver_.connect(ip_.c_str(), port_, boost::bind(&Hokuyo3dNode::cbConnect, this, _1));
@@ -347,30 +279,7 @@ public:
     driver_.poll();
     ROS_INFO("Communication stoped");
   }
-  void cbSubscriber()
-  {
-    boost::lock_guard<boost::mutex> lock(connect_mutex_);
-    if (pub_pc_.getNumSubscribers() > 0)
-    {
-      enable_pc_ = true;
-      ROS_DEBUG("PointCloud output enabled");
-    }
-    else
-    {
-      enable_pc_ = false;
-      ROS_DEBUG("PointCloud output disabled");
-    }
-    if (pub_pc2_.getNumSubscribers() > 0)
-    {
-      enable_pc2_ = true;
-      ROS_DEBUG("PointCloud2 output enabled");
-    }
-    else
-    {
-      enable_pc2_ = false;
-      ROS_DEBUG("PointCloud2 output disabled");
-    }
-  }
+ 
   bool poll()
   {
     if (driver_.poll())
@@ -447,12 +356,7 @@ protected:
   int frame_;
   int line_;
 
-  enum PublishCycle
-  {
-    CYCLE_FIELD,
-    CYCLE_FRAME,
-    CYCLE_LINE
-  };
+
   PublishCycle cycle_;
   std::string ip_;
   int port_;
@@ -466,12 +370,12 @@ protected:
   bool set_auto_reset_;
 };
 
-int main(int argc, char** argv)
+int main()
 {
-  ros::init(argc, argv, "hokuyo3d");
-  Hokuyo3dNode node;
+	YVTcommunication yvt():
 
-  node.spin();
+	yvt.tcp_ip_connect()
+	yvt.vssp_connect()
 
-  return 1;
+	return 1;
 }
