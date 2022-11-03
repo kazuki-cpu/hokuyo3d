@@ -27,19 +27,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <chrono> //変更8.15
-#include <memory> //追加8.15
-#include <thread> //変更9.17
-#include <mutex> //変更9.17
+#include <chrono> 
+#include <memory> 
+#include <thread> 
+#include <mutex> 
 #include <boost/asio.hpp>
 
 #include <algorithm>
-//#include <deque>
-//#include <string>//std_msgs/msg/string.hppかも
+#include <deque>
+#include <string>
 
-#include <rclcpp/rclcpp.hpp> //変更8.15
-#include <sensor_msgs/msg/point_cloud2_iterator.hpp> //変更9.17
-#include <sensor_msgs/msg/point_cloud_conversion.hpp> //変更9.17
+#include <rclcpp/rclcpp.hpp> 
+#include <sensor_msgs/msg/point_cloud2_iterator.hpp> 
+#include <sensor_msgs/msg/point_cloud_conversion.hpp> 
 
 #include <vssp.h>
 
@@ -54,7 +54,7 @@ void Hokuyo3dNode::cbPoint(
       const boost::shared_array<vssp::XYZI>& points,
       const boost::posix_time::ptime& time_read)
   {
-    if (timestamp_base_ == rclcpp::Time(0))//変更9.25
+    if (timestamp_base_ == rclcpp::Time(0))
       return;
     // Pack scan data
     if (enable_pc_)
@@ -72,7 +72,7 @@ void Hokuyo3dNode::cbPoint(
         {
           continue;
         }
-        geometry_msgs::msg::Point32 point;//変更9.17
+        geometry_msgs::msg::Point32 point;
         point.x = points[i].x;
         point.y = points[i].y;
         point.z = points[i].z;
@@ -121,7 +121,7 @@ void Hokuyo3dNode::cbPoint(
         }
         else
         {
-          pub_pc_->publish(cloud_);//9.2変更
+          pub_pc_->publish(cloud_);
         }
         cloud_stamp_last_ = cloud_.header.stamp;
         cloud_.points.clear();
@@ -136,7 +136,7 @@ void Hokuyo3dNode::cbPoint(
         }
         else
         {
-          pub_pc2_->publish(cloud2_);//9.2変更
+          pub_pc2_->publish(cloud2_);
         }
         cloud_stamp_last_ = cloud2_.header.stamp;
         cloud2_.data.clear();
@@ -162,7 +162,7 @@ void Hokuyo3dNode::cbPoint(
     const rclcpp::Time now = ros::Time::fromBoost(time_read);//★
     const rclcpp::Duration delay =
         ((now - time_ping_) - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
-    const rclcpp::Time base = time_ping_ + delay - rclcpp::Duration(header.received_time_ms * 0.001);//一部変更9.17
+    const rclcpp::Time base = time_ping_ + delay - rclcpp::Duration(header.received_time_ms * 0.001);
 
     timestamp_base_buffer_.push_back(base);
     if (timestamp_base_buffer_.size() > 5)
@@ -186,7 +186,7 @@ void Hokuyo3dNode::cbPoint(
   {
     if (timestamp_base_ == rclcpp::Time(0))
       return;
-    rclcpp::Time stamp = timestamp_base_ + rclcpp::Duration(aux_header.timestamp_ms * 0.001);//一部変更9.17
+    rclcpp::Time stamp = timestamp_base_ + rclcpp::Duration(aux_header.timestamp_ms * 0.001);
 
     if ((aux_header.data_bitfield & (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC)) ==
         (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC))
@@ -264,20 +264,20 @@ void Hokuyo3dNode::cbPoint(
     , timer_(io_, boost::posix_time::milliseconds(500))
   {
 
-    horizontal_interlace_ = this->declare_parameter<int>("horizontal_interlace", 4);//変更8.17
-    vertical_interlace_ = this->declare_parameter<int>("vertical_interlace", 1);//変更8.17
-    ip_ = this->declare_parameter<std::string>("ip", "192.168.0.10");//変更8.17
-    port_ = this->declare_parameter<int>("port", 10940);//変更8.17
-    frame_id_ = this->declare_parameter<std::string>("frame_id", "hokuyo3d");//変更8.17
-    imu_frame_id_ = this->declare_parameter<std::string>("imu_frame_id", frame_id_ + "_imu");//変更8.17
-    mag_frame_id_ = this->declare_parameter<std::string>("mag_frame_id", frame_id_ + "_mag");//変更8.17
-    range_min_ = this->declare_parameter<double>("range_min", 0.0);//変更8.17
+    horizontal_interlace_ = this->declare_parameter<int>("horizontal_interlace", 4);
+    vertical_interlace_ = this->declare_parameter<int>("vertical_interlace", 1);
+    ip_ = this->declare_parameter<std::string>("ip", "192.168.0.10");
+    port_ = this->declare_parameter<int>("port", 10940);
+    frame_id_ = this->declare_parameter<std::string>("frame_id", "hokuyo3d");
+    imu_frame_id_ = this->declare_parameter<std::string>("imu_frame_id", frame_id_ + "_imu");
+    mag_frame_id_ = this->declare_parameter<std::string>("mag_frame_id", frame_id_ + "_mag");
+    range_min_ = this->declare_parameter<double>("range_min", 0.0);
     set_auto_reset_ = true;
-    auto_reset_ = this->declare_parameter<bool>("auto_reset", false);//変更8.17
-    allow_jump_back_ = this->declare_parameter<bool>("allow_jump_back", false);//変更8.17
+    auto_reset_ = this->declare_parameter<bool>("auto_reset", false);
+    allow_jump_back_ = this->declare_parameter<bool>("allow_jump_back", false);
 
     std::string output_cycle;
-    output_cycle = this->declare_parameter<std::string>("output_cycle", "field");//変更8.17
+    output_cycle = this->declare_parameter<std::string>("output_cycle", "field");
         
 
     if (output_cycle.compare("frame") == 0)
@@ -294,10 +294,10 @@ void Hokuyo3dNode::cbPoint(
 
     driver_.setTimeout(2.0);
     ROS_INFO("Connecting to %s", ip_.c_str());
-    driver_.registerCallback(std::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4, _5, _6));//変更9.17
-    driver_.registerAuxCallback(std::bind(&Hokuyo3dNode::cbAux, this, _1, _2, _3, _4));//変更9.17
-    driver_.registerPingCallback(std::bind(&Hokuyo3dNode::cbPing, this, _1, _2));//変更9.17
-    driver_.registerErrorCallback(std::bind(&Hokuyo3dNode::cbError, this, _1, _2, _3));//変更9.17
+    driver_.registerCallback(std::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4, _5, _6));
+    driver_.registerAuxCallback(std::bind(&Hokuyo3dNode::cbAux, this, _1, _2, _3, _4));
+    driver_.registerPingCallback(std::bind(&Hokuyo3dNode::cbPing, this, _1, _2));
+    driver_.registerErrorCallback(std::bind(&Hokuyo3dNode::cbError, this, _1, _2, _3));
     field_ = 0;
     frame_ = 0;
     line_ = 0;
@@ -309,23 +309,23 @@ void Hokuyo3dNode::cbPoint(
     cloud2_.height = 1;
     cloud2_.is_bigendian = false;
     cloud2_.is_dense = false;
-    sensor_msgs::msg::PointCloud2Modifier pc2_modifier(cloud2_);//この関数は::msg::でもちゃんと動く？
+    sensor_msgs::msg::PointCloud2Modifier pc2_modifier(cloud2_);
     pc2_modifier.setPointCloud2Fields(4, "x", 1, sensor_msgs::msg::PointField::FLOAT32, "y", 1,
                                       sensor_msgs::msg::PointField::FLOAT32, "z", 1, sensor_msgs::msg::PointField::FLOAT32,
                                       "intensity", 1, sensor_msgs::msg::PointField::FLOAT32);
 
-    pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 5);//更新9.17(9.2)
-    pub_mag_ = this->create_publisher<sensor_msgs::msg::MagneticField>("mag", 5);//更新9.17(9.2)
+    pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 5);
+    pub_mag_ = this->create_publisher<sensor_msgs::msg::MagneticField>("mag", 5);
 
-    enable_pc_ = enable_pc2_ = true;//
-    //ros::SubscriberStatusCallback cb_con = std::bind(&Hokuyo3dNode::cbSubscriber, this);//一部変更9.17
+    enable_pc_ = enable_pc2_ = true;
+    //ros::SubscriberStatusCallback cb_con = std::bind(&Hokuyo3dNode::cbSubscriber, this);
 
     std::lock_guard<std::mutex> lock(connect_mutex_);//変更9.17
-    pub_pc_ = this->create_publisher<sensor_msgs::msg::PointCloud>("hokuyo_cloud", 5);//更新9.17(9.2)
-    pub_pc2_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("hokuyo_cloud2", 5);//更新9.17(9.2)
+    pub_pc_ = this->create_publisher<sensor_msgs::msg::PointCloud>("hokuyo_cloud", 5);
+    pub_pc2_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("hokuyo_cloud2", 5);
 
     // Start communication with the sensor
-    driver_.connect(ip_.c_str(), port_, std::bind(&Hokuyo3dNode::cbConnect, this, _1));//変更9.17
+    driver_.connect(ip_.c_str(), port_, std::bind(&Hokuyo3dNode::cbConnect, this, _1));
   }
   Hokuyo3dNode::~Hokuyo3dNode()
   {
@@ -335,6 +335,7 @@ void Hokuyo3dNode::cbPoint(
     driver_.poll();
     ROS_INFO("Communication stoped");
   }
+      
 /*  void Hokuyo3dNode::cbSubscriber()
   {
     std::lock_guard<std::mutex> lock(connect_mutex_);//変更9.17
@@ -360,6 +361,7 @@ void Hokuyo3dNode::cbPoint(
     }
   }
 */
+      
   bool Hokuyo3dNode::poll()
   {
     if (driver_.poll())
@@ -374,7 +376,7 @@ void Hokuyo3dNode::cbPoint(
     if (error)
       return;
 
-    if (!rclcpp::ok())//変更9.17
+    if (!rclcpp::ok())
     {
       driver_.stop();
     }
@@ -383,14 +385,14 @@ void Hokuyo3dNode::cbPoint(
       timer_.expires_at(
           timer_.expires_at() +
           boost::posix_time::milliseconds(500));
-      timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));//変更9.17
+      timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));
     }
   }
   void Hokuyo3dNode::spin()
   {
-    timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));//変更9.17
-    std::thread thread(//変更9.17
-        std::bind(&boost::asio::io_service::run, &io_));//変更9.17
+    timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));
+    std::thread thread(
+        std::bind(&boost::asio::io_service::run, &io_));
 
     ros::AsyncSpinner spinner(1);
     spinner.start();
@@ -406,18 +408,6 @@ void Hokuyo3dNode::cbPoint(
   }
  
 };
-
-/*
-int main(int argc, char** argv)
-{
-  ros::init(argc, argv, "hokuyo3d");
-  Hokuyo3dNode node;
-
-  node.spin();
-
-  return 1;
-}
-*/
 
 #include "rclcpp_components/register_node_macro.hpp"
 RCLCPP_COMPONENTS_REGISTER_NODE(Hokuyo3d::Hokuyo3dNode)
