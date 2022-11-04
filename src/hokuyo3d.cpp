@@ -100,177 +100,11 @@ public:
 
 
 
-class Hokuyo3dNode
-{
-public:
-  void cbPoint(
-      const vssp::Header& header,
-      const vssp::RangeHeader& range_header,
-      const vssp::RangeIndex& range_index,
-      const boost::shared_array<uint16_t>& index,
-      const boost::shared_array<vssp::XYZI>& points,
-      const boost::posix_time::ptime& time_read)
-  {
-    if (timestamp_base_ == ros::Time(0))
-      return;
-    // Pack scan data
-    if (enable_pc_)
-    {
-      if (cloud_.points.size() == 0)
-      {
-        // Start packing PointCloud message
-        cloud_.header.frame_id = frame_id_;
-        cloud_.header.stamp = timestamp_base_ + ros::Duration(range_header.line_head_timestamp_ms * 0.001);
-      }
-      // Pack PointCloud message
-      for (int i = 0; i < index[range_index.nspots]; i++)
-      {
-        if (points[i].r < range_min_)
-        {
-          continue;
-        }
-        geometry_msgs::Point32 point;
-        point.x = points[i].x;
-        point.y = points[i].y;
-        point.z = points[i].z;
-        cloud_.points.push_back(point);
-        cloud_.channels[0].values.push_back(points[i].i);
-      }
-    }
-    if (enable_pc2_)
-    {
-      if (cloud2_.data.size() == 0)
-      {
-        // Start packing PointCloud2 message
-        cloud2_.header.frame_id = frame_id_;
-        cloud2_.header.stamp = timestamp_base_ + ros::Duration(range_header.line_head_timestamp_ms * 0.001);
-        cloud2_.row_step = 0;
-        cloud2_.width = 0;
-      }
-      // Pack PointCloud2 message
-      cloud2_.data.resize((cloud2_.width + index[range_index.nspots]) * cloud2_.point_step);
 
-      float* data = reinterpret_cast<float*>(&cloud2_.data[0]);
-      data += cloud2_.width * cloud2_.point_step / sizeof(float);
-      for (int i = 0; i < index[range_index.nspots]; i++)
-      {
-        if (points[i].r < range_min_)
-        {
-          continue;
-        }
-        *(data++) = points[i].x;
-        *(data++) = points[i].y;
-        *(data++) = points[i].z;
-        *(data++) = points[i].i;
-        cloud2_.width++;
-      }
-      cloud2_.row_step = cloud2_.width * cloud2_.point_step;
-    }
-    // Publish points
-    if ((cycle_ == CYCLE_FIELD && (range_header.field != field_ || range_header.frame != frame_)) ||
-        (cycle_ == CYCLE_FRAME && (range_header.frame != frame_)) || (cycle_ == CYCLE_LINE))
-    {
-      if (enable_pc_)
-      {
-        if (cloud_.header.stamp < cloud_stamp_last_ && !allow_jump_back_)
-        {
-          ROS_INFO("Dropping timestamp jump backed cloud");
-        }
-        else
-        {
-          pub_pc_.publish(cloud_);
-        }
-        cloud_stamp_last_ = cloud_.header.stamp;
-        cloud_.points.clear();
-        cloud_.channels[0].values.clear();
-      }
-      if (enable_pc2_)
-      {
-        cloud2_.data.resize(cloud2_.width * cloud2_.point_step);
-        if (cloud2_.header.stamp < cloud_stamp_last_ && !allow_jump_back_)
-        {
-          ROS_INFO("Dropping timestamp jump backed cloud2");
-        }
-        else
-        {
-          pub_pc2_.publish(cloud2_);
-        }
-        cloud_stamp_last_ = cloud2_.header.stamp;
-        cloud2_.data.clear();
-      }
-      if (range_header.frame != frame_)
-        ping();
-      frame_ = range_header.frame;
-      field_ = range_header.field;
-      line_ = range_header.line;
-    }
-  }
  
-  void cbPing(
-      const vssp::Header& header,
-      const boost::posix_time::ptime& time_read)
-  {
-    const ros::Time now = ros::Time::fromBoost(time_read);
-    const ros::Duration delay =
-        ((now - time_ping_) - ros::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
-    const ros::Time base = time_ping_ + delay - ros::Duration(header.received_time_ms * 0.001);
-
-    timestamp_base_buffer_.push_back(base);
-    if (timestamp_base_buffer_.size() > 5)
-      timestamp_base_buffer_.pop_front();
-
-    auto sorted_timstamp_base = timestamp_base_buffer_;
-    std::sort(sorted_timstamp_base.begin(), sorted_timstamp_base.end());
-
-    if (timestamp_base_ == ros::Time(0))
-      timestamp_base_ = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
-    else
-      timestamp_base_ += (sorted_timstamp_base[sorted_timstamp_base.size() / 2] - timestamp_base_) * 0.1;
-
-    ROS_DEBUG("timestamp_base: %lf", timestamp_base_.toSec());
-  }
- 
-
-  Hokuyo3dNode()
-    : pnh_("~")
-    , timestamp_base_(0)
-    , timer_(io_, boost::posix_time::milliseconds(500))
-  {
- 
-   
-    std::string output_cycle;
-    pnh_.param("output_cycle", output_cycle, std::string("field"));
-
-    if (output_cycle.compare("frame") == 0)
-      cycle_ = CYCLE_FRAME;
-    else if (output_cycle.compare("field") == 0)
-      cycle_ = CYCLE_FIELD;
-    else if (output_cycle.compare("line") == 0)
-      cycle_ = CYCLE_LINE;
-    
-
-    driver_.setTimeout(2.0);
-    ROS_INFO("Connecting to %s", ip_.c_str());
-
-    field_ = 0;
-    frame_ = 0;
-    line_ = 0;
+  
 
 
-    cloud2_.height = 1;
-    cloud2_.is_bigendian = false;
-    cloud2_.is_dense = false;
-    sensor_msgs::PointCloud2Modifier pc2_modifier(cloud2_);
-    pc2_modifier.setPointCloud2Fields(4, "x", 1, sensor_msgs::PointField::FLOAT32, "y", 1,
-                                      sensor_msgs::PointField::FLOAT32, "z", 1, sensor_msgs::PointField::FLOAT32,
-                                      "intensity", 1, sensor_msgs::PointField::FLOAT32);
-
-
-    boost::lock_guard<boost::mutex> lock(connect_mutex_);
-
-    // Start communication with the sensor
-    driver_.connect(ip_.c_str(), port_, boost::bind(&Hokuyo3dNode::cbConnect, this, _1));
-  }
   ~Hokuyo3dNode()
   {
     driver_.requestAuxData(false);
@@ -319,35 +153,16 @@ public:
     timer_.cancel();
     ROS_INFO("Connection closed");
   }
-  void ping()
-  {
-    driver_.requestPing();
-    time_ping_ = ros::Time::now();
-  }
+ 
 
 protected:
-  ros::NodeHandle pnh_;
-  ros::Publisher pub_pc_;
-  ros::Publisher pub_pc2_;
-  ros::Publisher pub_imu_;
-  ros::Publisher pub_mag_;
+  
   vssp::VsspDriver driver_;
-  sensor_msgs::PointCloud cloud_;
-  sensor_msgs::PointCloud2 cloud2_;
-  sensor_msgs::Imu imu_;
-  sensor_msgs::MagneticField mag_;
+  
 
-  bool enable_pc_;
-  bool enable_pc2_;
+ 
   bool allow_jump_back_;
   boost::mutex connect_mutex_;
-
-  ros::Time time_ping_;
-  ros::Time timestamp_base_;
-  std::deque<ros::Time> timestamp_base_buffer_;
-  ros::Time imu_stamp_last_;
-  ros::Time mag_stamp_last_;
-  ros::Time cloud_stamp_last_;
 
   boost::asio::io_service io_;
   boost::asio::deadline_timer timer_;
@@ -364,8 +179,7 @@ protected:
   int vertical_interlace_;
   double range_min_;
   std::string frame_id_;
-  std::string imu_frame_id_;
-  std::string mag_frame_id_;
+
   bool auto_reset_;
   bool set_auto_reset_;
 };
