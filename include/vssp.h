@@ -111,6 +111,8 @@ public:
     timer_.async_wait(boost::bind(&VsspDriver::onTimeoutConnect, this, boost::asio::placeholders::error));
     socket_.async_connect(endpoint, boost::bind(&vssp::VsspDriver::onConnect, this, boost::asio::placeholders::error));
   }
+  
+  /*
   void registerErrorCallback(decltype(cb_error_) cb)
   {
     cb_error_ = cb;
@@ -127,6 +129,7 @@ public:
   {
     cb_ping_ = cb;
   }
+  */
   void setAutoReset(const bool enable)
   {
     if (enable)
@@ -240,6 +243,8 @@ private:
       io_service_.stop();
     }
   }
+  
+  /*
   void onConnect(const boost::system::error_code& error)
   {
     timer_.cancel();
@@ -251,6 +256,8 @@ private:
     }
     cb_connect_(true);
   }
+  */
+  
   void onSend(const boost::system::error_code& error, boost::shared_ptr<std::string> data)
   {
     if (error)
@@ -343,8 +350,10 @@ private:
             {
               const std::string data(boost::asio::buffer_cast<const char*>(buf_.data()));
               std::string message(data, 0, header.length - header.header_length - 1);
+              /*
               if (cb_error_)
                 cb_error_(header, message, time_read);
+              */
             }
             break;
           default:
@@ -427,13 +436,15 @@ private:
             break;
           case TYPE_PNG:
             // Response to ping command
+            /*
             if (cb_ping_)
               cb_ping_(header, time_read);
+            */
             break;
           case TYPE_RI:
           case TYPE_RO:
             // Range data
-            if (!tbl_h_loaded_ || !tbl_v_loaded_ || !cb_point_)
+            if (!tbl_h_loaded_ || !tbl_v_loaded_ /* || !cb_point_ */)
             {
               // Something wrong
               break;
@@ -483,9 +494,11 @@ private:
                   success = false;
                   break;
               }
+              /*
               if (!success)
                 break;
               cb_point_(header, range_header, range_index, index, points, time_read);
+              */
             }
             break;
           case TYPE_AX:
@@ -510,8 +523,10 @@ private:
                 buf_.consume(sizeof(int32_t) * offset);
                 length -= sizeof(int32_t) * offset;
               }
+              /*
               if (cb_aux_)
                 cb_aux_(header, aux_header, auxs, time_read);
+              */
             }
             break;
           default:
