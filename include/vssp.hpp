@@ -31,9 +31,9 @@
 #define VSSP_H
 
 #include <boost/asio.hpp>
+#include <boost/asio/system_timer.hpp>
 #include <boost/array.hpp>
-#include <boost/format.hpp>
-//#include <boost/bind.hpp> 消去9.17
+#include <boost/format.hpp> 
 #include <boost/serialization/access.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/shared_array.hpp>
