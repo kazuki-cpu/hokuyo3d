@@ -52,7 +52,7 @@ class VsspDriver
 private:
   boost::asio::io_service io_service_;
   boost::asio::ip::tcp::socket socket_;
-  boost::asio::deadline_timer timer_;
+  boost::asio::system_timer timer_;
   bool closed_;
   AuxFactorArray aux_factor_;
 
@@ -62,26 +62,26 @@ private:
       const vssp::RangeIndex&,
       const boost::shared_array<uint16_t>&,
       const boost::shared_array<vssp::XYZI>&,
-      const boost::posix_time::ptime&)> cb_point_;
+      const std::chrono::system_clock::time_point&)> cb_point_;
   std::function<void(//変更9.17
       const vssp::Header&,
       const vssp::AuxHeader&,
       const boost::shared_array<vssp::Aux>&,
-      const boost::posix_time::ptime&)> cb_aux_;
+      const std::chrono::system_clock::time_point&)> cb_aux_;
   std::function<void(//変更9.17
       const vssp::Header&,
-      const boost::posix_time::ptime&)> cb_ping_;
+      const std::chrono::system_clock::time_point&)> cb_ping_;
   std::function<void(//変更9.17
       const vssp::Header&,
       const std::string&,
-      const boost::posix_time::ptime&)> cb_error_;
+      const std::chrono::system_clock::time_point&)> cb_error_;
   std::function<void(bool)> cb_connect_;//変更9.17
   std::shared_array<const double> tbl_h_;//変更9.17
   std::vector<boost::shared_array<const TableSincos>> tbl_v_;
   bool tbl_h_loaded_;
   bool tbl_v_loaded_;
   std::vector<bool> tbl_vn_loaded_;
-  boost::posix_time::time_duration timeout_;
+  std::chrono::duration timeout_;
 
   boost::asio::streambuf buf_;
 
@@ -96,12 +96,12 @@ public:
     , cb_ping_(0)
     , tbl_h_loaded_(false)
     , tbl_v_loaded_(false)
-    , timeout_(boost::posix_time::seconds(1))
+    , timeout_(std::chrono::seconds(1))
   {
   }
   void setTimeout(const double to)
   {
-    timeout_ = boost::posix_time::milliseconds(static_cast<int64_t>(1000 * to));
+    timeout_ = std::chrono::milliseconds(static_cast<int64_t>(1000 * to));
   }
   void connect(const char* ip, const unsigned int port, decltype(cb_connect_) cb)
   {
@@ -289,7 +289,7 @@ private:
   }
   void onRead(const boost::system::error_code& error)
   {
-    const auto time_read = boost::posix_time::microsec_clock::universal_time();
+    const auto time_read = std::chrono::system_clock::now();
     if (error == boost::asio::error::eof)
     {
       // Connection closed_
