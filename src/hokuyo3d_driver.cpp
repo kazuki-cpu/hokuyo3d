@@ -52,7 +52,7 @@ void Hokuyo3dNode::cbPoint(
       const vssp::RangeIndex& range_index,
       const boost::shared_array<uint16_t>& index,
       const boost::shared_array<vssp::XYZI>& points,
-      const boost::posix_time::ptime& time_read)
+      const std::chrono::system_clock::time_point& time_read)
   {
     if (timestamp_base_ == rclcpp::Time(0))
       return;
@@ -151,15 +151,23 @@ void Hokuyo3dNode::cbPoint(
   void Hokuyo3dNode::cbError(
       const vssp::Header& header,
       const std::string& message,
-      const boost::posix_time::ptime& time_read)
+      const std::chrono::system_clock::time_point& time_read)
   {
     ROS_ERROR("%s", message.c_str());
   }
   void Hokuyo3dNode::cbPing(
       const vssp::Header& header,
-      const boost::posix_time::ptime& time_read)
+      const std::chrono::system_clock::time_point& time_read)
   {
-    const rclcpp::Time now = ros::Time::fromBoost(time_read);//★
+    
+    std::chrono::seconds total_s = duration_cast<seconds>(time_read.time_since_epoch());
+    std::chrono::microseconds micro_s = duration_cast<microseconds>(time_read.time_since_epoch());
+    std::chrono::system_clock::duration fractional_s = micro_s - total_s;
+
+    rclcpp::Time now;
+    now.sec = total_s;
+    now.nsec = fractional_s / 1000;
+
     const rclcpp::Duration delay =
         ((now - time_ping_) - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
     const rclcpp::Time base = time_ping_ + delay - rclcpp::Duration(header.received_time_ms * 0.001);
@@ -182,7 +190,7 @@ void Hokuyo3dNode::cbPoint(
       const vssp::Header& header,
       const vssp::AuxHeader& aux_header,
       const boost::shared_array<vssp::Aux>& auxs,
-      const boost::posix_time::ptime& time_read)
+      const std::chrono::system_clock::time_point& time_read)
   {
     if (timestamp_base_ == rclcpp::Time(0))
       return;
@@ -261,7 +269,7 @@ void Hokuyo3dNode::cbPoint(
   Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
   : Node("hokuyo3d", options)
     , timestamp_base_(0)
-    , timer_(io_, boost::posix_time::milliseconds(500))
+    , timer_(io_, std::chrono::milliseconds(500))
   {
 
     horizontal_interlace_ = this->declare_parameter<int>("horizontal_interlace", 4);
@@ -384,7 +392,7 @@ void Hokuyo3dNode::cbPoint(
     {
       timer_.expires_at(
           timer_.expires_at() +
-          boost::posix_time::milliseconds(500));
+          std::chrono::milliseconds(500));
       timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));
     }
   }
