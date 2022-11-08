@@ -517,12 +517,12 @@ private:
           default:
             break;
         }
-      }
+      }//for
       buf_.consume(length);
-    }
+    }//while
     receivePackets();
     return;
-  }
+  }//onRead
 };
 
 }  // namespace vssp
