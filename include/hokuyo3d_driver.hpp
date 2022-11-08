@@ -41,6 +41,7 @@ extern "C" {
 
 #include <mutex> 
 #include <boost/asio.hpp>
+#include <boost/asio/system_timer.hpp>
 #include <deque>
 #include <string>//std_msgs/msg/string.hppかも
 #include <rclcpp/rclcpp.hpp>
@@ -97,7 +98,7 @@ protected:
   rclcpp::Time cloud_stamp_last_; //変更9.17
 
   boost::asio::io_service io_;
-  boost::asio::deadline_timer timer_;
+  boost::asio::system_timer timer_;
 
   int field_;
   int frame_;
