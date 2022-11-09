@@ -334,6 +334,7 @@ void Hokuyo3dNode::cbPoint(
 
     // Start communication with the sensor
     driver_.connect(ip_.c_str(), port_, std::bind(&Hokuyo3dNode::cbConnect, this, _1));
+    spin();
   }
   Hokuyo3dNode::~Hokuyo3dNode()
   {
@@ -402,10 +403,10 @@ void Hokuyo3dNode::cbPoint(
     std::thread thread(
         std::bind(&boost::asio::io_service::run, &io_));
 
-    ros::AsyncSpinner spinner(1);
-    spinner.start();
+    //ros::AsyncSpinner spinner(1);
+    //spinner.start();
     driver_.spin();
-    spinner.stop();
+    //spinner.stop();
     timer_.cancel();
     ROS_INFO("Connection closed");
   }
