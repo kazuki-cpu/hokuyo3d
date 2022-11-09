@@ -60,7 +60,10 @@ install(
   DIRECTORY include/
   DESTINATION include
 )
-
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
 install(
   TARGETS hokuyo3d_driver
   EXPORT export_hokuyo3d_driver
