@@ -46,10 +46,10 @@ extern "C" {
 #include <string>//std_msgs/msg/string.hppかも
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/time.hpp>
-#include <sensor_msgs/msg/PointCloud.hpp> //変更9.17
-#include <sensor_msgs/msg/PointCloud2.hpp> //変更9.17
-#include <sensor_msgs/msg/Imu.hpp> //変更9.17
-#include <sensor_msgs/msg/MagneticField.hpp> //変更9.17
+#include <sensor_msgs/msg/PointCloud.hpp> 
+#include <sensor_msgs/msg/PointCloud2.hpp> 
+#include <sensor_msgs/msg/Imu.hpp> 
+#include <sensor_msgs/msg/MagneticField.hpp> 
 
 
 #include <vssp.h>
@@ -75,27 +75,27 @@ public:
 
 protected:
   
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud>SharedPtr pub_pc_; //更新9.17(9.2)
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>SharedPtr pub_pc2_; //更新9.17(9.2)
-  rclcpp::Publisher<sensor_msgs::msg::Imu>SharedPtr pub_imu_; //更新9.17(9.2)
-  rclcpp::Publisher<sensor_msgs::msg::MagneticField>SharedPtr pub_mag_; //更新9.17(9.2)
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud>SharedPtr pub_pc_; 
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>SharedPtr pub_pc2_; 
+  rclcpp::Publisher<sensor_msgs::msg::Imu>SharedPtr pub_imu_; 
+  rclcpp::Publisher<sensor_msgs::msg::MagneticField>SharedPtr pub_mag_; 
   vssp::VsspDriver driver_;
-  sensor_msgs::msg::PointCloud cloud_; //変更9.17
-  sensor_msgs::msg::PointCloud2 cloud2_; //変更9.17
-  sensor_msgs::msg::Imu imu_; //変更9.17
-  sensor_msgs::msg::MagneticField mag_; //変更9.17
+  sensor_msgs::msg::PointCloud cloud_; 
+  sensor_msgs::msg::PointCloud2 cloud2_; 
+  sensor_msgs::msg::Imu imu_; 
+  sensor_msgs::msg::MagneticField mag_; 
 
   bool enable_pc_;
   bool enable_pc2_;
   bool allow_jump_back_;
-  std::mutex connect_mutex_;//変更9.17
+  std::mutex connect_mutex_;
 
-  rclcpp::Time time_ping_; //変更9.17
-  rclcpp::Time timestamp_base_; //変更9.17
-  std::deque<rclcpp::Time> timestamp_base_buffer_; //変更9.17
-  rclcpp::Time imu_stamp_last_; //変更9.17
-  rclcpp::Time mag_stamp_last_; //変更9.17
-  rclcpp::Time cloud_stamp_last_; //変更9.17
+  rclcpp::Time time_ping_; 
+  rclcpp::Time timestamp_base_; 
+  std::deque<rclcpp::Time> timestamp_base_buffer_; 
+  rclcpp::Time imu_stamp_last_; 
+  rclcpp::Time mag_stamp_last_; 
+  rclcpp::Time cloud_stamp_last_; 
 
   boost::asio::io_service io_;
   boost::asio::system_timer timer_;
