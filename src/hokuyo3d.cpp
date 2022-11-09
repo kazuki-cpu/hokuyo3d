@@ -3,24 +3,15 @@
 
 #include "hokuyo3d/hokuyo3d_driver.hpp"
 
-int main(int argc, char *argv[]) {
-  rclcpp::init(argc, argv);
-  rclcpp::NodeOptions options;
-  auto greeter = std::make_shared<greeter_ros2_style::Greeter>(options);
-  rclcpp::spin(greeter);
-
-  rclcpp::shutdown();
-  return 0;
-}
-
-/*
-int main(int argc, char** argv)
+int main(int argc, char * argv[])//**?
 {
-  ros::init(argc, argv, "hokuyo3d");
-  Hokuyo3dNode node;
-
-  node.spin();
-
+  rclcpp::init(argc, argv);
+  rclcpp::executors::SingleThreadedExecutor exe;
+  rclcpp::NodeOptions options;
+  std::shared_ptr<Hokuyo3d::Hokuyo3dNode> hokuyo3d_node =
+    std::make_shared<Hokuyo3d::Hokuyo3dNode>(options);
+  exe.add_node(hokuyo3d_node->get_node_base_interface());
+  exe.spin();
+  rclcpp::shutdown();
   return 1;
 }
-*/
