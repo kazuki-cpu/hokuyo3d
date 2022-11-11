@@ -317,10 +317,14 @@ void Hokuyo3dNode::cbPoint(
     cloud2_.height = 1;
     cloud2_.is_bigendian = false;
     cloud2_.is_dense = false;
+    
+    setPointFields();
+    /*
     sensor_msgs::msg::PointCloud2Modifier pc2_modifier(cloud2_);
     pc2_modifier.setPointCloud2Fields(4, "x", 1, sensor_msgs::msg::PointField::FLOAT32, "y", 1,
                                       sensor_msgs::msg::PointField::FLOAT32, "z", 1, sensor_msgs::msg::PointField::FLOAT32,
                                       "intensity", 1, sensor_msgs::msg::PointField::FLOAT32);
+    */
 
     pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 5);
     pub_mag_ = this->create_publisher<sensor_msgs::msg::MagneticField>("mag", 5);
@@ -370,7 +374,13 @@ void Hokuyo3dNode::cbPoint(
     }
   }
 */
-      
+  void Hokuyo3dNode::setPointFields()
+  {
+      cloud2_.fields.name = {"x", "y", "z", "intensity"};
+      cloud2_.fields.offset = {0, 4, 8, 12};
+      cloud2_.fields.datatype = {7, 7, 7, 7};
+      cloud2_.fields.count = {1, 1, 1, 1};
+  }
   bool Hokuyo3dNode::poll()
   {
     if (driver_.poll())
