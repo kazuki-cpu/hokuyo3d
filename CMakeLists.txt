@@ -41,7 +41,9 @@ ament_target_dependencies(hokuyo3d_driver
 rclcpp_components_register_nodes(hokuyo3d_driver "Hokuyo3d::Hokuyo3dNode")
 
 add_executable(hokuyo3d src/hokuyo3d.cpp)
-target_link_libraries(hokuyo3d hokuyo3d_driver)
+target_link_libraries(hokuyo3d 
+  hokuyo3d_driver
+  ${Boost_LIBRARIES})
 ament_target_dependencies(hokuyo3d
   rclcpp
   class_loader
