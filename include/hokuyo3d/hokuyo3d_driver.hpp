@@ -46,10 +46,10 @@ extern "C" {
 #include <string>//std_msgs/msg/string.hppかも
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/time.hpp>
-#include <sensor_msgs/msg/PointCloud.hpp> 
-#include <sensor_msgs/msg/PointCloud2.hpp> 
-#include <sensor_msgs/msg/Imu.hpp> 
-#include <sensor_msgs/msg/MagneticField.hpp> 
+#include <sensor_msgs/msg/point_cloud.hpp> 
+#include <sensor_msgs/msg/point_cloud2.hpp> 
+#include <sensor_msgs/msg/imu.hpp> 
+//#include <sensor_msgs/msg/MagneticField.hpp> 
 
 
 #include <hokuyo3d/vssp.hpp>
@@ -78,12 +78,12 @@ protected:
   rclcpp::Publisher<sensor_msgs::msg::PointCloud>SharedPtr pub_pc_; 
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>SharedPtr pub_pc2_; 
   rclcpp::Publisher<sensor_msgs::msg::Imu>SharedPtr pub_imu_; 
-  rclcpp::Publisher<sensor_msgs::msg::MagneticField>SharedPtr pub_mag_; 
+  //rclcpp::Publisher<sensor_msgs::msg::MagneticField>SharedPtr pub_mag_; 
   vssp::VsspDriver driver_;
   sensor_msgs::msg::PointCloud cloud_; 
   sensor_msgs::msg::PointCloud2 cloud2_; 
   sensor_msgs::msg::Imu imu_; 
-  sensor_msgs::msg::MagneticField mag_; 
+  //sensor_msgs::msg::MagneticField mag_; 
 
   bool enable_pc_;
   bool enable_pc2_;
@@ -94,7 +94,7 @@ protected:
   rclcpp::Time timestamp_base_; 
   std::deque<rclcpp::Time> timestamp_base_buffer_; 
   rclcpp::Time imu_stamp_last_; 
-  rclcpp::Time mag_stamp_last_; 
+  //rclcpp::Time mag_stamp_last_; 
   rclcpp::Time cloud_stamp_last_; 
 
   boost::asio::io_service io_;
@@ -118,7 +118,7 @@ protected:
   double range_min_;
   std::string frame_id_;
   std::string imu_frame_id_;
-  std::string mag_frame_id_;
+  //std::string mag_frame_id_;
   bool auto_reset_;
   bool set_auto_reset_;
 
