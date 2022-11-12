@@ -38,10 +38,10 @@
 #include <string>
 
 #include <rclcpp/rclcpp.hpp> 
-#include <sensor_msgs/msg/point_cloud2_iterator.hpp> 
-#include <sensor_msgs/msg/point_cloud_conversion.hpp> 
+//#include <sensor_msgs/msg/point_cloud2_iterator.hpp> 
+//#include <sensor_msgs/msg/point_cloud_conversion.hpp> 
 
-#include <vssp.h>
+#include <hokuyo3d/hokuyo3d_driver.hpp>
 
 namespace Hokuyo3d
 {
