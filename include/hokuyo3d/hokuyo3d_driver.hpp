@@ -52,7 +52,7 @@ extern "C" {
 #include <sensor_msgs/msg/MagneticField.hpp> 
 
 
-#include <vssp.h>
+#include <hokuyo3d/vssp.hpp>
 
 namespace Hokuyo3d
 {
