@@ -43,7 +43,7 @@
 #include <vector>
 #include <string>
 
-#include <hokuyo3d/vsspdefs.h>//vsspにすべきか？
+#include <hokuyo3d/vsspdefs.hpp>//vsspにすべきか？
 
 namespace vssp
 {
