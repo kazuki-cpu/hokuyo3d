@@ -32,6 +32,7 @@ include_directories(
 
 add_library(hokuyo3d_driver SHARED src/hokuyo3d_driver.cpp)
 target_compile_definitions(hokuyo3d_driver PRIVATE "HOKUYO3D_BUILDING_DLL")
+target_link_libraries(hokuyo3d_driver ${Boost_LIBRARIES})
 ament_target_dependencies(hokuyo3d_driver
   rclcpp
   rclcpp_components
