@@ -223,6 +223,8 @@ void Hokuyo3dNode::cbPoint(
         imu_.header.stamp += rclcpp::Duration(aux_header.data_ms * 0.001);
       }
     }
+    
+    /*
     if ((aux_header.data_bitfield & vssp::AX_MASK_MAG) == vssp::AX_MASK_MAG)
     {
       mag_.header.frame_id = mag_frame_id_;
@@ -244,6 +246,7 @@ void Hokuyo3dNode::cbPoint(
         mag_.header.stamp += rclcpp::Duration(aux_header.data_ms * 0.001);
       }
     }
+    */
   }
   void Hokuyo3dNode::cbConnect(bool success)
   {
