@@ -42,6 +42,7 @@
 //#include <sensor_msgs/msg/point_cloud_conversion.hpp> 
 
 #include <hokuyo3d/hokuyo3d_driver.hpp>
+#include <hokuyo3d/vssp.hpp>
 
 namespace Hokuyo3d
 {
