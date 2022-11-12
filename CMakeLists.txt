@@ -38,7 +38,7 @@ ament_target_dependencies(hokuyo3d_driver
   rclcpp_components
   sensor_msgs
   )
-rclcpp_components_register_nodes(hokuyo3d_driver "hokuyo3d::Hokuyo3dNode")
+rclcpp_components_register_nodes(hokuyo3d_driver "Hokuyo3d::Hokuyo3dNode")
 
 add_executable(hokuyo3d src/hokuyo3d.cpp)
 target_link_libraries(hokuyo3d hokuyo3d_driver)
