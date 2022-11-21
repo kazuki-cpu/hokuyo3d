@@ -56,26 +56,6 @@ private:
   bool closed_;
   AuxFactorArray aux_factor_;
 
-  boost::function<void(
-      const vssp::Header&,
-      const vssp::RangeHeader&,
-      const vssp::RangeIndex&,
-      const boost::shared_array<uint16_t>&,
-      const boost::shared_array<vssp::XYZI>&,
-      const boost::posix_time::ptime&)> cb_point_;
-  boost::function<void(
-      const vssp::Header&,
-      const vssp::AuxHeader&,
-      const boost::shared_array<vssp::Aux>&,
-      const boost::posix_time::ptime&)> cb_aux_;
-  boost::function<void(
-      const vssp::Header&,
-      const boost::posix_time::ptime&)> cb_ping_;
-  boost::function<void(
-      const vssp::Header&,
-      const std::string&,
-      const boost::posix_time::ptime&)> cb_error_;
-  boost::function<void(bool)> cb_connect_;
   boost::shared_array<const double> tbl_h_;
   std::vector<boost::shared_array<const TableSincos>> tbl_v_;
   bool tbl_h_loaded_;
@@ -103,33 +83,8 @@ public:
   {
     timeout_ = boost::posix_time::milliseconds(static_cast<int64_t>(1000 * to));
   }
-  void connect(const char* ip, const unsigned int port, decltype(cb_connect_) cb)
-  {
-    cb_connect_ = cb;
-    boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
-    timer_.expires_from_now(timeout_);
-    timer_.async_wait(boost::bind(&VsspDriver::onTimeoutConnect, this, boost::asio::placeholders::error));
-    socket_.async_connect(endpoint, boost::bind(&vssp::VsspDriver::onConnect, this, boost::asio::placeholders::error));
-  }
   
-  /*
-  void registerErrorCallback(decltype(cb_error_) cb)
-  {
-    cb_error_ = cb;
-  }
-  void registerCallback(decltype(cb_point_) cb)
-  {
-    cb_point_ = cb;
-  }
-  void registerAuxCallback(decltype(cb_aux_) cb)
-  {
-    cb_aux_ = cb;
-  }
-  void registerPingCallback(decltype(cb_ping_) cb)
-  {
-    cb_ping_ = cb;
-  }
-  */
+
   void setAutoReset(const bool enable)
   {
     if (enable)
@@ -243,20 +198,6 @@ private:
       io_service_.stop();
     }
   }
-  
-  /*
-  void onConnect(const boost::system::error_code& error)
-  {
-    timer_.cancel();
-    if (error)
-    {
-      closed_ = true;
-      cb_connect_(false);
-      return;
-    }
-    cb_connect_(true);
-  }
-  */
   
   void onSend(const boost::system::error_code& error, boost::shared_ptr<std::string> data)
   {
