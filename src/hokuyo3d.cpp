@@ -1,26 +1,62 @@
-#include <rclcpp/rclcpp.hpp>
-#include <memory>
+//#include <chrono>
+#include <boost/asio.hpp>
+//#include <string>
+#include <vssp.h>
 
-#include "hokuyo3d/hokuyo3d_driver.hpp"
+boost::posix_time::time_duration timeout_;
 
-int main(int argc, char *argv[]) {
-  rclcpp::init(argc, argv);
-  rclcpp::NodeOptions options;
-  auto greeter = std::make_shared<greeter_ros2_style::Greeter>(options);
-  rclcpp::spin(greeter);
+class YVTcommunication{
+	
+	
+public:
 
-  rclcpp::shutdown();
-  return 0;
-}
+	boost::asio::io_service io_;
+  	boost::asio::deadline_timer timer_;
+	vssp::VsspDriver driver_;
 
-/*
-int main(int argc, char** argv)
+	YVTcommunication()
+	{
+	int horizontal_interlace_ = 4;
+	int horizontal_interlace_ = 1;
+	std::string ip_ = "192.168.11.100";
+	int port_ = 10940;
+
+	boost::asio::ip::tcp::socket socket(io_);
+	driver_.setTimeout(2.0);
+	}	
+
+
+	void tcp_ip_connect()
+	{
+		boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
+		timer_.expires_from_now(timeout_);
+    		timer_.async_wait(std::bind(&VsspDriver::onTimeoutConnect, driver_, boost::asio::placeholders::error));
+    		socket_.async_connect(endpoint, std::bind(&YVTcommunication::vssp_connect, this, boost::asio::placeholders::error));
+	}
+	
+	void vssp_connect()
+	{
+		timer_.cancel();
+		driver_.requestPing();
+		driver_.setAutoReset(false);
+      		driver_.setHorizontalInterlace(horizontal_interlace_);
+      		driver_.requestHorizontalTable();
+      		driver_.setVerticalInterlace(vertical_interlace_);
+      		driver_.requestVerticalTable(vertical_interlace_);
+      		driver_.requestData(true, true);
+      		driver_.requestAuxData();
+		receivePackets()		
+     	}
+	
+	
+};//YVTcommunication
+
+int main()
 {
-  ros::init(argc, argv, "hokuyo3d");
-  Hokuyo3dNode node;
+	YVTcommunication yvt():
 
-  node.spin();
+	yvt.tcp_ip_connect()
+	
 
-  return 1;
+	return 1;
 }
-*/
