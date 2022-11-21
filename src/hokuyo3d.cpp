@@ -22,7 +22,14 @@ public:
 	boost::asio::ip::tcp::socket socket(io_);
 	driver_.setTimeout(2.0);
 	}	
-
+	~YVTcommunication()
+  	{
+    	driver_.requestAuxData(false);
+    	driver_.requestData(true, false);
+    	driver_.requestData(false, false);
+    	driver_.poll();
+    	ROS_INFO("Communication stoped");
+  	}
 
 	void tcp_ip_connect()
 	{
