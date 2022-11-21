@@ -45,7 +45,7 @@ public:
       		driver_.requestVerticalTable(vertical_interlace_);
       		driver_.requestData(true, true);
       		driver_.requestAuxData();
-		receivePackets()		
+		driver_.receivePackets();		
      	}
 	
 	
