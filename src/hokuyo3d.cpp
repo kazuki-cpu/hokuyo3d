@@ -31,7 +31,7 @@ public:
     	ROS_INFO("Communication stoped");
   	}
 
-	void tcp_ip_connect()
+	void tcp_ip_connect(const char* ip, const unsigned int port)
 	{
 		boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
 		timer_.expires_from_now(timeout_);
@@ -89,7 +89,7 @@ int main()
 	
 	YVTcommunication yvt():
 
-	yvt.tcp_ip_connect();
+	yvt.tcp_ip_connect(ip_, port_);
 	yvt.spin();
 	
 	return 1;
