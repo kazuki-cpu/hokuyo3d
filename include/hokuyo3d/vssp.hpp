@@ -220,9 +220,9 @@ public:
 private:
   void send(const std::string cmd)
   {
-    boost::shared_ptr<std::string> data(new std::string(cmd));
+    boost::shared_ptr<std::string> data(new std::string(cmd));//boostしかないか？
     boost::asio::async_write(socket_, boost::asio::buffer(*data),
-                             boost::bind(&VsspDriver::onSend, this, boost::asio::placeholders::error, data));
+                             std::bind(&VsspDriver::onSend, this, boost::asio::placeholders::error, data));
   }
   void onTimeoutConnect(const boost::system::error_code& error)
   {
