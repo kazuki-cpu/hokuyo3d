@@ -27,8 +27,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HOKUYO3D__VSSP_HPP_
-#define HOKUYO3D__VSSP_HPP_
 
 #include <boost/asio.hpp>
 #include <boost/asio/system_timer.hpp>
