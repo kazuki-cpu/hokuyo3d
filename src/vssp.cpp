@@ -43,50 +43,12 @@
 #include <vector>
 #include <string>
 
-#include <hokuyo3d/vsspdefs.hpp>//vsspにすべきか？
+#include <hokuyo3d/vssp.hpp>//vsspにすべきか？
 
 namespace vssp
 {
-class VsspDriver
-{
-private:
-  boost::asio::io_service io_service_;
-  boost::asio::ip::tcp::socket socket_;
-  boost::asio::system_timer timer_;
-  bool closed_;
-  AuxFactorArray aux_factor_;
 
-  std::function<void(
-      const vssp::Header&,
-      const vssp::RangeHeader&,
-      const vssp::RangeIndex&,
-      const boost::shared_array<uint16_t>&,
-      const boost::shared_array<vssp::XYZI>&,
-      const std::chrono::system_clock::time_point&)> cb_point_;
-  std::function<void(
-      const vssp::Header&,
-      const vssp::AuxHeader&,
-      const boost::shared_array<vssp::Aux>&,
-      const std::chrono::system_clock::time_point&)> cb_aux_;
-  std::function<void(
-      const vssp::Header&,
-      const std::chrono::system_clock::time_point&)> cb_ping_;
-  std::function<void(
-      const vssp::Header&,
-      const std::string&,
-      const std::chrono::system_clock::time_point&)> cb_error_;
-  std::function<void(bool)> cb_connect_;
-  boost::shared_array<const double> tbl_h_;
-  std::vector<boost::shared_array<const TableSincos>> tbl_v_;
-  bool tbl_h_loaded_;
-  bool tbl_v_loaded_;
-  std::vector<bool> tbl_vn_loaded_;
-  std::chrono::duration timeout_;
-
-  boost::asio::streambuf buf_;
-
-public:
-  VsspDriver()
+  VsspDriver::VsspDriver()
     : socket_(io_service_)
     , timer_(io_service_)
     , closed_(false)
@@ -99,11 +61,11 @@ public:
     , timeout_(std::chrono::seconds(1))
   {
   }
-  void setTimeout(const double to)
+  void VsspDriver::setTimeout(const double to)
   {
     timeout_ = std::chrono::milliseconds(static_cast<int64_t>(1000 * to));
   }
-  void connect(const char* ip, const unsigned int port, decltype(cb_connect_) cb)
+  void VsspDriver::connect(const char* ip, const unsigned int port, decltype(cb_connect_) cb)
   {
     cb_connect_ = cb;
     boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
@@ -111,42 +73,42 @@ public:
     timer_.async_wait(std::bind(&VsspDriver::onTimeoutConnect, this, boost::asio::placeholders::error));
     socket_.async_connect(endpoint, std::bind(&vssp::VsspDriver::onConnect, this, boost::asio::placeholders::error));
   }
-  void registerErrorCallback(decltype(cb_error_) cb)
+  void VsspDriver::registerErrorCallback(decltype(cb_error_) cb)
   {
     cb_error_ = cb;
   }
-  void registerCallback(decltype(cb_point_) cb)
+  void VsspDriver::registerCallback(decltype(cb_point_) cb)
   {
     cb_point_ = cb;
   }
-  void registerAuxCallback(decltype(cb_aux_) cb)
+  void VsspDriver::registerAuxCallback(decltype(cb_aux_) cb)
   {
     cb_aux_ = cb;
   }
-  void registerPingCallback(decltype(cb_ping_) cb)
+  void VsspDriver::registerPingCallback(decltype(cb_ping_) cb)
   {
     cb_ping_ = cb;
   }
-  void setAutoReset(const bool enable)
+  void VsspDriver::setAutoReset(const bool enable)
   {
     if (enable)
       send(std::string("SET:_ars=1\n"));
     else
       send(std::string("SET:_ars=0\n"));
   }
-  [[deprecated("use setHorizontalInterlace() instead of setInterlace()")]] void setInterlace(const int itl)
+  [[deprecated("use setHorizontalInterlace() instead of setInterlace()")]] void VsspDriver::setInterlace(const int itl)
   {
     setHorizontalInterlace(itl);
   }
-  void setHorizontalInterlace(const int itl)
+  void VsspDriver::setHorizontalInterlace(const int itl)
   {
     send((boost::format("SET:_itl=0,%02d\n") % itl).str());
   }
-  void setVerticalInterlace(const int itl)
+  void VsspDriver::setVerticalInterlace(const int itl)
   {
     send((boost::format("SET:_itv=0,%02d\n") % itl).str());
   }
-  void requestVerticalTable(const int itl = 1)
+  void VsspDriver::requestVerticalTable(const int itl = 1)
   {
     tbl_v_.resize(itl);
     tbl_vn_loaded_.resize(itl);
@@ -163,19 +125,19 @@ public:
       }
     }
   }
-  void requestHorizontalTable()
+  void VsspDriver::requestHorizontalTable()
   {
     send(std::string("GET:tblh\n"));
   }
-  void requestPing()
+  void VsspDriver::requestPing()
   {
     send(std::string("PNG\n"));
   }
-  void requestAuxData(const bool start = 1)
+  void VsspDriver::requestAuxData(const bool start = 1)
   {
     send((boost::format("DAT:ax=%d\n") % static_cast<int>(start)).str());
   }
-  void requestData(const bool intensity = 1, const bool start = 1)
+  void VsspDriver::requestData(const bool intensity = 1, const bool start = 1)
   {
     if (intensity)
     {
@@ -186,7 +148,7 @@ public:
       send((boost::format("DAT:ro=%d\n") % static_cast<int>(start)).str());
     }
   }
-  void receivePackets()
+  void VsspDriver::receivePackets()
   {
     timer_.cancel();
     timer_.expires_from_now(timeout_);
@@ -196,7 +158,7 @@ public:
     boost::asio::async_read(socket_, buf_, boost::asio::transfer_at_least(4),
                             std::bind(&VsspDriver::onRead, this, boost::asio::placeholders::error));
   }
-  bool poll()
+  bool VsspDriver::poll()
   {
     boost::system::error_code ec;
     io_service_.poll(ec);
@@ -204,27 +166,27 @@ public:
       return true;
     return false;
   }
-  void spin()
+  void VsspDriver::spin()
   {
     io_service_.run();
   }
-  void stop()
+  void VsspDriver::stop()
   {
     io_service_.stop();
   }
-  boost::asio::io_service& getIoService()
+  boost::asio::io_service& VsspDriver::getIoService()
   {
     return io_service_;
   }
 
 private:
-  void send(const std::string cmd)
+  void VsspDriver::send(const std::string cmd)
   {
     boost::shared_ptr<std::string> data(new std::string(cmd));//stdでもいい？
     boost::asio::async_write(socket_, boost::asio::buffer(*data),
                              std::bind(&VsspDriver::onSend, this, boost::asio::placeholders::error, data));
   }
-  void onTimeoutConnect(const boost::system::error_code& error)
+  void VsspDriver::onTimeoutConnect(const boost::system::error_code& error)
   {
     if (!error)
     {
@@ -232,7 +194,7 @@ private:
       io_service_.stop();
     }
   }
-  void onTimeout(const boost::system::error_code& error)
+  void VsspDriver::onTimeout(const boost::system::error_code& error)
   {
     if (!error)
     {
@@ -240,7 +202,7 @@ private:
       io_service_.stop();
     }
   }
-  void onConnect(const boost::system::error_code& error)
+  void VsspDriver::onConnect(const boost::system::error_code& error)
   {
     timer_.cancel();
     if (error)
@@ -251,7 +213,7 @@ private:
     }
     cb_connect_(true);
   }
-  void onSend(const boost::system::error_code& error, boost::shared_ptr<std::string> data)
+  void VsspDriver::onSend(const boost::system::error_code& error, boost::shared_ptr<std::string> data)
   {
     if (error)
     {
@@ -260,7 +222,7 @@ private:
     }
   }
   template <class DATA_TYPE>
-  bool rangeToXYZ(
+  bool VsspDriver::rangeToXYZ(
       const vssp::RangeHeader& range_header,
       const vssp::RangeHeaderV2R1& range_header_v2r1,
       const vssp::RangeIndex& range_index,
@@ -287,7 +249,7 @@ private:
     }
     return true;
   }
-  void onRead(const boost::system::error_code& error)
+  void VsspDriver::onRead(const boost::system::error_code& error)
   {
     const auto time_read = std::chrono::system_clock::now();
     if (error == boost::asio::error::eof)
