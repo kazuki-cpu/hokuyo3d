@@ -220,7 +220,7 @@ public:
 private:
   void send(const std::string cmd)
   {
-    boost::shared_ptr<std::string> data(new std::string(cmd));//boostしかないか？
+    boost::shared_ptr<std::string> data(new std::string(cmd));//stdでもいい？
     boost::asio::async_write(socket_, boost::asio::buffer(*data),
                              std::bind(&VsspDriver::onSend, this, boost::asio::placeholders::error, data));
   }
@@ -386,7 +386,7 @@ private:
                   int i = 0;
                   for (auto& cell : cells)
                   {
-                    const double rad(std::strtol(cell.c_str(), nullptr, 16) * 2.0 * M_PI / 65535.0);
+                    const double v_rad(std::strtol(cell.c_str(), nullptr, 16) * 2.0 * M_PI / 65535.0);//"v_"rad付け足し
                     sincos(rad, &tbl_v[i].s, &tbl_v[i].c);
                     i++;
                   }
