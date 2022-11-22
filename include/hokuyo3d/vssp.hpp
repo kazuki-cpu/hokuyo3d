@@ -141,4 +141,4 @@ private:
 
 }  // namespace vssp
 
-#endif  // VSSP_H
+#endif  //
