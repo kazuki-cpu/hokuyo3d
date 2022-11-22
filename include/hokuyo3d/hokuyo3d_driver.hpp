@@ -61,14 +61,25 @@ class Hokuyo3dNode : public rclcpp::Node
 public:
   HOKUYO3D_PUBLIC explicit Hokuyo3dNode(const rclcpp::NodeOptions & options);
   
-  void cbPoint();
-  void cbError();
-  void cbPing();
-  void cbAux();
-  void cbConnect();
+  void cbPoint(const vssp::Header& header,
+      const vssp::RangeHeader& range_header,
+      const vssp::RangeIndex& range_index,
+      const boost::shared_array<uint16_t>& index,
+      const boost::shared_array<vssp::XYZI>& points,
+      const std::chrono::system_clock::time_point& time_read);
+  void cbError(const vssp::Header& header,
+      const std::string& message,
+      const std::chrono::system_clock::time_point& time_read);
+  void cbPing(const vssp::Header& header,
+      const std::chrono::system_clock::time_point& time_read);
+  void cbAux(const vssp::Header& header,
+      const vssp::AuxHeader& aux_header,
+      const boost::shared_array<vssp::Aux>& auxs,
+      const std::chrono::system_clock::time_point& time_read);
+  void cbConnect(bool success);
   //void cbSubscriber();
   bool poll();
-  void cbTimer();
+  void cbTimer(const boost::system::error_code& error);
   void spin();
   void ping();
   
