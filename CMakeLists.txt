@@ -32,6 +32,13 @@ include_directories(
 
 add_library(hokuyo3d_driver SHARED src/hokuyo3d_driver.cpp)
 target_compile_definitions(hokuyo3d_driver PRIVATE "HOKUYO3D_BUILDING_DLL")
+
+target_include_directories(hokuyo3d_driver
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)//変更1123
+
 target_link_libraries(hokuyo3d_driver ${Boost_LIBRARIES})
 ament_target_dependencies(hokuyo3d_driver
   rclcpp
