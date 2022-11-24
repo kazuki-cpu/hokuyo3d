@@ -256,6 +256,9 @@ private:
       }
       // Read packet Header
       const vssp::Header header = *boost::asio::buffer_cast<const vssp::Header*>(buf_.data());
+      /*printf("%d, %d, %d, %d, %d, %d, %d\n", header.mark, header.type, header.status, header.header_length,
+                                            header.length, header.received_time_ms, header.send_time_ms);*///debag
+      
       if (header.mark != vssp::VSSP_MARK)
       {
         // Invalid packet
@@ -308,6 +311,9 @@ private:
               const std::string data(boost::asio::buffer_cast<const char*>(buf_.data()));
               std::vector<std::string> lines;
               boost::algorithm::split(lines, data, boost::algorithm::is_any_of("\n\r"));
+              //std::cout << lines[1]; //debag
+              //std::cout << std::endl;//debag
+              
               if (lines.size() == 0)
                 break;
 
@@ -318,6 +324,8 @@ private:
                   break;
                 std::vector<std::string> cells;
                 boost::algorithm::split(cells, lines[1], boost::algorithm::is_any_of(","));
+                //std::cout << cells[0]; //debag
+                //std::cout << std::endl;//debag
 
                 if (lines[0].compare("GET:tblv") == 0 ||
                     lines[0].compare(0, 6, "GET:tv") == 0)
@@ -390,6 +398,10 @@ private:
             {
               // Decode range data Header
               const vssp::RangeHeader range_header = *boost::asio::buffer_cast<const vssp::RangeHeader*>(buf_.data());
+              /*printf("%d, %d, %d, %d, %d, %d, %d\n", range_header.line_head_timestamp_ms, range_header.line_tail_timestamp_ms,
+                                                      range_header.line_head_h_angle_ratio, range_header.line_tail_h_angle_ratio,
+                                                      range_header.field, range_header.line, range_header.spot);*///debag
+              
               vssp::RangeHeaderV2R1 range_header_v2r1 = RANGE_HEADER_V2R1_DEFAULT;
               if (range_header.header_length >= 24)
               {
@@ -444,6 +456,7 @@ private:
             {
               // Decode range data Header
               const vssp::AuxHeader aux_header = *boost::asio::buffer_cast<const vssp::AuxHeader*>(buf_.data());
+              //printf("%d, %d, %d, %d\n", aux_header.timestamp_ms, aux_header.data_bitfield, aux_header.data_count, aux_header.data_ms);//debag
               buf_.consume(aux_header.header_length);
               length -= aux_header.header_length;
 
@@ -457,6 +470,10 @@ private:
                 {
                   if (aux_header.data_bitfield & (1 << static_cast<int>(b)))
                     auxs[i][b] = aux_factor_[b] * data[offset++].val;
+                  //printf("auxs[%d][%d],%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", i,b,auxs[i].ang_vel.x,auxs[i].ang_vel.y,auxs[i].ang_vel.z,auxs[i].lin_acc.x,auxs[i].lin_acc.y,auxs[i].lin_acc.z,auxs[i].mag.x,auxs[i].mag.y,auxs[i].mag.z,auxs[i].temp);//debag
+                  //printf("auxs[%d][%d]=%f\n", i,b);//debag
+                  //printf("%d\n", data[offset].val);//debag
+                  //printf("%d\n", offset);//debag
                 }
                 buf_.consume(sizeof(int32_t) * offset);
                 length -= sizeof(int32_t) * offset;
