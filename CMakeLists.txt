@@ -30,9 +30,15 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 
+add_library(vssp SHARED src/vssp.cpp)
+target_compile_definitions(vssp PRIVATE "HOKUYO3D_BUILDING_DLL")
+target_link_libraries(vssp ${Boost_LIBRARIES})
+
 add_library(hokuyo3d_driver SHARED src/hokuyo3d_driver.cpp)
 target_compile_definitions(hokuyo3d_driver PRIVATE "HOKUYO3D_BUILDING_DLL")
-target_link_libraries(hokuyo3d_driver ${Boost_LIBRARIES})
+target_link_libraries(hokuyo3d_driver 
+  vssp
+  ${Boost_LIBRARIES})
 ament_target_dependencies(hokuyo3d_driver
   rclcpp
   rclcpp_components
@@ -49,6 +55,7 @@ ament_target_dependencies(hokuyo3d
   class_loader
   sensor_msgs)
 
+ament_export_targets(export_vssp HAS_LIBRARY_TARGET)
 ament_export_targets(export_hokuyo3d_driver HAS_LIBRARY_TARGET)
 
 ament_export_dependencies(rclcpp)
@@ -57,6 +64,7 @@ ament_export_dependencies(sensor_msgs)
 
 
 ament_export_include_directories(include)
+ament_export_libraries(vssp)
 ament_export_libraries(hokuyo3d_driver)
 
 install(
@@ -67,6 +75,13 @@ install(
   DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}
 )
+install(
+  TARGETS vssp
+  EXPORT export_vssp
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include)
 install(
   TARGETS hokuyo3d_driver
   EXPORT export_hokuyo3d_driver
