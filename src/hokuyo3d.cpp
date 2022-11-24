@@ -1,6 +1,11 @@
 //#include <chrono>
+#include <boost/bind.hpp>
+#include <boost/thread.hpp>
+#include <boost/thread/lock_guard.hpp>
+#include <boost/thread/mutex.hpp>
+#include <ros/ros.h>
 #include <boost/asio.hpp>
-//#include <string>
+#include <string>
 #include <vssp.h>
 
 boost::posix_time::time_duration timeout_;
@@ -35,8 +40,8 @@ public:
 	{
 		boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
 		timer_.expires_from_now(timeout_);
-    		timer_.async_wait(std::bind(&VsspDriver::onTimeoutConnect, driver_, boost::asio::placeholders::error));
-    		socket_.async_connect(endpoint, std::bind(&YVTcommunication::vssp_connect, this, boost::asio::placeholders::error));
+    		timer_.async_wait(boost::bind(&VsspDriver::onTimeoutConnect, driver_, boost::asio::placeholders::error));
+    		socket_.async_connect(endpoint, boost::bind(&YVTcommunication::vssp_connect, this, boost::asio::placeholders::error));
 	}
 	
 	void vssp_connect()
