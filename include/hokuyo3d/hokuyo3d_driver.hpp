@@ -133,7 +133,6 @@ protected:
   bool auto_reset_;
   bool set_auto_reset_;
 
-
 };
   
 } //namespace Hokuyo3d
