@@ -1,23 +1,19 @@
-//#include <chrono>
-#include <boost/bind.hpp>
-#include <boost/thread.hpp>
-#include <boost/thread/lock_guard.hpp>
-#include <boost/thread/mutex.hpp>
-#include <ros/ros.h>
+#include <chrono>
+#include <rclcpp/rclcpp.hpp>
 #include <boost/asio.hpp>
 #include <string>
-#include <vssp.h>
+#include <vssp.hpp>
 
-boost::posix_time::time_duration timeout_;
+std::chrono::duration timeout_;
 
 class YVTcommunication{
 		
 public:
 	boost::asio::io_service io_;
-  	boost::asio::deadline_timer timer_;
+  	boost::asio::system_timer timer_;
 	vssp::VsspDriver driver_;
 
-	YVTcommunication():timer_(io_, boost::posix_time::milliseconds(500))
+	YVTcommunication():timer_(io_, std::chrono::milliseconds(500))
 	{
 	int horizontal_interlace_ = 4;
 	int horizontal_interlace_ = 1;
@@ -40,8 +36,8 @@ public:
 	{
 		boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
 		timer_.expires_from_now(timeout_);
-    		timer_.async_wait(boost::bind(&VsspDriver::onTimeoutConnect, driver_, boost::asio::placeholders::error));
-    		socket_.async_connect(endpoint, boost::bind(&YVTcommunication::vssp_connect, this, boost::asio::placeholders::error));
+    		timer_.async_wait(std::bind(&VsspDriver::onTimeoutConnect, driver_, boost::asio::placeholders::error));
+    		socket_.async_connect(endpoint, std::bind(&YVTcommunication::vssp_connect, this, boost::asio::placeholders::error));
 	}
 	
 	void vssp_connect()
@@ -63,7 +59,7 @@ public:
     		if (error)
       		return;
 
-    		if (!ros::ok())
+    		if (!rclcpp::ok())
     		{
       			driver_.stop();
     		}
@@ -71,16 +67,16 @@ public:
     		{
       			timer_.expires_at(
          			timer_.expires_at() +
-          			boost::posix_time::milliseconds(500));
-      			timer_.async_wait(boost::bind(&Hokuyo3dNode::cbTimer, this, _1));
+          			std::chrono::milliseconds(500));
+      			timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));
     		}
   	}
 	
   	void spin()
   	{
-    		timer_.async_wait(boost::bind(&Hokuyo3dNode::cbTimer, this, _1));
-    		boost::thread thread(
-        		boost::bind(&boost::asio::io_service::run, &io_));
+    		timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));
+    		std::thread thread(
+        		std::bind(&boost::asio::io_service::run, &io_));
 		
     		driver_.spin();
     		timer_.cancel();
