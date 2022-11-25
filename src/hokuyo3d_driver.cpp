@@ -118,7 +118,7 @@ void Hokuyo3dNode::cbPoint(
       {
         if (cloud_.header.stamp < cloud_stamp_last_ && !allow_jump_back_)
         {
-          ROS_INFO("Dropping timestamp jump backed cloud");
+          RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed cloud");
         }
         else
         {
@@ -133,7 +133,7 @@ void Hokuyo3dNode::cbPoint(
         cloud2_.data.resize(cloud2_.width * cloud2_.point_step);
         if (cloud2_.header.stamp < cloud_stamp_last_ && !allow_jump_back_)
         {
-          ROS_INFO("Dropping timestamp jump backed cloud2");
+          RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed cloud2");
         }
         else
         {
@@ -154,7 +154,7 @@ void Hokuyo3dNode::cbPoint(
       const std::string& message,
       const std::chrono::system_clock::time_point& time_read)
   {
-    ROS_ERROR("%s", message.c_str());
+    RCLCPP_ERROR(get_logger(), "%s", message.c_str());
   }
   void Hokuyo3dNode::cbPing(
       const vssp::Header& header,
@@ -185,7 +185,7 @@ void Hokuyo3dNode::cbPoint(
     else
       timestamp_base_ += (sorted_timstamp_base[sorted_timstamp_base.size() / 2] - timestamp_base_) * 0.1;
 
-    ROS_DEBUG("timestamp_base: %lf", timestamp_base_.toSec());
+    RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.toSec());
   }
   void Hokuyo3dNode::cbAux(
       const vssp::Header& header,
@@ -213,7 +213,7 @@ void Hokuyo3dNode::cbPoint(
         imu_.linear_acceleration.z = auxs[i].lin_acc.z;
         if (imu_stamp_last_ > imu_.header.stamp && !allow_jump_back_)
         {
-          ROS_INFO("Dropping timestamp jump backed imu");
+          RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed imu");
         }
         else
         {
@@ -252,7 +252,7 @@ void Hokuyo3dNode::cbPoint(
   {
     if (success)
     {
-      ROS_INFO("Connection established");
+      RCLCPP_INFO(get_logger(), "Connection established");
       ping();
       if (set_auto_reset_)
         driver_.setAutoReset(auto_reset_);
@@ -263,11 +263,11 @@ void Hokuyo3dNode::cbPoint(
       driver_.requestData(true, true);
       driver_.requestAuxData();
       driver_.receivePackets();
-      ROS_INFO("Communication started");
+      RCLCPP_INFO(get_logger(), "Communication started");
     }
     else
     {
-      ROS_ERROR("Connection failed");
+      RCLCPP_ERROR(get_logger(), "Connection failed");
     }
   }
   Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
@@ -291,7 +291,6 @@ void Hokuyo3dNode::cbPoint(
     std::string output_cycle;
     output_cycle = this->declare_parameter<std::string>("output_cycle", "field");
         
-
     if (output_cycle.compare("frame") == 0)
       cycle_ = CYCLE_FRAME;
     else if (output_cycle.compare("field") == 0)
@@ -300,12 +299,12 @@ void Hokuyo3dNode::cbPoint(
       cycle_ = CYCLE_LINE;
     else
     {
-      ROS_ERROR("Unknown output_cycle value %s", output_cycle.c_str());
+      RCLCPP_ERROR(this->get_logger(), "Unknown output_cycle value %s", output_cycle.c_str());
       rclcpp::shutdown();
     }
 
     driver_.setTimeout(2.0);
-    ROS_INFO("Connecting to %s", ip_.c_str());
+    RCLCPP_INFO(this->get_logger(), "Connecting to %s", ip_.c_str());
     driver_.registerCallback(std::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4, _5, _6));
     driver_.registerAuxCallback(std::bind(&Hokuyo3dNode::cbAux, this, _1, _2, _3, _4));
     driver_.registerPingCallback(std::bind(&Hokuyo3dNode::cbPing, this, _1, _2));
@@ -334,7 +333,6 @@ void Hokuyo3dNode::cbPoint(
     */
 
     pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 5);
-    pub_mag_ = this->create_publisher<sensor_msgs::msg::MagneticField>("mag", 5);
 
     enable_pc_ = enable_pc2_ = true;
     //ros::SubscriberStatusCallback cb_con = std::bind(&Hokuyo3dNode::cbSubscriber, this);
@@ -353,7 +351,7 @@ void Hokuyo3dNode::cbPoint(
     driver_.requestData(true, false);
     driver_.requestData(false, false);
     driver_.poll();
-    ROS_INFO("Communication stoped");
+    RCLCPP_INFO(this->get_logger(), "Communication stoped");
   }
       
 /*  void Hokuyo3dNode::cbSubscriber()
@@ -377,7 +375,7 @@ void Hokuyo3dNode::cbPoint(
     else
     {
       enable_pc2_ = false;
-      ROS_DEBUG("PointCloud2 output disabled");
+      RCLCPP_DEBUG("PointCloud2 output disabled");
     }
   }
 */
@@ -388,7 +386,7 @@ void Hokuyo3dNode::cbPoint(
     {
       return true;
     }
-    ROS_INFO("Connection closed");
+    RCLCPP_INFO(get_logger(), "Connection closed");
     return false;
   }
   void Hokuyo3dNode::cbTimer(const boost::system::error_code& error)
@@ -419,7 +417,7 @@ void Hokuyo3dNode::cbPoint(
     driver_.spin();
     //spinner.stop();
     timer_.cancel();
-    ROS_INFO("Connection closed");
+    RCLCPP_INFO(get_logger(),"Connection closed");
   }
   void Hokuyo3dNode::ping()
   {
