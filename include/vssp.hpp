@@ -52,7 +52,7 @@ class VsspDriver
 private:
   boost::asio::io_service io_service_;
   boost::asio::ip::tcp::socket socket_;
-  boost::asio::deadline_timer timer_;
+  boost::asio::system_timer timer_;
   bool closed_;
   AuxFactorArray aux_factor_;
 
@@ -61,7 +61,7 @@ private:
   bool tbl_h_loaded_;
   bool tbl_v_loaded_;
   std::vector<bool> tbl_vn_loaded_;
-  boost::posix_time::time_duration timeout_;
+  std::chrono::duration timeout_;
 
   boost::asio::streambuf buf_;
 
@@ -73,12 +73,12 @@ public:
     , aux_factor_(AUX_FACTOR_DEFAULT)
     , tbl_h_loaded_(false)
     , tbl_v_loaded_(false)
-    , timeout_(boost::posix_time::seconds(1))
+    , timeout_(std::chrono::seconds(1))
   {
   }
   void setTimeout(const double to)
   {
-    timeout_ = boost::posix_time::milliseconds(static_cast<int64_t>(1000 * to));
+    timeout_ = std::chrono::milliseconds(static_cast<int64_t>(1000 * to));
   }
   
 
@@ -145,11 +145,11 @@ public:
   {
     timer_.cancel();
     timer_.expires_from_now(timeout_);
-    timer_.async_wait(boost::bind(&VsspDriver::onTimeout, this, boost::asio::placeholders::error));
+    timer_.async_wait(std::bind(&VsspDriver::onTimeout, this, boost::asio::placeholders::error));
     // Read at least 4 bytes.
     // In most case, callback function will be called for each VSSP line.
     boost::asio::async_read(socket_, buf_, boost::asio::transfer_at_least(4),
-                            boost::bind(&VsspDriver::onRead, this, boost::asio::placeholders::error));
+                            std::bind(&VsspDriver::onRead, this, boost::asio::placeholders::error));
   }
   bool poll()
   {
@@ -177,7 +177,7 @@ private:
   {
     boost::shared_ptr<std::string> data(new std::string(cmd));
     boost::asio::async_write(socket_, boost::asio::buffer(*data),
-                             boost::bind(&VsspDriver::onSend, this, boost::asio::placeholders::error, data));
+                             std::bind(&VsspDriver::onSend, this, boost::asio::placeholders::error, data));
   }
   void onTimeoutConnect(const boost::system::error_code& error)
   {
@@ -234,7 +234,7 @@ private:
   }
   void onRead(const boost::system::error_code& error)
   {
-    const auto time_read = boost::posix_time::microsec_clock::universal_time();
+    const auto time_read = std::chrono::system_clock::now();
     if (error == boost::asio::error::eof)
     {
       // Connection closed_
