@@ -27,8 +27,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VSSP_H
-#define VSSP_H
+#ifndef VSSP_HPP_
+#define VSSP_HPP_
 
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
@@ -43,7 +43,7 @@
 #include <vector>
 #include <string>
 
-#include <vsspdefs.h>
+#include <hokuyo3d/vsspdefs.h>
 
 namespace vssp
 {
