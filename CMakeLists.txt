@@ -37,7 +37,7 @@ target_include_directories(hokuyo3d_driver
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
-)//変更1123
+)
 
 target_link_libraries(hokuyo3d_driver ${Boost_LIBRARIES})
 ament_target_dependencies(hokuyo3d_driver
