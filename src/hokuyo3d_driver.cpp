@@ -44,6 +44,8 @@
 #include <hokuyo3d/hokuyo3d_driver.hpp>
 #include <hokuyo3d/vssp.hpp>
 
+using namespace std::placeholders
+
 namespace Hokuyo3d
 {
 
