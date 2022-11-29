@@ -284,7 +284,7 @@ void Hokuyo3dNode::cbPoint(
     port_ = this->declare_parameter<int>("port", 10940);
     frame_id_ = this->declare_parameter<std::string>("frame_id", "hokuyo3d");
     imu_frame_id_ = this->declare_parameter<std::string>("imu_frame_id", frame_id_ + "_imu");
-    mag_frame_id_ = this->declare_parameter<std::string>("mag_frame_id", frame_id_ + "_mag");
+    //mag_frame_id_ = this->declare_parameter<std::string>("mag_frame_id", frame_id_ + "_mag");
     range_min_ = this->declare_parameter<double>("range_min", 0.0);
     set_auto_reset_ = true;
     auto_reset_ = this->declare_parameter<bool>("auto_reset", false);
