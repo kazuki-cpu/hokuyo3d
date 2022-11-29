@@ -59,7 +59,9 @@ namespace Hokuyo3d
 class Hokuyo3dNode : public rclcpp::Node
 {
 public:
-  HOKUYO3D_PUBLIC explicit Hokuyo3dNode(const rclcpp::NodeOptions & options);
+  HOKUYO3D_PUBLIC 
+  explicit Hokuyo3dNode(const rclcpp::NodeOptions & options);
+  ~Hokuyo3dNode(void);
   
   void cbPoint(const vssp::Header& header,
       const vssp::RangeHeader& range_header,
