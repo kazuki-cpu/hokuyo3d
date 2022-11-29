@@ -86,10 +86,10 @@ public:
 
 protected:
   
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud>SharedPtr pub_pc_; 
-  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>SharedPtr pub_pc2_; 
-  rclcpp::Publisher<sensor_msgs::msg::Imu>SharedPtr pub_imu_; 
-  //rclcpp::Publisher<sensor_msgs::msg::MagneticField>SharedPtr pub_mag_; 
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud>::SharedPtr pub_pc_; 
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_pc2_; 
+  rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_imu_; 
+  //rclcpp::Publisher<sensor_msgs::msg::MagneticField>::SharedPtr pub_mag_; 
   vssp::VsspDriver driver_;
   sensor_msgs::msg::PointCloud cloud_; 
   sensor_msgs::msg::PointCloud2 cloud2_; 
