@@ -45,6 +45,21 @@
 
 #include <hokuyo3d/vsspdefs.hpp>//vsspにすべきか？
 
+#include <functional>
+#include <boost/bind/arg.hpp>
+
+namespace std {
+
+template <int n>
+struct is_placeholder<boost::arg<n>>
+  : public ::std::integral_constant<int, n> { };
+
+template <int n>
+struct is_placeholder<boost::arg<n>(*)()>
+  : public ::std::integral_constant<int, n> { };
+
+} // namespace std
+
 namespace vssp
 {
 class VsspDriver
