@@ -424,7 +424,7 @@ void Hokuyo3dNode::cbPoint(
   void Hokuyo3dNode::ping()
   {
     driver_.requestPing();
-    time_ping_ = now();
+    time_ping_ = this->now();
   }
  
 };
