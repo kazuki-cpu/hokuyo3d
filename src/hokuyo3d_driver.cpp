@@ -219,7 +219,7 @@ void Hokuyo3dNode::cbPoint(
         }
         else
         {
-          pub_imu_.publish(imu_);
+          pub_imu_->publish(imu_);
         }
         imu_stamp_last_ = imu_.header.stamp;
         imu_.header.stamp += rclcpp::Duration(aux_header.data_ms * 0.001);
