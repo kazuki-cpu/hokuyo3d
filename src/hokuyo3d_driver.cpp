@@ -45,7 +45,7 @@
 #include <hokuyo3d/vssp.hpp>
 
 using namespace std::placeholders
-using namespace std::chrono
+using namespace std::chrono//12/2追加
 
 namespace Hokuyo3d
 {
@@ -56,7 +56,7 @@ void Hokuyo3dNode::cbPoint(
       const vssp::RangeIndex& range_index,
       const boost::shared_array<uint16_t>& index,
       const boost::shared_array<vssp::XYZI>& points,
-      const system_clock::time_point& time_read)
+      const system_clock::time_point& time_read)//12/2変更
   {
     if (timestamp_base_ == rclcpp::Time(0))
       return;
@@ -324,7 +324,8 @@ void Hokuyo3dNode::cbPoint(
     cloud2_.is_bigendian = false;
     cloud2_.is_dense = false;
     
-    cloud2_.fields[0] = {"x", 0, 7, 1};
+    cloud2_.fields[0].name = "x";
+                         , 0, 7, 1};//12/2変更しよう
     cloud2_.fields[1] = {"y", 4, 7, 1};
     cloud2_.fields[2] = {"z", 8, 7, 1};
     cloud2_.fields[3] = {"intensity", 12, 7, 1};
@@ -414,7 +415,7 @@ void Hokuyo3dNode::cbPoint(
     timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));
     std::thread thread(
         std::bind(
-  static_cast<std::size_t (boost::asio::io_service::*)()>(&boost::asio::io_service::run), &io_));
+  static_cast<std::size_t (boost::asio::io_service::*)()>(&boost::asio::io_service::run), &io_));//12/2変更
 
     //ros::AsyncSpinner spinner(1);
     //spinner.start();
