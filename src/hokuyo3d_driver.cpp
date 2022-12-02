@@ -324,11 +324,23 @@ void Hokuyo3dNode::cbPoint(
     cloud2_.is_bigendian = false;
     cloud2_.is_dense = false;
     
-    cloud2_.fields[0].name = "x";
-                         , 0, 7, 1};//12/2変更しよう
-    cloud2_.fields[1] = {"y", 4, 7, 1};
-    cloud2_.fields[2] = {"z", 8, 7, 1};
-    cloud2_.fields[3] = {"intensity", 12, 7, 1};
+    cloud2_.fields[0].name = "x";//12/2変更
+    cloud2_.fields[0].offset = 0;
+    cloud2_.fields[0].datatype = 7;
+    cloud2_.fields[0].count = 1;
+    cloud2_.fields[1].name = "y";//12/2変更
+    cloud2_.fields[1].offset = 4;
+    cloud2_.fields[1].datatype = 7;
+    cloud2_.fields[1].count = 1;    
+    cloud2_.fields[2].name = "z";//12/2変更
+    cloud2_.fields[2].offset = 8;
+    cloud2_.fields[2].datatype = 7;
+    cloud2_.fields[2].count = 1;
+    cloud2_.fields[3].name = "intensity";//12/2変更
+    cloud2_.fields[3].offset = 12;
+    cloud2_.fields[3].datatype = 7;
+    cloud2_.fields[3].count = 1;
+  
     /*
     sensor_msgs::msg::PointCloud2Modifier pc2_modifier(cloud2_);
     pc2_modifier.setPointCloud2Fields(4, "x", 1, sensor_msgs::msg::PointField::FLOAT32, "y", 1,
