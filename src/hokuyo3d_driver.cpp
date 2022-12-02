@@ -412,7 +412,8 @@ void Hokuyo3dNode::cbPoint(
   {
     timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));
     std::thread thread(
-        std::bind(&boost::asio::io_service::run, &io_));
+        std::bind(
+  static_cast<std::size_t (boost::asio::io_service::*)()>(&boost::asio::io_service::run), &io_));
 
     //ros::AsyncSpinner spinner(1);
     //spinner.start();
