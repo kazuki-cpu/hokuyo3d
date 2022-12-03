@@ -169,8 +169,8 @@ void Hokuyo3dNode::cbPoint(
     system_clock::duration fractional_s = micro_s - total_s;
 
     rclcpp::Time now;
-    now.sec = total_s;
-    now.nsec = fractional_s / 1000;
+    now.seconds = total_s;
+    now.nanoseconds = fractional_s / 1000;
 
     const rclcpp::Duration delay =
         ((now - time_ping_) - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
