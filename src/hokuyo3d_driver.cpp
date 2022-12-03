@@ -188,7 +188,7 @@ void Hokuyo3dNode::cbPoint(
     else
       timestamp_base_ += (sorted_timstamp_base[sorted_timstamp_base.size() / 2] - timestamp_base_) * 0.1;
 
-    RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.toSec());
+    RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds);//12/3変更
   }
   void Hokuyo3dNode::cbAux(
       const vssp::Header& header,
