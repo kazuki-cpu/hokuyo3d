@@ -442,7 +442,7 @@ void Hokuyo3dNode::cbPoint(
     time_ping_ = this->now();
   }
  
-};
+}
 
 #include "rclcpp_components/register_node_macro.hpp"
 RCLCPP_COMPONENTS_REGISTER_NODE(Hokuyo3d::Hokuyo3dNode)
