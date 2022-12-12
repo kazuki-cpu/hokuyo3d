@@ -58,7 +58,7 @@ void Hokuyo3dNode::cbPoint(
       const boost::shared_array<vssp::XYZI>& points,
       const system_clock::time_point& time_read)//12/2変更
   {
-    if (timestamp_base_ == rclcpp::Time(0))
+    if (timestamp_base_ == rclcpp::Time(0, 0))
       return;
     // Pack scan data
     if (enable_pc_)
@@ -67,7 +67,7 @@ void Hokuyo3dNode::cbPoint(
       {
         // Start packing PointCloud message
         cloud_.header.frame_id = frame_id_;
-        cloud_.header.stamp = timestamp_base_ + rclcpp::Duration(range_header.line_head_timestamp_ms * 0.001);
+        cloud_.header.stamp = timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
       }
       // Pack PointCloud message
       for (int i = 0; i < index[range_index.nspots]; i++)
@@ -90,7 +90,7 @@ void Hokuyo3dNode::cbPoint(
       {
         // Start packing PointCloud2 message
         cloud2_.header.frame_id = frame_id_;
-        cloud2_.header.stamp = timestamp_base_ + rclcpp::Duration(range_header.line_head_timestamp_ms * 0.001);
+        cloud2_.header.stamp = timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
         cloud2_.row_step = 0;
         cloud2_.width = 0;
       }
@@ -164,17 +164,12 @@ void Hokuyo3dNode::cbPoint(
       const system_clock::time_point& time_read)
   {
     
-    seconds total_s = duration_cast<seconds>(time_read.time_since_epoch());
-    microseconds micro_s = duration_cast<microseconds>(time_read.time_since_epoch());
-    system_clock::duration fractional_s = micro_s - total_s;
-
-    rclcpp::Time now;
-    now.seconds = total_s;
-    now.nanoseconds = fractional_s / 1000;
+    milliseconds now = duration_cast<milliseconds>(time_read.time_since_epoch());//12/12変更
+    builtin_interfaces::msg::Time ping_time = time_ping_;
 
     const rclcpp::Duration delay =
-        ((now - time_ping_) - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
-    const rclcpp::Time base = time_ping_ + delay - rclcpp::Duration(header.received_time_ms * 0.001);
+        ((rclcpp::Duration(now) - rclcpp::Duration(ping_time.sec, ping_time.nanosec)) - rclcpp::Duration(millseconds(header.send_time_ms - header.received_time_ms))) * 0.5;
+    const rclcpp::Time base = time_ping_ + delay - rclcpp::Duration(milliseconds(header.received_time_ms));
 
     timestamp_base_buffer_.push_back(base);
     if (timestamp_base_buffer_.size() > 5)
@@ -183,12 +178,14 @@ void Hokuyo3dNode::cbPoint(
     auto sorted_timstamp_base = timestamp_base_buffer_;
     std::sort(sorted_timstamp_base.begin(), sorted_timstamp_base.end());
 
-    if (timestamp_base_ == rclcpp::Time(0))
+    if (timestamp_base_ == rclcpp::Time(0,0))//12/12変更
       timestamp_base_ = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
     else
-      timestamp_base_ += (sorted_timstamp_base[sorted_timstamp_base.size() / 2] - timestamp_base_) * 0.1;
+      builtin_interface::msg::Time old_timestamp_base = timestamp_base_;
+      builtin_interface::msg::Time new_timestamp_base = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
+      timestamp_base_ = timestamp_base_ + (rclcpp::Duration(new_timestamp_base.sec, new_timestamp_base.nanosec) - rclcpp::Duration(old_timestamp_base.sec, old_timestamp_base.nanosec)) * 0.1;
 
-    RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds);//12/3変更
+    RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds());//12/3変更
   }
   void Hokuyo3dNode::cbAux(
       const vssp::Header& header,
@@ -196,9 +193,9 @@ void Hokuyo3dNode::cbPoint(
       const boost::shared_array<vssp::Aux>& auxs,
       const system_clock::time_point& time_read)
   {
-    if (timestamp_base_ == rclcpp::Time(0))
+    if (timestamp_base_ == rclcpp::Time(0, 0))
       return;
-    rclcpp::Time stamp = timestamp_base_ + rclcpp::Duration(aux_header.timestamp_ms * 0.001);
+    rclcpp::Time stamp = timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms));
 
     if ((aux_header.data_bitfield & (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC)) ==
         (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC))
@@ -223,7 +220,7 @@ void Hokuyo3dNode::cbPoint(
           pub_imu_->publish(imu_);
         }
         imu_stamp_last_ = imu_.header.stamp;
-        imu_.header.stamp.nanosec += aux_header.data_ms * 0.001;//12/5変更 変更前"imu_.header.stamp +=rclcpp::Duration(aux_header.data_ms * 0.001)"
+        imu_.header.stamp.nanosec += aux_header.data_ms * 1000000;//12/5変更 変更前"imu_.header.stamp +=rclcpp::Duration(aux_header.data_ms * 0.001)"
       }
     }
     
@@ -275,7 +272,7 @@ void Hokuyo3dNode::cbPoint(
   }
   Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
   : Node("hokuyo3d", options)
-    , timestamp_base_(0)
+    , timestamp_base_(0, 0)
     , timer_(io_, milliseconds(500))//std::chrono::
   {
 
