@@ -43,7 +43,7 @@
 #include <vector>
 #include <string>
 
-#include <hokuyo3d/vsspdefs.hpp>//vsspにすべきか？
+#include <hokuyo3d/vsspdefs.hpp>
 
 #include <functional>
 #include <boost/bind/arg.hpp>
