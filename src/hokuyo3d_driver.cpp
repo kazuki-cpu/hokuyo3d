@@ -120,7 +120,7 @@ void Hokuyo3dNode::cbPoint(
     {
       if (enable_pc_)
       {
-        if (cloud_.header.stamp < cloud_stamp_last_ && !allow_jump_back_)
+        if (rclcpp::Time(cloud_.header.stamp.sec, cloud_.header.stamp.nanosec) < cloud_stamp_last_ && !allow_jump_back_)
         {
           RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed cloud");
         }
@@ -135,7 +135,7 @@ void Hokuyo3dNode::cbPoint(
       if (enable_pc2_)
       {
         cloud2_.data.resize(cloud2_.width * cloud2_.point_step);
-        if (cloud2_.header.stamp < cloud_stamp_last_ && !allow_jump_back_)
+        if (rclcpp::Time(cloud2_.header.stamp.sec, cloud2_.header.stamp.nanosec) < cloud_stamp_last_ && !allow_jump_back_)
         {
           RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed cloud2");
         }
@@ -179,12 +179,13 @@ void Hokuyo3dNode::cbPoint(
     auto sorted_timstamp_base = timestamp_base_buffer_;
     std::sort(sorted_timstamp_base.begin(), sorted_timstamp_base.end());
 
-    if (timestamp_base_ == rclcpp::Time(0,0))//12/12変更
+    if (timestamp_base_ == rclcpp::Time(0,0)){//12/12変更
       timestamp_base_ = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
-    else
+    }else{
       builtin_interfaces::msg::Time old_timestamp_base = timestamp_base_;
       builtin_interfaces::msg::Time new_timestamp_base = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
-      timestamp_base_ = timestamp_base_ + (rclcpp::Duration(new_timestamp_base.sec, new_timestamp_base.nanosec) - rclcpp::Duration(old_timestamp_base.sec, old_timestamp_base.nanosec)) * 0.1;
+      timestamp_base_ = timestamp_base_ + (rclcpp::Duration(new_timestamp_base.sec - old_timestamp_base.sec, new_timestamp_base.nanosec - old_timestamp_base.nanosec)) * 0.1;
+    }
 
     RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds());//12/3変更
   }
@@ -212,7 +213,7 @@ void Hokuyo3dNode::cbPoint(
         imu_.linear_acceleration.x = auxs[i].lin_acc.x;
         imu_.linear_acceleration.y = auxs[i].lin_acc.y;
         imu_.linear_acceleration.z = auxs[i].lin_acc.z;
-        if (imu_stamp_last_ > imu_.header.stamp && !allow_jump_back_)
+        if (imu_stamp_last_ > rclcpp::Time(imu_.header.stamp.sec, imu_.header.stamp.nanosec) && !allow_jump_back_)
         {
           RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed imu");
         }
