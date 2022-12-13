@@ -38,6 +38,7 @@
 #include <string>
 
 #include <rclcpp/rclcpp.hpp> 
+#include <builtin_interfaces/msg/time.hpp> 
 //#include <sensor_msgs/msg/point_cloud2_iterator.hpp> 
 //#include <sensor_msgs/msg/point_cloud_conversion.hpp> 
 
@@ -181,8 +182,8 @@ void Hokuyo3dNode::cbPoint(
     if (timestamp_base_ == rclcpp::Time(0,0))//12/12変更
       timestamp_base_ = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
     else
-      builtin_interface::msg::Time old_timestamp_base = timestamp_base_;
-      builtin_interface::msg::Time new_timestamp_base = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
+      builtin_interfaces::msg::Time old_timestamp_base = timestamp_base_;
+      builtin_interfaces::msg::Time new_timestamp_base = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
       timestamp_base_ = timestamp_base_ + (rclcpp::Duration(new_timestamp_base.sec, new_timestamp_base.nanosec) - rclcpp::Duration(old_timestamp_base.sec, old_timestamp_base.nanosec)) * 0.1;
 
     RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds());//12/3変更
