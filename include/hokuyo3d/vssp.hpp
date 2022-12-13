@@ -402,7 +402,7 @@ private:
                   for (auto& cell : cells)
                   {
                     const double v_rad(std::strtol(cell.c_str(), nullptr, 16) * 2.0 * M_PI / 65535.0);//"v_"rad付け足し
-                    sincos(rad, &tbl_v[i].s, &tbl_v[i].c);
+                    sincos(v_rad, &tbl_v[i].s, &tbl_v[i].c);
                     i++;
                   }
                   tbl_v_[tv] = tbl_v;
