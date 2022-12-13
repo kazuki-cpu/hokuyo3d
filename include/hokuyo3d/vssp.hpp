@@ -38,7 +38,7 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/shared_array.hpp>
 #include <boost/algorithm/string.hpp>
-#include <chrono>//変更9.17
+#include <chrono>
 
 #include <vector>
 #include <string>
@@ -266,7 +266,7 @@ private:
     }
     cb_connect_(true);
   }
-  void onSend(const boost::system::error_code& error, boost::shared_ptr<std::string> data)
+  void onSend(const boost::system::error_code& error) //12/14変更"boost::shared_ptr<std::string> data"消去
   {
     if (error)
     {
