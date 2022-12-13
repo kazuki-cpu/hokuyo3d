@@ -32,16 +32,13 @@
 #include <thread> 
 #include <mutex> 
 #include <boost/asio.hpp>
-
 #include <algorithm>
 #include <deque>
 #include <string>
-
 #include <rclcpp/rclcpp.hpp> 
 #include <builtin_interfaces/msg/time.hpp> 
 //#include <sensor_msgs/msg/point_cloud2_iterator.hpp> 
 //#include <sensor_msgs/msg/point_cloud_conversion.hpp> 
-
 #include <hokuyo3d/hokuyo3d_driver.hpp>
 #include <hokuyo3d/vssp.hpp>
 
@@ -56,8 +53,7 @@ void Hokuyo3dNode::cbPoint(
       const vssp::RangeHeader& range_header,
       const vssp::RangeIndex& range_index,
       const boost::shared_array<uint16_t>& index,
-      const boost::shared_array<vssp::XYZI>& points,
-      const system_clock::time_point& time_read)//12/2変更
+      const boost::shared_array<vssp::XYZI>& points)//12/14変更"const system_clock::time_point& time_read"消去
   {
     if (timestamp_base_ == rclcpp::Time(0, 0))
       return;
@@ -154,15 +150,12 @@ void Hokuyo3dNode::cbPoint(
     }
   }
   void Hokuyo3dNode::cbError(
-      const vssp::Header& header,
-      const std::string& message,
-      const system_clock::time_point& time_read)
+      const std::string& message) //12/14変更"const vssp::Header& header","const system_clock::time_point& time_read"消去
   {
     RCLCPP_ERROR(get_logger(), "%s", message.c_str());
   }
   void Hokuyo3dNode::cbPing(
-      const vssp::Header& header,
-      const system_clock::time_point& time_read)
+      const system_clock::time_point& time_read) //12/14変更"const vssp::Header& header"消去
   {
     
     milliseconds now = duration_cast<milliseconds>(time_read.time_since_epoch());//12/12変更
@@ -190,10 +183,8 @@ void Hokuyo3dNode::cbPoint(
     RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds());//12/3変更
   }
   void Hokuyo3dNode::cbAux(
-      const vssp::Header& header,
       const vssp::AuxHeader& aux_header,
-      const boost::shared_array<vssp::Aux>& auxs,
-      const system_clock::time_point& time_read)
+      const boost::shared_array<vssp::Aux>& auxs) //12/14変更"const vssp::Header& header","const system_clock::time_point& time_read"消去
   {
     if (timestamp_base_ == rclcpp::Time(0, 0))
       return;
