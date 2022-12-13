@@ -20,6 +20,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(builtin_interfaces REQUIRED)
 find_package(Boost REQUIRED system)
 
 ################################################################################
@@ -44,6 +45,7 @@ ament_target_dependencies(hokuyo3d_driver
   rclcpp
   rclcpp_components
   sensor_msgs
+  builtin_interfaces
   )
 rclcpp_components_register_nodes(hokuyo3d_driver "Hokuyo3d::Hokuyo3dNode")
 
