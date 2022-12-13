@@ -96,7 +96,7 @@ private:
   bool tbl_h_loaded_;
   bool tbl_v_loaded_;
   std::vector<bool> tbl_vn_loaded_;
-  std::chrono::duration timeout_;
+  std::chrono::milliseconds timeout_;
 
   boost::asio::streambuf buf_;
 
