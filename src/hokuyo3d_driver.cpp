@@ -169,7 +169,7 @@ void Hokuyo3dNode::cbPoint(
     builtin_interfaces::msg::Time ping_time = time_ping_;
 
     const rclcpp::Duration delay =
-        ((rclcpp::Duration(now) - rclcpp::Duration(ping_time.sec, ping_time.nanosec)) - rclcpp::Duration(millseconds(header.send_time_ms - header.received_time_ms))) * 0.5;
+        ((rclcpp::Duration(now) - rclcpp::Duration(ping_time.sec, ping_time.nanosec)) - rclcpp::Duration(milliseconds(header.send_time_ms - header.received_time_ms))) * 0.5;
     const rclcpp::Time base = time_ping_ + delay - rclcpp::Duration(milliseconds(header.received_time_ms));
 
     timestamp_base_buffer_.push_back(base);
