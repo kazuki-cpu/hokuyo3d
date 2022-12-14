@@ -225,9 +225,9 @@ public:
 private:
   void send(const std::string cmd)
   {
-    boost::shared_ptr<std::string> data(new std::string(cmd));//stdでもいい？
+    boost::shared_ptr<std::string> data(new std::string(cmd));
     boost::asio::async_write(socket_, boost::asio::buffer(*data),
-                             std::bind(&VsspDriver::onSend, this, boost::asio::placeholders::error, data));
+                             std::bind(&VsspDriver::onSend, this, boost::asio::placeholders::error)); //12/14変更"boost::shared_ptr<std::string> data"消去
   }
   void onTimeoutConnect(const boost::system::error_code& error)
   {
