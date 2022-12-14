@@ -313,7 +313,7 @@ void Hokuyo3dNode::cbPoint(
     cloud2_.is_bigendian = false;
     cloud2_.is_dense = false;
     
-    cloud2_.fields[0].name = "x";//12/2変更
+    cloud2_.fields[0].name = "x";//12/2変更 ここからプログラムが止まる
     cloud2_.fields[0].offset = 0;
     cloud2_.fields[0].datatype = 7;
     cloud2_.fields[0].count = 1;
