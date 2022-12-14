@@ -49,11 +49,10 @@ namespace Hokuyo3d
 {
 
 void Hokuyo3dNode::cbPoint(
-      const vssp::Header& header,
       const vssp::RangeHeader& range_header,
       const vssp::RangeIndex& range_index,
       const boost::shared_array<uint16_t>& index,
-      const boost::shared_array<vssp::XYZI>& points)//12/14変更"const system_clock::time_point& time_read"消去
+      const boost::shared_array<vssp::XYZI>& points) //12/14変更"const vssp::Header& header","const system_clock::time_point& time_read"消去
   {
     if (timestamp_base_ == rclcpp::Time(0, 0))
       return;
@@ -298,10 +297,10 @@ void Hokuyo3dNode::cbPoint(
 
     driver_.setTimeout(2.0);
     RCLCPP_INFO(this->get_logger(), "Connecting to %s", ip_.c_str());
-    driver_.registerCallback(std::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4, _5, _6));
-    driver_.registerAuxCallback(std::bind(&Hokuyo3dNode::cbAux, this, _1, _2, _3, _4));
-    driver_.registerPingCallback(std::bind(&Hokuyo3dNode::cbPing, this, _1, _2));
-    driver_.registerErrorCallback(std::bind(&Hokuyo3dNode::cbError, this, _1, _2, _3));
+    driver_.registerCallback(std::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4));
+    driver_.registerAuxCallback(std::bind(&Hokuyo3dNode::cbAux, this, _1, _2));
+    driver_.registerPingCallback(std::bind(&Hokuyo3dNode::cbPing, this, _1));
+    driver_.registerErrorCallback(std::bind(&Hokuyo3dNode::cbError, this, _1));
     field_ = 0;
     frame_ = 0;
     line_ = 0;
