@@ -37,7 +37,7 @@
 #include <string>
 #include <rclcpp/rclcpp.hpp> 
 #include <builtin_interfaces/msg/time.hpp> 
-//#include <sensor_msgs/msg/point_cloud2_iterator.hpp> 
+#include <sensor_msgs/point_cloud2_iterator.hpp> 
 //#include <sensor_msgs/msg/point_cloud_conversion.hpp> 
 #include <hokuyo3d/hokuyo3d_driver.hpp>
 #include <hokuyo3d/vssp.hpp>
@@ -312,7 +312,7 @@ void Hokuyo3dNode::cbPoint(
     cloud2_.height = 1;
     cloud2_.is_bigendian = false;
     cloud2_.is_dense = false;
-    
+    /*
     cloud2_.fields[0].name = "x";//12/2変更 ここからプログラムが止まる
     cloud2_.fields[0].offset = 0;
     cloud2_.fields[0].datatype = 7;
@@ -329,13 +329,13 @@ void Hokuyo3dNode::cbPoint(
     cloud2_.fields[3].offset = 12;
     cloud2_.fields[3].datatype = 7;
     cloud2_.fields[3].count = 1;
-  
-    /*
-    sensor_msgs::msg::PointCloud2Modifier pc2_modifier(cloud2_);
+    */
+    
+    sensor_msgs::PointCloud2Modifier pc2_modifier(cloud2_);
     pc2_modifier.setPointCloud2Fields(4, "x", 1, sensor_msgs::msg::PointField::FLOAT32, "y", 1,
                                       sensor_msgs::msg::PointField::FLOAT32, "z", 1, sensor_msgs::msg::PointField::FLOAT32,
                                       "intensity", 1, sensor_msgs::msg::PointField::FLOAT32);
-    */
+    
 
     pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 5);
 
