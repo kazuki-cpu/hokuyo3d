@@ -339,7 +339,8 @@ void Hokuyo3dNode::cbPoint(
 
     pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 5);
 
-    enable_pc_ = enable_pc2_ = true;
+    enable_pc_ = false;
+    enable_pc2_ = true;
     //ros::SubscriberStatusCallback cb_con = std::bind(&Hokuyo3dNode::cbSubscriber, this);
 
     std::lock_guard<std::mutex> lock(connect_mutex_);//変更9.17
