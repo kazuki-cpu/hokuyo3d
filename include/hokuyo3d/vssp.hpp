@@ -39,14 +39,11 @@
 #include <boost/shared_array.hpp>
 #include <boost/algorithm/string.hpp>
 #include <chrono>
-
 #include <vector>
 #include <string>
-
-#include <hokuyo3d/vsspdefs.hpp>
-
 #include <functional>
 #include <boost/bind/arg.hpp>
+#include <hokuyo3d/vsspdefs.hpp>
 
 namespace std {
 
@@ -72,24 +69,17 @@ private:
   AuxFactorArray aux_factor_;
 
   std::function<void(
-      const vssp::Header&,
       const vssp::RangeHeader&,
       const vssp::RangeIndex&,
       const boost::shared_array<uint16_t>&,
-      const boost::shared_array<vssp::XYZI>&,
-      const std::chrono::system_clock::time_point&)> cb_point_;
+      const boost::shared_array<vssp::XYZI>&)> cb_point_;
   std::function<void(
-      const vssp::Header&,
       const vssp::AuxHeader&,
-      const boost::shared_array<vssp::Aux>&,
-      const std::chrono::system_clock::time_point&)> cb_aux_;
+      const boost::shared_array<vssp::Aux>&)> cb_aux_;
   std::function<void(
-      const vssp::Header&,
       const std::chrono::system_clock::time_point&)> cb_ping_;
   std::function<void(
-      const vssp::Header&,
-      const std::string&,
-      const std::chrono::system_clock::time_point&)> cb_error_;
+      const std::string&)> cb_error_;
   std::function<void(bool)> cb_connect_;
   boost::shared_array<const double> tbl_h_;
   std::vector<boost::shared_array<const TableSincos>> tbl_v_;
