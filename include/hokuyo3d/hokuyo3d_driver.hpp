@@ -68,7 +68,8 @@ public:
       const boost::shared_array<uint16_t>& index,
       const boost::shared_array<vssp::XYZI>& points);
   void cbError(const std::string& message);
-  void cbPing(const std::chrono::system_clock::time_point& time_read);
+  void cbPing(const vssp::Header& header
+  　　const std::chrono::system_clock::time_point& time_read);
   void cbAux(const vssp::AuxHeader& aux_header,
       const boost::shared_array<vssp::Aux>& auxs);
   void cbConnect(bool success);
