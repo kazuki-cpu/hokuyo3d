@@ -63,21 +63,14 @@ public:
   explicit Hokuyo3dNode(const rclcpp::NodeOptions & options);
   ~Hokuyo3dNode(void);
   
-  void cbPoint(const vssp::Header& header,
-      const vssp::RangeHeader& range_header,
+  void cbPoint(const vssp::RangeHeader& range_header,
       const vssp::RangeIndex& range_index,
       const boost::shared_array<uint16_t>& index,
-      const boost::shared_array<vssp::XYZI>& points,
-      const std::chrono::system_clock::time_point& time_read);
-  void cbError(const vssp::Header& header,
-      const std::string& message,
-      const std::chrono::system_clock::time_point& time_read);
-  void cbPing(const vssp::Header& header,
-      const std::chrono::system_clock::time_point& time_read);
-  void cbAux(const vssp::Header& header,
-      const vssp::AuxHeader& aux_header,
-      const boost::shared_array<vssp::Aux>& auxs,
-      const std::chrono::system_clock::time_point& time_read);
+      const boost::shared_array<vssp::XYZI>& points);
+  void cbError(const std::string& message);
+  void cbPing(const std::chrono::system_clock::time_point& time_read);
+  void cbAux(const vssp::AuxHeader& aux_header,
+      const boost::shared_array<vssp::Aux>& auxs);
   void cbConnect(bool success);
   //void cbSubscriber();
   bool poll();
