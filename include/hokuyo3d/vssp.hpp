@@ -77,6 +77,7 @@ private:
       const vssp::AuxHeader&,
       const boost::shared_array<vssp::Aux>&)> cb_aux_;
   std::function<void(
+    　const vssp::Header&
       const std::chrono::system_clock::time_point&)> cb_ping_;
   std::function<void(
       const std::string&)> cb_error_;
