@@ -154,7 +154,8 @@ void Hokuyo3dNode::cbPoint(
     RCLCPP_ERROR(get_logger(), "%s", message.c_str());
   }
   void Hokuyo3dNode::cbPing(
-      const system_clock::time_point& time_read) //12/14変更"const vssp::Header& header"消去
+      const vssp::Header& header
+      const system_clock::time_point& time_read) 
   {
     
     milliseconds now = duration_cast<milliseconds>(time_read.time_since_epoch());//12/12変更
