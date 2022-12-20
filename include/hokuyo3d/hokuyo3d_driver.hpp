@@ -42,12 +42,13 @@ extern "C" {
 #include <mutex> 
 #include <boost/asio.hpp>
 #include <boost/asio/system_timer.hpp>
-#include <deque>
+//#include <deque>
 #include <string>//std_msgs/msg/string.hppかも
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/time.hpp>
 #include <sensor_msgs/msg/point_cloud.hpp> 
-#include <sensor_msgs/msg/point_cloud2.hpp> 
+#include <sensor_msgs/msg/point_cloud2.hpp>
+#include <builtin_interfaces/msg/time.hpp>
 #include <sensor_msgs/msg/imu.hpp> 
 //#include <sensor_msgs/msg/MagneticField.hpp> 
 
@@ -67,17 +68,14 @@ public:
       const vssp::RangeHeader& range_header,
       const vssp::RangeIndex& range_index,
       const boost::shared_array<uint16_t>& index,
-      const boost::shared_array<vssp::XYZI>& points,
-      const std::chrono::system_clock::time_point& time_read);
+      const boost::shared_array<vssp::XYZI>& points);
   void cbError(const vssp::Header& header,
-      const std::string& message,
-      const std::chrono::system_clock::time_point& time_read);
-  void cbPing(const vssp::Header& header,
-      const std::chrono::system_clock::time_point& time_read);
+      const std::string& message);
+  //void cbPing(const vssp::Header& header,
+      //const std::chrono::system_clock::time_point& time_read);
   void cbAux(const vssp::Header& header,
       const vssp::AuxHeader& aux_header,
-      const boost::shared_array<vssp::Aux>& auxs,
-      const std::chrono::system_clock::time_point& time_read);
+      const boost::shared_array<vssp::Aux>& auxs);
   void cbConnect(bool success);
   //void cbSubscriber();
   bool poll();
@@ -104,12 +102,12 @@ protected:
   std::mutex connect_mutex_;
 
   rclcpp::Clock ros_clock_;
-  rclcpp::Time time_ping_; 
-  rclcpp::Time timestamp_base_; 
-  std::deque<rclcpp::Time> timestamp_base_buffer_; 
-  rclcpp::Time imu_stamp_last_; 
+  //rclcpp::Time time_ping_; 
+  //rclcpp::Time timestamp_base_; 
+  //std::deque<rclcpp::Time> timestamp_base_buffer_; 
+  builtin_interfaces::msg::Time imu_stamp_last_; 
   //rclcpp::Time mag_stamp_last_; 
-  rclcpp::Time cloud_stamp_last_; 
+  builtin_interfaces::msg::Time cloud_stamp_last_; 
 
   boost::asio::io_service io_;
   boost::asio::system_timer timer_;
