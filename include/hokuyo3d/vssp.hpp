@@ -76,20 +76,21 @@ private:
       const vssp::RangeHeader&,
       const vssp::RangeIndex&,
       const boost::shared_array<uint16_t>&,
-      const boost::shared_array<vssp::XYZI>&,
-      const std::chrono::system_clock::time_point&)> cb_point_;
+      const boost::shared_array<vssp::XYZI>&)> cb_point_;
+      //const std::chrono::system_clock::time_point&)> cb_point_;
   std::function<void(
       const vssp::Header&,
       const vssp::AuxHeader&,
-      const boost::shared_array<vssp::Aux>&,
-      const std::chrono::system_clock::time_point&)> cb_aux_;
-  std::function<void(
+      const boost::shared_array<vssp::Aux>&)> cb_aux_;
+      //const std::chrono::system_clock::time_point&)> cb_aux_;
+  /*std::function<void(
       const vssp::Header&,
       const std::chrono::system_clock::time_point&)> cb_ping_;
+  */
   std::function<void(
       const vssp::Header&,
-      const std::string&,
-      const std::chrono::system_clock::time_point&)> cb_error_;
+      const std::string&)> cb_error_;
+      //const std::chrono::system_clock::time_point&)> cb_error_;
   std::function<void(bool)> cb_connect_;
   boost::shared_array<const double> tbl_h_;
   std::vector<boost::shared_array<const TableSincos>> tbl_v_;
@@ -108,7 +109,7 @@ public:
     , aux_factor_(AUX_FACTOR_DEFAULT)
     , cb_point_(0)
     , cb_aux_(0)
-    , cb_ping_(0)
+    //, cb_ping_(0)
     , tbl_h_loaded_(false)
     , tbl_v_loaded_(false)
     , timeout_(std::chrono::seconds(1))
@@ -138,10 +139,11 @@ public:
   {
     cb_aux_ = cb;
   }
-  void registerPingCallback(decltype(cb_ping_) cb)
+  /*void registerPingCallback(decltype(cb_ping_) cb)
   {
     cb_ping_ = cb;
   }
+  */
   void setAutoReset(const bool enable)
   {
     if (enable)
@@ -203,7 +205,7 @@ public:
   }
   void receivePackets()
   {
-    printf("receive\n");
+    //printf("receive\n");
     timer_.cancel();
     timer_.expires_from_now(timeout_);
     timer_.async_wait(std::bind(&VsspDriver::onTimeout, this, boost::asio::placeholders::error));
@@ -307,8 +309,8 @@ private:
   }
   void onRead(const boost::system::error_code& error)
   {
-    printf("onRead\n");
-    const auto time_read = std::chrono::system_clock::now();
+    //printf("onRead\n");
+    //const auto time_read = std::chrono::system_clock::now();
     if (error == boost::asio::error::eof)
     {
       // Connection closed_
@@ -363,7 +365,7 @@ private:
               const std::string data(boost::asio::buffer_cast<const char*>(buf_.data()));
               std::string message(data, 0, header.length - header.header_length - 1);
               if (cb_error_)
-                cb_error_(header, message, time_read);
+                cb_error_(header, message);
             }
             break;
           default:
@@ -446,8 +448,8 @@ private:
             break;
           case TYPE_PNG:
             // Response to ping command
-            if (cb_ping_)
-              cb_ping_(header, time_read);
+            //if (cb_ping_)
+              //cb_ping_(header, time_read);
             break;
           case TYPE_RI:
           case TYPE_RO:
@@ -504,7 +506,7 @@ private:
               }
               if (!success)
                 break;
-              cb_point_(header, range_header, range_index, index, points, time_read);
+              cb_point_(header, range_header, range_index, index, points);
             }
             break;
           case TYPE_AX:
@@ -530,7 +532,7 @@ private:
                 length -= sizeof(int32_t) * offset;
               }
               if (cb_aux_)
-                cb_aux_(header, aux_header, auxs, time_read);
+                cb_aux_(header, aux_header, auxs);
             }
             break;
           default:
