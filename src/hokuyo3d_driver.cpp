@@ -34,7 +34,7 @@
 #include <boost/asio.hpp>
 
 #include <algorithm>
-#include <deque>
+//#include <deque>
 #include <string>
 
 #include <rclcpp/rclcpp.hpp> 
@@ -56,11 +56,10 @@ void Hokuyo3dNode::cbPoint(
       const vssp::RangeHeader& range_header,
       const vssp::RangeIndex& range_index,
       const boost::shared_array<uint16_t>& index,
-      const boost::shared_array<vssp::XYZI>& points,
-      const system_clock::time_point& time_read)//12/2変更
+      const boost::shared_array<vssp::XYZI>& points)//12/2変更
   {
-    if (timestamp_base_ == rclcpp::Time(0, 0))
-      return;
+    //if (timestamp_base_ == rclcpp::Time(0, 0))
+      //return;
     // Pack scan data
     if (enable_pc_)
     {
@@ -68,7 +67,7 @@ void Hokuyo3dNode::cbPoint(
       {
         // Start packing PointCloud message
         cloud_.header.frame_id = frame_id_;
-        cloud_.header.stamp = timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
+        cloud_.header.stamp = ros_clock_.now();//timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
       }
       // Pack PointCloud message
       for (int i = 0; i < index[range_index.nspots]; i++)
@@ -91,7 +90,7 @@ void Hokuyo3dNode::cbPoint(
       {
         // Start packing PointCloud2 message
         cloud2_.header.frame_id = frame_id_;
-        cloud2_.header.stamp = timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
+        cloud2_.header.stamp = ros_clock_.now(); //timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
         cloud2_.row_step = 0;
         cloud2_.width = 0;
       }
@@ -120,7 +119,7 @@ void Hokuyo3dNode::cbPoint(
     {
       if (enable_pc_)
       {
-        if (rclcpp::Time(cloud_.header.stamp.sec, cloud_.header.stamp.nanosec) < cloud_stamp_last_ && !allow_jump_back_)
+        if (cloud_.header.stamp < cloud_stamp_last_ && !allow_jump_back_)
         {
           RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed cloud");
         }
@@ -135,7 +134,7 @@ void Hokuyo3dNode::cbPoint(
       if (enable_pc2_)
       {
         cloud2_.data.resize(cloud2_.width * cloud2_.point_step);
-        if (rclcpp::Time(cloud2_.header.stamp.sec, cloud2_.header.stamp.nanosec) < cloud_stamp_last_ && !allow_jump_back_)
+        if (cloud2_.header.stamp < cloud_stamp_last_ && !allow_jump_back_)
         {
           RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed cloud2");
         }
@@ -147,7 +146,7 @@ void Hokuyo3dNode::cbPoint(
         cloud2_.data.clear();
       }
       if (range_header.frame != frame_)
-        ping();
+        //ping();
       frame_ = range_header.frame;
       field_ = range_header.field;
       line_ = range_header.line;
@@ -155,12 +154,11 @@ void Hokuyo3dNode::cbPoint(
   }
   void Hokuyo3dNode::cbError(
       const vssp::Header& header,
-      const std::string& message,
-      const system_clock::time_point& time_read)
+      const std::string& message)
   {
     RCLCPP_ERROR(get_logger(), "%s", message.c_str());
   }
-  void Hokuyo3dNode::cbPing(
+  /*void Hokuyo3dNode::cbPing(
       const vssp::Header& header,
       const system_clock::time_point& time_read)
   {
@@ -189,15 +187,15 @@ void Hokuyo3dNode::cbPoint(
 
     RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds());//12/3変更
   }
+  */
   void Hokuyo3dNode::cbAux(
       const vssp::Header& header,
       const vssp::AuxHeader& aux_header,
-      const boost::shared_array<vssp::Aux>& auxs,
-      const system_clock::time_point& time_read)
+      const boost::shared_array<vssp::Aux>& auxs)
   {
-    if (timestamp_base_ == rclcpp::Time(0, 0))
-      return;
-    rclcpp::Time stamp = timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms));
+    //if (timestamp_base_ == rclcpp::Time(0, 0))
+      //return;
+    rclcpp::Time stamp = ros_clock_.now(); // timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms));
 
     if ((aux_header.data_bitfield & (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC)) ==
         (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC))
@@ -213,7 +211,7 @@ void Hokuyo3dNode::cbPoint(
         imu_.linear_acceleration.x = auxs[i].lin_acc.x;
         imu_.linear_acceleration.y = auxs[i].lin_acc.y;
         imu_.linear_acceleration.z = auxs[i].lin_acc.z;
-        if (imu_stamp_last_ > rclcpp::Time(imu_.header.stamp.sec, imu_.header.stamp.nanosec) && !allow_jump_back_)
+        if (imu_stamp_last_ > imu_.header.stamp && !allow_jump_back_)
         {
           RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed imu");
         }
@@ -277,7 +275,7 @@ void Hokuyo3dNode::cbPoint(
   Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
   : Node("hokuyo3d", options)
     , ros_clock_(RCL_SYSTEM_TIME)
-    , timestamp_base_(0, 0)
+    //, timestamp_base_(0, 0)
     , timer_(io_, milliseconds(500))//std::chrono::
   {
 
@@ -310,10 +308,10 @@ void Hokuyo3dNode::cbPoint(
 
     driver_.setTimeout(2.0);
     RCLCPP_INFO(this->get_logger(), "Connecting to %s", ip_.c_str());
-    driver_.registerCallback(std::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4, _5, _6));
-    driver_.registerAuxCallback(std::bind(&Hokuyo3dNode::cbAux, this, _1, _2, _3, _4));
-    driver_.registerPingCallback(std::bind(&Hokuyo3dNode::cbPing, this, _1, _2));
-    driver_.registerErrorCallback(std::bind(&Hokuyo3dNode::cbError, this, _1, _2, _3));
+    driver_.registerCallback(std::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4, _5));
+    driver_.registerAuxCallback(std::bind(&Hokuyo3dNode::cbAux, this, _1, _2, _3));
+    //driver_.registerPingCallback(std::bind(&Hokuyo3dNode::cbPing, this, _1, _2));
+    driver_.registerErrorCallback(std::bind(&Hokuyo3dNode::cbError, this, _1, _2));
     field_ = 0;
     frame_ = 0;
     line_ = 0;
@@ -430,7 +428,7 @@ void Hokuyo3dNode::cbPoint(
   void Hokuyo3dNode::ping()
   {
     driver_.requestPing();
-    time_ping_ = ros_clock_.now();//this->now();
+    //time_ping_ = this->now();
   }
  
 }
