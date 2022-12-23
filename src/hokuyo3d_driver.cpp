@@ -162,7 +162,7 @@ void Hokuyo3dNode::cbPoint(
   {
     RCLCPP_ERROR(get_logger(), "%s", message.c_str());
   }
-  /*void Hokuyo3dNode::cbPing(
+  void Hokuyo3dNode::cbPing(
       const vssp::Header& header,
       const system_clock::time_point& time_read)
   {
@@ -180,7 +180,7 @@ void Hokuyo3dNode::cbPoint(
 
     auto sorted_timstamp_base = timestamp_base_buffer_;
     std::sort(sorted_timstamp_base.begin(), sorted_timstamp_base.end());
-
+    
     if (timestamp_base_ == rclcpp::Time(0,0)){//12/12変更
       timestamp_base_ = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
     }else{
@@ -191,7 +191,7 @@ void Hokuyo3dNode::cbPoint(
 
     RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds());//12/3変更
   }
-  */
+  
   void Hokuyo3dNode::cbAux(
       const vssp::Header& header,
       const vssp::AuxHeader& aux_header,
@@ -280,7 +280,7 @@ void Hokuyo3dNode::cbPoint(
   Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
   : Node("hokuyo3d", options)
     //, ros_clock_(RCL_SYSTEM_TIME)
-    //, timestamp_base_(0, 0)
+    , timestamp_base_(0, 0)
     , timer_(io_, milliseconds(500))//std::chrono::
   {
 
@@ -433,7 +433,7 @@ void Hokuyo3dNode::cbPoint(
   void Hokuyo3dNode::ping()
   {
     driver_.requestPing();
-    //time_ping_ = this->now();
+    time_ping_ = this->now();
   }
  
 }
