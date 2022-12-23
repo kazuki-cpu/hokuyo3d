@@ -61,6 +61,7 @@ void Hokuyo3dNode::cbPoint(
     //if (timestamp_base_ == rclcpp::Time(0, 0))
       //return;
     // Pack scan data
+    
     if (enable_pc_)
     {
       if (cloud_.points.size() == 0)
@@ -85,6 +86,7 @@ void Hokuyo3dNode::cbPoint(
         cloud_.channels[0].values.push_back(points[i].i);
       }
     }
+    
     if (enable_pc2_)
     {
       if (cloud2_.data.size() == 0)
@@ -213,7 +215,7 @@ void Hokuyo3dNode::cbPoint(
         imu_.linear_acceleration.x = auxs[i].lin_acc.x;
         imu_.linear_acceleration.y = auxs[i].lin_acc.y;
         imu_.linear_acceleration.z = auxs[i].lin_acc.z;
-        if (imu_stamp_last_ > stamp && !allow_jump_back_)
+        if (stamp < imu_stamp_last_ && !allow_jump_back_)
         {
           RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed imu");
         }
