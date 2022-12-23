@@ -67,7 +67,7 @@ void Hokuyo3dNode::cbPoint(
       if (cloud_.points.size() == 0)
       {
         // Start packing PointCloud message
-        rclcpp::Time pc_stamp = this->now();
+        pc_stamp = this->now();
         cloud_.header.frame_id = frame_id_;
         cloud_.header.stamp = pc_stamp;//timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
       }
@@ -92,7 +92,7 @@ void Hokuyo3dNode::cbPoint(
       if (cloud2_.data.size() == 0)
       {
         // Start packing PointCloud2 message
-        rclcpp::Time pc2_stamp = this->now();
+        pc2_stamp = this->now();
         cloud2_.header.frame_id = frame_id_;
         cloud2_.header.stamp = pc2_stamp; //timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
         cloud2_.row_step = 0;
