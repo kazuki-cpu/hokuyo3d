@@ -101,7 +101,7 @@ protected:
   bool allow_jump_back_;
   std::mutex connect_mutex_;
 
-  rclcpp::Clock ros_clock_;
+  //rclcpp::Clock ros_clock_;
   //rclcpp::Time time_ping_; 
   //rclcpp::Time timestamp_base_; 
   //std::deque<rclcpp::Time> timestamp_base_buffer_; 
