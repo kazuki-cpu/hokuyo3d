@@ -107,6 +107,8 @@ protected:
   //std::deque<rclcpp::Time> timestamp_base_buffer_; 
   builtin_interfaces::msg::Time imu_stamp_last_; 
   //rclcpp::Time mag_stamp_last_; 
+  rclcpp::Time pc_stamp;
+  rclcpp::Time pc2_stamp;
   builtin_interfaces::msg::Time cloud_stamp_last_; 
 
   boost::asio::io_service io_;
