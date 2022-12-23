@@ -67,7 +67,7 @@ void Hokuyo3dNode::cbPoint(
       {
         // Start packing PointCloud message
         cloud_.header.frame_id = frame_id_;
-        cloud_.header.stamp = ros_clock_.now();//timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
+        cloud_.header.stamp = this->now();//timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
       }
       // Pack PointCloud message
       for (int i = 0; i < index[range_index.nspots]; i++)
@@ -90,7 +90,7 @@ void Hokuyo3dNode::cbPoint(
       {
         // Start packing PointCloud2 message
         cloud2_.header.frame_id = frame_id_;
-        cloud2_.header.stamp = ros_clock_.now(); //timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
+        cloud2_.header.stamp = this->now(); //timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
         cloud2_.row_step = 0;
         cloud2_.width = 0;
       }
@@ -195,7 +195,7 @@ void Hokuyo3dNode::cbPoint(
   {
     //if (timestamp_base_ == rclcpp::Time(0, 0))
       //return;
-    rclcpp::Time stamp = ros_clock_.now(); // timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms));
+    rclcpp::Time stamp = this->now(); // timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms));
 
     if ((aux_header.data_bitfield & (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC)) ==
         (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC))
@@ -274,7 +274,7 @@ void Hokuyo3dNode::cbPoint(
   }
   Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
   : Node("hokuyo3d", options)
-    , ros_clock_(RCL_SYSTEM_TIME)
+    //, ros_clock_(RCL_SYSTEM_TIME)
     //, timestamp_base_(0, 0)
     , timer_(io_, milliseconds(500))//std::chrono::
   {
