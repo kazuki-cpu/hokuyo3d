@@ -213,7 +213,7 @@ void Hokuyo3dNode::cbPoint(
         imu_.linear_acceleration.x = auxs[i].lin_acc.x;
         imu_.linear_acceleration.y = auxs[i].lin_acc.y;
         imu_.linear_acceleration.z = auxs[i].lin_acc.z;
-        if (imu_stamp_last_ > imu_.header.stamp && !allow_jump_back_)
+        if (imu_stamp_last_ > stamp && !allow_jump_back_)
         {
           RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed imu");
         }
@@ -222,7 +222,8 @@ void Hokuyo3dNode::cbPoint(
           pub_imu_->publish(imu_);
         }
         imu_stamp_last_ = imu_.header.stamp;
-        imu_.header.stamp.nanosec += aux_header.data_ms * 1000000;//12/5変更 変更前"imu_.header.stamp +=rclcpp::Duration(aux_header.data_ms * 0.001)"
+        stamp = stamp + rclcpp::Duration(aux_header.data_ms * 0.001);
+        imu_.header.stamp =  stamp;//12/5変更 変更前"imu_.header.stamp +=rclcpp::Duration(aux_header.data_ms * 0.001)"
       }
     }
     
