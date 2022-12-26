@@ -5,6 +5,12 @@
 #include <boost/asio.hpp>
 #include <vssp.hpp>
 
+#include <vssp_debag_msgs/msg/Aux.hpp>
+#include <vssp_debag_msgs/msg/AuxHeader.hpp>
+#include <vssp_debag_msgs/msg/Header.hpp>
+#include <vssp_debag_msgs/msg/RangeHeader.hpp>
+#include <vssp_debag_msgs/msg/XYZI.hpp>
+
 std::chrono::duration timeout_;
 
 class YVTcommunication{
