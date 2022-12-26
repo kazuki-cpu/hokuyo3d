@@ -187,7 +187,7 @@ public:
 private:
   void send(const std::string cmd)
   {
-    boost::shared_ptr<std::string> data(new std::string(cmd));//stdでもいい？
+    boost::shared_ptr<std::string> data(new std::string(cmd));
     boost::asio::async_write(socket_, boost::asio::buffer(*data),
                              std::bind(&VsspDriver::onSend, this, boost::asio::placeholders::error, data));
   }
@@ -281,6 +281,17 @@ private:
       }
       // Read packet Header
       const vssp::Header header = *boost::asio::buffer_cast<const vssp::Header*>(buf_.data());
+      
+      //header data publish
+      header_->mark = header.mark;
+      header_->type = header.type;
+      header_->status = header.status;
+      header_->header_length = header.header_length;
+      header_->length = header.length;
+      header_->received_time_ms = header.received_time_ms;
+      header_->send_time_ms = header.send_time_ms;
+      header_pub->publish(header_);
+      
       if (header.mark != vssp::VSSP_MARK)
       {
         // Invalid packet
@@ -417,6 +428,22 @@ private:
                 range_header_v2r1 = *boost::asio::buffer_cast<const vssp::RangeHeaderV2R1*>(
                     buf_.data() + sizeof(vssp::RangeHeader));
               }
+              
+              //rangeheader data publish
+              range_header_->header_length = range_header.header_length;
+              range_header_->line_head_timestamp_ms = range_header.line_head_timestamp_ms;
+              range_header_->line_tail_timestamp_ms = range_header.line_tail_timestamp_ms;
+              range_header_->line_head_h_angle_ratio = range_header.line_head_h_angle_ratio;
+              range_header_->line_tail_h_angle_ratio = range_header.line_tail_h_angle_ratio;
+              range_header_->frame = range_header.frame;
+              range_header_->field = range_header.field;
+              range_header_->line = range_header.line;
+              range_header_->spot = range_header.spot;
+              range_header_->vertical_field = range_header_v2r1.vertical_field;
+              range_header_->vertical_interlace = range_header_v2r1.vertical_interlace;
+              range_header_pub->publish(range_header_);
+              
+              
               buf_.consume(range_header.header_length);
               length -= range_header.header_length;
 
@@ -463,6 +490,14 @@ private:
             {
               // Decode range data Header
               const vssp::AuxHeader aux_header = *boost::asio::buffer_cast<const vssp::AuxHeader*>(buf_.data());
+              // auxheader data publish
+              aux_header_->header_length = aux_header.header_length;
+              aux_header_->timestamp_ms = aux_header.timestamp_ms;
+              aux_header_->data_bitfield = aux_header.data_bitfield;
+              aux_header_->data_count = aux_header.data_count;
+              aux_header_->data_ms = aux_header.data_ms;
+              aux_header_pub->publish(aux_header_);
+              
               buf_.consume(aux_header.header_length);
               length -= aux_header.header_length;
 
