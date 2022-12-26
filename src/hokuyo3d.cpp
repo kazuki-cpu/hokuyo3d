@@ -1,7 +1,8 @@
-#include <chrono>
 #include <rclcpp/rclcpp.hpp>
-#include <boost/asio.hpp>
+#include <chrono>
 #include <string>
+
+#include <boost/asio.hpp>
 #include <vssp.hpp>
 
 std::chrono::duration timeout_;
@@ -29,7 +30,7 @@ public:
     	driver_.requestData(true, false);
     	driver_.requestData(false, false);
     	driver_.poll();
-    	ROS_INFO("Communication stoped");
+    	RCLCPP_INFO("Communication stoped");
   	}
 
 	void tcp_ip_connect(const char* ip, const unsigned int port)
@@ -76,17 +77,24 @@ public:
   	{
     		timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));
     		std::thread thread(
-        		std::bind(&boost::asio::io_service::run, &io_));
-		
+        	std::bind(
+  			static_cast<std::size_t (boost::asio::io_service::*)()>(&boost::asio::io_service::run), &io_));
+
     		driver_.spin();
     		timer_.cancel();
-    		ROS_INFO("Connection closed");
+    		RCLCPP_INFO(get_logger(),"Connection closed");
   	}
 	
 };//YVTcommunication
 
 int main()
 {
+	rclcpp::init(argc, argv);
+	
+	auto node = rclcpp::Node::make_shared("vssp_debag");
+	rclcpp::Publisher<>::SharedPtr header_pub;
+	rclcpp::Publisher<>::SharedPtr range_header_pub;
+	rclcpp::Publisher<>::SharedPtr aux_header_pub;
 	
 	YVTcommunication yvt():
 
