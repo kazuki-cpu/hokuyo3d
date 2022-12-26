@@ -1,0 +1,9 @@
+uint16_t header_length
+uint32_t line_head_timestamp_ms
+uint32_t line_tail_timestamp_ms
+int16_t line_head_h_angle_ratio
+int16_t line_tail_h_angle_ratio
+uint8_t frame
+uint8_t field
+uint16_t line
+uint16_t spot
