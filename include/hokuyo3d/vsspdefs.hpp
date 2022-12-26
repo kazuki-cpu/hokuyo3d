@@ -27,8 +27,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HOKUYO3D_VSSPDEFS_HPP_
-#define HOKUYO3D_VSSPDEFS_HPP_
+#ifndef HOKUYO3D__VSSPDEFS_HPP_
+#define HOKUYO3D__VSSPDEFS_HPP_
 
 #include <cstdint>
 #include <cmath>
