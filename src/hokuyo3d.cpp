@@ -11,7 +11,7 @@
 #include <vssp_debag_msgs/msg/RangeHeader.hpp>
 #include <vssp_debag_msgs/msg/XYZI.hpp>
 
-std::chrono::duration timeout_;
+std::chrono::milliseconds timeout_;
 
 class YVTcommunication: public rclcpp::Node
 {		
@@ -45,7 +45,6 @@ public:
 		int port_ = 10940;
 
 		boost::asio::ip::tcp::socket socket(io_);
-		driver_.setTimeout(2.0);
 		
 		header_pub = this->create_publisher<vssp_debag_msgs::msg::Header>("header", 10);
 		range_header_pub = this->create_publisher<vssp_debag_msgs::msg::RangeHeader>("range_header", 10);
