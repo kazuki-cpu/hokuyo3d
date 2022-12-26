@@ -70,35 +70,12 @@ private:
   boost::asio::system_timer timer_;
   bool closed_;
   AuxFactorArray aux_factor_;
-
-  std::function<void(
-      const vssp::Header&,
-      const vssp::RangeHeader&,
-      const vssp::RangeIndex&,
-      const boost::shared_array<uint16_t>&,
-      const boost::shared_array<vssp::XYZI>&)> cb_point_;
-      //const std::chrono::system_clock::time_point&)> cb_point_;
-  std::function<void(
-      const vssp::Header&,
-      const vssp::AuxHeader&,
-      const boost::shared_array<vssp::Aux>&)> cb_aux_;
-      //const std::chrono::system_clock::time_point&)> cb_aux_;
-  std::function<void(
-      const vssp::Header&,
-      const std::chrono::system_clock::time_point&)> cb_ping_;
-  
-  std::function<void(
-      const vssp::Header&,
-      const std::string&)> cb_error_;
-      //const std::chrono::system_clock::time_point&)> cb_error_;
-  std::function<void(bool)> cb_connect_;
   boost::shared_array<const double> tbl_h_;
   std::vector<boost::shared_array<const TableSincos>> tbl_v_;
   bool tbl_h_loaded_;
   bool tbl_v_loaded_;
   std::vector<bool> tbl_vn_loaded_;
   std::chrono::milliseconds timeout_;
-
   boost::asio::streambuf buf_;
 
 public:
@@ -107,9 +84,6 @@ public:
     , timer_(io_service_)
     , closed_(false)
     , aux_factor_(AUX_FACTOR_DEFAULT)
-    , cb_point_(0)
-    , cb_aux_(0)
-    //, cb_ping_(0)
     , tbl_h_loaded_(false)
     , tbl_v_loaded_(false)
     , timeout_(std::chrono::seconds(1))
@@ -119,31 +93,6 @@ public:
   {
     timeout_ = std::chrono::milliseconds(static_cast<int64_t>(1000 * to));
   }
-  void connect(const char* ip, const unsigned int port, decltype(cb_connect_) cb)
-  {
-    cb_connect_ = cb;
-    boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
-    timer_.expires_from_now(timeout_);
-    timer_.async_wait(std::bind(&VsspDriver::onTimeoutConnect, this, boost::asio::placeholders::error));
-    socket_.async_connect(endpoint, std::bind(&vssp::VsspDriver::onConnect, this, boost::asio::placeholders::error));
-  }
-  void registerErrorCallback(decltype(cb_error_) cb)
-  {
-    cb_error_ = cb;
-  }
-  void registerCallback(decltype(cb_point_) cb)
-  {
-    cb_point_ = cb;
-  }
-  void registerAuxCallback(decltype(cb_aux_) cb)
-  {
-    cb_aux_ = cb;
-  }
-  /*void registerPingCallback(decltype(cb_ping_) cb)
-  {
-    cb_ping_ = cb;
-  }
-  */
   void setAutoReset(const bool enable)
   {
     if (enable)
@@ -548,4 +497,4 @@ private:
 
 }  // namespace vssp
 
-#endif  // VSSP_HPP
+#endif  // HOKUYO3D__VSSP_HPP_
