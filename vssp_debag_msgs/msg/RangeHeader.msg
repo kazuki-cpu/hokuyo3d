@@ -7,3 +7,5 @@ uint8_t frame
 uint8_t field
 uint16_t line
 uint16_t spot
+uint8_t vertical_field;
+uint8_t vertical_interlace;
