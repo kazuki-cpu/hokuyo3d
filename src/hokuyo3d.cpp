@@ -54,7 +54,7 @@ public:
 		
 		driver_.setTimeout(2.0);
 		tcp_ip_connect(ip_, port_);
-		yvt.spin();
+		spin();
 	}
 	
 	~YVTcommunication()
