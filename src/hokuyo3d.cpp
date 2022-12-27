@@ -11,14 +11,14 @@
 #include <vssp_debag_msgs/msg/RangeHeader.hpp>
 #include <vssp_debag_msgs/msg/XYZI.hpp>
 
-std::chrono::milliseconds timeout_;
-
 class YVTcommunication: public rclcpp::Node
 {		
 public:
 	boost::asio::io_service io_;
   	boost::asio::system_timer timer_;
 	vssp::VsspDriver driver_;
+	
+	std::chrono::milliseconds timeout_;
 	
 	vssp_debag_msgs::msg::Header header_;
 	vssp_debag_msgs::msg::RangeHeader range_header_;
@@ -44,16 +44,16 @@ public:
 		std::string ip_ = "192.168.11.100";
 		int port_ = 10940;
 
-		boost::asio::ip::tcp::socket socket(io_);
+		boost::asio::ip::tcp::socket socket(io_);	
 		
 		header_pub = this->create_publisher<vssp_debag_msgs::msg::Header>("header", 10);
 		range_header_pub = this->create_publisher<vssp_debag_msgs::msg::RangeHeader>("range_header", 10);
 		aux_header_pub = this->create_publisher<vssp_debag_msgs::msg::AuxHeader>("aux_header", 10);
 		aux_pub = this->create_publisher<vssp_debag_msgs::msg::Aux>("aux", 10);
 		xyzi_pub = this->create_publisher<vssp_debag_msgs::msg::XYZI>("xyzi", 10);
-		
-		driver_.setTimeout(2.0);
-		tcp_ip_connect(ip_, port_);
+  
+    		timeout_ = std::chrono::milliseconds(static_cast<int64_t>(2000));
+  		tcp_ip_connect(ip_, port_);
 		spin();
 	}
 	
