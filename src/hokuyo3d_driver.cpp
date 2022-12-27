@@ -67,7 +67,7 @@ void Hokuyo3dNode::cbPoint(
       if (cloud_.points.size() == 0)
       {
         // Start packing PointCloud message
-        pc_stamp = timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
+        pc_stamp = timestamp_base_ + rclcpp::Duration(range_header.line_head_timestamp_ms * 0.001);
         cloud_.header.frame_id = frame_id_;
         cloud_.header.stamp = pc_stamp;//timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
       }
@@ -92,7 +92,7 @@ void Hokuyo3dNode::cbPoint(
       if (cloud2_.data.size() == 0)
       {
         // Start packing PointCloud2 message
-        pc2_stamp = timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
+        pc2_stamp = timestamp_base_ + rclcpp::Duration(range_header.line_head_timestamp_ms * 0.001);
         cloud2_.header.frame_id = frame_id_;
         cloud2_.header.stamp = pc2_stamp; //timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
         cloud2_.row_step = 0;
@@ -171,8 +171,8 @@ void Hokuyo3dNode::cbPoint(
     builtin_interfaces::msg::Time ping_time = time_ping_;
 
     const rclcpp::Duration delay =
-        (rclcpp::Duration(now) - rclcpp::Duration(ping_time.sec, ping_time.nanosec) - rclcpp::Duration(milliseconds(header.send_time_ms - header.received_time_ms))) * 0.5;
-    const timestamp_base_ = time_ping_ + delay - rclcpp::Duration(milliseconds(header.received_time_ms));
+        (rclcpp::Duration(now) - rclcpp::Duration(ping_time.sec, ping_time.nanosec) - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
+    const timestamp_base_ = time_ping_ + delay - rclcpp::Duration(header.received_time_ms * 0.001);
    
     /*
     timestamp_base_buffer_.push_back(base);
