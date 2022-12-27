@@ -329,10 +329,6 @@ void Hokuyo3dNode::cbPoint(
     cloud2_.is_bigendian = false;
     cloud2_.is_dense = false;
     
-    
-    RCLCPP_INFO(this->get_logger(), "setup");
- 
-    
     sensor_msgs::PointCloud2Modifier pc2_modifier(cloud2_);
     pc2_modifier.setPointCloud2Fields(4, "x", 1, sensor_msgs::msg::PointField::FLOAT32, "y", 1,
                                       sensor_msgs::msg::PointField::FLOAT32, "z", 1, sensor_msgs::msg::PointField::FLOAT32,
