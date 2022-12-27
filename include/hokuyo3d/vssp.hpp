@@ -132,10 +132,6 @@ public:
   {
     
   }
-  void setTimeout(const double to)
-  {
-    timeout_ = std::chrono::milliseconds(static_cast<int64_t>(1000 * to));
-  }
   void setAutoReset(const bool enable)
   {
     if (enable)
@@ -244,24 +240,12 @@ private:
   }
   void onTimeout(const boost::system::error_code& error)
   {
-    //printf("timeout\n");
     if (!error)
     {
       printf("!error\n");
       closed_ = true;
       io_service_.stop();
     }
-  }
-  void onConnect(const boost::system::error_code& error)
-  {
-    timer_.cancel();
-    if (error)
-    {
-      closed_ = true;
-      cb_connect_(false);
-      return;
-    }
-    cb_connect_(true);
   }
   void onSend(const boost::system::error_code& error, boost::shared_ptr<std::string> data)
   {
