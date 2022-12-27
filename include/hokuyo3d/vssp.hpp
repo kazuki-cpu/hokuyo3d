@@ -548,4 +548,4 @@ private:
 
 }  // namespace vssp
 
-#endif  // VSSP_H
+#endif  // HOKUYO3D__VSSP_HPP_
