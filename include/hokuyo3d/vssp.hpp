@@ -89,6 +89,49 @@ public:
     , timeout_(std::chrono::seconds(1))
   {
   }
+  void Header_publish(vssp_debag_msgs::msg::Header::SharedPtr header_)
+  {
+    header_->mark = header.mark;
+    header_->type = header.type;
+    header_->status = header.status;
+    header_->header_length = header.header_length;
+    header_->length = header.length;
+    header_->received_time_ms = header.received_time_ms;
+    header_->send_time_ms = header.send_time_ms;
+    header_pub->publish(header_);
+  }
+  void RangeHeader_publish(vssp_debag_msgs::msg::AuxHeader::SharedPtr aux_header_)
+  {
+    aux_header_->header_length = aux_header.header_length;
+    aux_header_->timestamp_ms = aux_header.timestamp_ms;
+    aux_header_->data_bitfield = aux_header.data_bitfield;
+    aux_header_->data_count = aux_header.data_count;
+    aux_header_->data_ms = aux_header.data_ms;
+    aux_header_pub->publish(aux_header_);
+  }
+  void header_publish(vssp_debag_msgs::msg::RangeHeader::SharedPtr range_header_)
+  {
+    range_header_->header_length = range_header.header_length;
+    range_header_->line_head_timestamp_ms = range_header.line_head_timestamp_ms;
+    range_header_->line_tail_timestamp_ms = range_header.line_tail_timestamp_ms;
+    range_header_->line_head_h_angle_ratio = range_header.line_head_h_angle_ratio;
+    range_header_->line_tail_h_angle_ratio = range_header.line_tail_h_angle_ratio;
+    range_header_->frame = range_header.frame;
+    range_header_->field = range_header.field;
+    range_header_->line = range_header.line;
+    range_header_->spot = range_header.spot;
+    range_header_->vertical_field = range_header_v2r1.vertical_field;
+    range_header_->vertical_interlace = range_header_v2r1.vertical_interlace;
+    range_header_pub->publish(range_header_);
+  }
+  void XYZI_publish(vssp_debag_msgs::msg::XYZI::SharedPtr xyzi_)
+  {
+    
+  }
+  void Aux_publish(vssp_debag_msgs::msg::Aux::SharedPtr aux_)
+  {
+    
+  }
   void setTimeout(const double to)
   {
     timeout_ = std::chrono::milliseconds(static_cast<int64_t>(1000 * to));
@@ -258,7 +301,6 @@ private:
   }
   void onRead(const boost::system::error_code& error)
   {
-    //printf("onRead\n");
     const auto time_read = std::chrono::system_clock::now();
     if (error == boost::asio::error::eof)
     {
@@ -283,14 +325,7 @@ private:
       const vssp::Header header = *boost::asio::buffer_cast<const vssp::Header*>(buf_.data());
       
       //header data publish
-      header_->mark = header.mark;
-      header_->type = header.type;
-      header_->status = header.status;
-      header_->header_length = header.header_length;
-      header_->length = header.length;
-      header_->received_time_ms = header.received_time_ms;
-      header_->send_time_ms = header.send_time_ms;
-      header_pub->publish(header_);
+      Header_publish(header_);
       
       if (header.mark != vssp::VSSP_MARK)
       {
@@ -324,8 +359,8 @@ private:
             {
               const std::string data(boost::asio::buffer_cast<const char*>(buf_.data()));
               std::string message(data, 0, header.length - header.header_length - 1);
-              if (cb_error_)
-                cb_error_(header, message);
+              //if (cb_error_)
+                //cb_error_(header, message);
             }
             break;
           default:
@@ -408,8 +443,8 @@ private:
             break;
           case TYPE_PNG:
             // Response to ping command
-            if (cb_ping_)
-              cb_ping_(header, time_read);
+            //if (cb_ping_)
+              //cb_ping_(header, time_read);
             break;
           case TYPE_RI:
           case TYPE_RO:
@@ -430,19 +465,8 @@ private:
               }
               
               //rangeheader data publish
-              range_header_->header_length = range_header.header_length;
-              range_header_->line_head_timestamp_ms = range_header.line_head_timestamp_ms;
-              range_header_->line_tail_timestamp_ms = range_header.line_tail_timestamp_ms;
-              range_header_->line_head_h_angle_ratio = range_header.line_head_h_angle_ratio;
-              range_header_->line_tail_h_angle_ratio = range_header.line_tail_h_angle_ratio;
-              range_header_->frame = range_header.frame;
-              range_header_->field = range_header.field;
-              range_header_->line = range_header.line;
-              range_header_->spot = range_header.spot;
-              range_header_->vertical_field = range_header_v2r1.vertical_field;
-              range_header_->vertical_interlace = range_header_v2r1.vertical_interlace;
-              range_header_pub->publish(range_header_);
-              
+              RangeHeader_publish(range_header_);
+   
               
               buf_.consume(range_header.header_length);
               length -= range_header.header_length;
@@ -491,12 +515,8 @@ private:
               // Decode range data Header
               const vssp::AuxHeader aux_header = *boost::asio::buffer_cast<const vssp::AuxHeader*>(buf_.data());
               // auxheader data publish
-              aux_header_->header_length = aux_header.header_length;
-              aux_header_->timestamp_ms = aux_header.timestamp_ms;
-              aux_header_->data_bitfield = aux_header.data_bitfield;
-              aux_header_->data_count = aux_header.data_count;
-              aux_header_->data_ms = aux_header.data_ms;
-              aux_header_pub->publish(aux_header_);
+              AuxHeader_publish(aux_header_);
+              
               
               buf_.consume(aux_header.header_length);
               length -= aux_header.header_length;
