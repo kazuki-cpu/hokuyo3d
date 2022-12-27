@@ -109,7 +109,8 @@ protected:
   //rclcpp::Time mag_stamp_last_; 
   rclcpp::Time pc_stamp;
   rclcpp::Time pc2_stamp;
-  builtin_interfaces::msg::Time cloud_stamp_last_; 
+  builtin_interfaces::msg::Time cloud_stamp_last_;
+  builtin_interfaces::msg::Time cloud2_stamp_last_; 
 
   boost::asio::io_service io_;
   boost::asio::system_timer timer_;
