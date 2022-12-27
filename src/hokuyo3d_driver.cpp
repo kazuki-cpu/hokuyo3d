@@ -58,8 +58,8 @@ void Hokuyo3dNode::cbPoint(
       const boost::shared_array<uint16_t>& index,
       const boost::shared_array<vssp::XYZI>& points)//12/2変更
   {
-    //if (timestamp_base_ == rclcpp::Time(0, 0))
-      //return;
+    if (timestamp_base_ == rclcpp::Time(0, 0))
+      return;
     // Pack scan data
     
     if (enable_pc_)
@@ -67,7 +67,7 @@ void Hokuyo3dNode::cbPoint(
       if (cloud_.points.size() == 0)
       {
         // Start packing PointCloud message
-        pc_stamp = timestamp_base_ + rclcpp::Duration(range_header.line_head_timestamp_ms * 0.001);
+        pc_stamp = timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
         cloud_.header.frame_id = frame_id_;
         cloud_.header.stamp = pc_stamp;//timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
       }
@@ -92,7 +92,7 @@ void Hokuyo3dNode::cbPoint(
       if (cloud2_.data.size() == 0)
       {
         // Start packing PointCloud2 message
-        pc2_stamp = timestamp_base_ + rclcpp::Duration(range_header.line_head_timestamp_ms * 0.001);
+        pc2_stamp = timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
         cloud2_.header.frame_id = frame_id_;
         cloud2_.header.stamp = pc2_stamp; //timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
         cloud2_.row_step = 0;
@@ -138,7 +138,7 @@ void Hokuyo3dNode::cbPoint(
       if (enable_pc2_)
       {
         cloud2_.data.resize(cloud2_.width * cloud2_.point_step);
-        if (pc2_stamp < cloud_stamp_last_ && !allow_jump_back_)
+        if (pc2_stamp < cloud2_stamp_last_ && !allow_jump_back_)
         {
           RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed cloud2");
         }
@@ -146,7 +146,7 @@ void Hokuyo3dNode::cbPoint(
         {
           pub_pc2_->publish(cloud2_);
         }
-        cloud_stamp_last_ = cloud2_.header.stamp;
+        cloud2_stamp_last_ = cloud2_.header.stamp;
         cloud2_.data.clear();
       }
       if (range_header.frame != frame_)
@@ -173,7 +173,9 @@ void Hokuyo3dNode::cbPoint(
     const rclcpp::Duration delay =
         ((rclcpp::Duration(now) - rclcpp::Duration(ping_time.sec, ping_time.nanosec)) - rclcpp::Duration(milliseconds(header.send_time_ms - header.received_time_ms))) * 0.5;
     const rclcpp::Time base = time_ping_ + delay - rclcpp::Duration(milliseconds(header.received_time_ms));
-
+    
+    timestamp_base_ = base;
+    /*
     timestamp_base_buffer_.push_back(base);
     if (timestamp_base_buffer_.size() > 5)
       timestamp_base_buffer_.pop_front();
@@ -188,7 +190,7 @@ void Hokuyo3dNode::cbPoint(
       builtin_interfaces::msg::Time new_timestamp_base = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
       timestamp_base_ = timestamp_base_ + rclcpp::Duration(new_timestamp_base.sec - old_timestamp_base.sec, new_timestamp_base.nanosec - old_timestamp_base.nanosec)* 0.1;
     }
-
+    */
     RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds());//12/3変更
   }
   
@@ -197,9 +199,9 @@ void Hokuyo3dNode::cbPoint(
       const vssp::AuxHeader& aux_header,
       const boost::shared_array<vssp::Aux>& auxs)
   {
-    //if (timestamp_base_ == rclcpp::Time(0, 0))
-      //return;
-    rclcpp::Time stamp = timestamp_base_ + rclcpp::Duration(aux_header.timestamp_ms * 0.001); // timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms));
+    if (timestamp_base_ == rclcpp::Time(0, 0))
+      return;
+    rclcpp::Time stamp = timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms)); // timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms));
 
     if ((aux_header.data_bitfield & (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC)) ==
         (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC))
@@ -224,7 +226,7 @@ void Hokuyo3dNode::cbPoint(
           pub_imu_->publish(imu_);
         }
         imu_stamp_last_ = imu_.header.stamp;
-        stamp = stamp + rclcpp::Duration(aux_header.data_ms * 0.001);
+        stamp = stamp + rclcpp::Duration(milliseconds(aux_header.data_ms));
         imu_.header.stamp =  stamp;//12/5変更 変更前"imu_.header.stamp +=rclcpp::Duration(aux_header.data_ms * 0.001)"
       }
     }
@@ -279,7 +281,6 @@ void Hokuyo3dNode::cbPoint(
   }
   Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
   : Node("hokuyo3d", options)
-    //, ros_clock_(RCL_SYSTEM_TIME)
     , timestamp_base_(0, 0)
     , timer_(io_, milliseconds(500))//std::chrono::
   {
@@ -331,8 +332,7 @@ void Hokuyo3dNode::cbPoint(
     
     
     RCLCPP_INFO(this->get_logger(), "setup");
- 
-    
+     
     sensor_msgs::PointCloud2Modifier pc2_modifier(cloud2_);
     pc2_modifier.setPointCloud2Fields(4, "x", 1, sensor_msgs::msg::PointField::FLOAT32, "y", 1,
                                       sensor_msgs::msg::PointField::FLOAT32, "z", 1, sensor_msgs::msg::PointField::FLOAT32,
