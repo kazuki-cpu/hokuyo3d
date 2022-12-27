@@ -150,7 +150,7 @@ void Hokuyo3dNode::cbPoint(
         cloud2_.data.clear();
       }
       if (range_header.frame != frame_)
-        ping();
+        //ping();
       frame_ = range_header.frame;
       field_ = range_header.field;
       line_ = range_header.line;
