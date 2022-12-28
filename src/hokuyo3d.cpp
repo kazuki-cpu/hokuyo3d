@@ -44,13 +44,20 @@ public:
 
 		boost::asio::ip::tcp::socket socket(io_);	
 		
+		//publisher establish
 		header_pub = this->create_publisher<vssp_debag_msgs::msg::Header>("header", 10);
 		range_header_pub = this->create_publisher<vssp_debag_msgs::msg::RangeHeader>("range_header", 10);
 		aux_header_pub = this->create_publisher<vssp_debag_msgs::msg::AuxHeader>("aux_header", 10);
 		aux_pub = this->create_publisher<vssp_debag_msgs::msg::Aux>("aux", 10);
 		xyzi_pub = this->create_publisher<vssp_debag_msgs::msg::XYZI>("xyzi", 10);
+		
+		//register callback function
+		driver_.registerHeaderCallback(std::bind(&YVTcommunication::Header_publish, this, _1));
+		driver_.registerRangeHeaderCallback(std::bind(&YVTcommunication::RangeHeader_publish, this, _1));
+		driver_.registerAuxHeaderCallback(std::bind(&YVTcommunication::AuxHeader_publish, this, _1));
+		driver_.registerXYZICallback(std::bind(&YVTcommunication::XYZI_publish, this, _1));
+		driver_.registerAuxCallback(std::bind(&YVTcommunication::Aux_publish, this, _1));
   
-    		timeout_ = std::chrono::milliseconds(static_cast<int64_t>(2000));
   		tcp_ip_connect(ip_, port_);
 		spin();
 	}
@@ -135,7 +142,7 @@ public:
     		aux_header_->data_ms = aux_header.data_ms;
     		aux_header_pub->publish(aux_header_);
   	}
-  	void header_publish(vssp_debag_msgs::msg::RangeHeader::SharedPtr range_header_)
+  	void AuxHeader_publish(vssp_debag_msgs::msg::RangeHeader::SharedPtr range_header_)
   	{
     		range_header_->header_length = range_header.header_length;
     		range_header_->line_head_timestamp_ms = range_header.line_head_timestamp_ms;
