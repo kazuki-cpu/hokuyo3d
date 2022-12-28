@@ -75,7 +75,6 @@ private:
   bool tbl_h_loaded_;
   bool tbl_v_loaded_;
   std::vector<bool> tbl_vn_loaded_;
-  std::chrono::milliseconds timeout_;
   boost::asio::streambuf buf_;
 
 public:
@@ -88,49 +87,6 @@ public:
     , tbl_v_loaded_(false)
     , timeout_(std::chrono::seconds(1))
   {
-  }
-  void Header_publish(vssp_debag_msgs::msg::Header::SharedPtr header_)
-  {
-    header_->mark = header.mark;
-    header_->type = header.type;
-    header_->status = header.status;
-    header_->header_length = header.header_length;
-    header_->length = header.length;
-    header_->received_time_ms = header.received_time_ms;
-    header_->send_time_ms = header.send_time_ms;
-    header_pub->publish(header_);
-  }
-  void RangeHeader_publish(vssp_debag_msgs::msg::AuxHeader::SharedPtr aux_header_)
-  {
-    aux_header_->header_length = aux_header.header_length;
-    aux_header_->timestamp_ms = aux_header.timestamp_ms;
-    aux_header_->data_bitfield = aux_header.data_bitfield;
-    aux_header_->data_count = aux_header.data_count;
-    aux_header_->data_ms = aux_header.data_ms;
-    aux_header_pub->publish(aux_header_);
-  }
-  void header_publish(vssp_debag_msgs::msg::RangeHeader::SharedPtr range_header_)
-  {
-    range_header_->header_length = range_header.header_length;
-    range_header_->line_head_timestamp_ms = range_header.line_head_timestamp_ms;
-    range_header_->line_tail_timestamp_ms = range_header.line_tail_timestamp_ms;
-    range_header_->line_head_h_angle_ratio = range_header.line_head_h_angle_ratio;
-    range_header_->line_tail_h_angle_ratio = range_header.line_tail_h_angle_ratio;
-    range_header_->frame = range_header.frame;
-    range_header_->field = range_header.field;
-    range_header_->line = range_header.line;
-    range_header_->spot = range_header.spot;
-    range_header_->vertical_field = range_header_v2r1.vertical_field;
-    range_header_->vertical_interlace = range_header_v2r1.vertical_interlace;
-    range_header_pub->publish(range_header_);
-  }
-  void XYZI_publish(vssp_debag_msgs::msg::XYZI::SharedPtr xyzi_)
-  {
-    
-  }
-  void Aux_publish(vssp_debag_msgs::msg::Aux::SharedPtr aux_)
-  {
-    
   }
   void setAutoReset(const bool enable)
   {
@@ -193,9 +149,8 @@ public:
   }
   void receivePackets()
   {
-    //printf("receive\n");
     timer_.cancel();
-    timer_.expires_from_now(timeout_);
+    timer_.expires_from_now(std::chrono::milliseconds(2000));
     timer_.async_wait(std::bind(&VsspDriver::onTimeout, this, boost::asio::placeholders::error));
     // Read at least 4 bytes.
     // In most case, callback function will be called for each VSSP line.
