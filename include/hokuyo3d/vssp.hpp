@@ -70,6 +70,12 @@ private:
   boost::asio::system_timer timer_;
   bool closed_;
   AuxFactorArray aux_factor_;
+  std::function<void(const vssp::Header&)> debag_header_;
+  std::function<void(const vssp::RangeHeader&)> debag_rangeheader_;    
+  std::function<void(const vssp::AuxHeader&)> debag_auxheader_;
+  std::function<void(const boost::shared_array<vssp::XYZI>&)> debag_xyzi_;
+  std::function<void(const boost::shared_array<vssp::Aux>&)> debag_aux_;
+  
   boost::shared_array<const double> tbl_h_;
   std::vector<boost::shared_array<const TableSincos>> tbl_v_;
   bool tbl_h_loaded_;
@@ -87,6 +93,26 @@ public:
     , tbl_v_loaded_(false)
     , timeout_(std::chrono::seconds(1))
   {
+  }
+  void registerHeaderCallback(decltype(debag_header_) debag)
+  {
+    debag_header_ = debag;
+  }
+  void registerRangeHeaderCallback(decltype(debag_rangeheader_) debag)
+  {
+    debag_rangeheader_ = debag;
+  }
+  void registerAuxHeaderCallback(decltype(debag_auxheader_) debag)
+  {
+    debag_auxheader_ = debag;
+  }
+  void registerXYZICallback(decltype(debag_xyzi_) debag)
+  {
+    debag_xyzi_ = debag;
+  }
+  void registerAuxCallback(decltype(debag_aux_) debag)
+  {
+    debag_aux_ = debag;
   }
   void setAutoReset(const bool enable)
   {
