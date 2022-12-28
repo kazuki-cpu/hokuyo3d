@@ -3,7 +3,7 @@
 #include <string>
 
 #include <boost/asio.hpp>
-#include <vssp.hpp>
+#include <hokuyo3d/vssp.hpp>
 
 #include <vssp_debag_msgs/msg/Aux.hpp>
 #include <vssp_debag_msgs/msg/AuxHeader.hpp>
@@ -18,17 +18,6 @@ public:
   	boost::asio::system_timer timer_;
 	vssp::VsspDriver driver_;
 	
-	vssp_debag_msgs::msg::Header header_;
-	vssp_debag_msgs::msg::RangeHeader range_header_;
-	vssp_debag_msgs::msg::AuxHeader aux_header_;
-	vssp_debag_msgs::msg::Aux aux_;
-	vssp_debag_msgs::msg::XYZI xyzi_;
-	
-	rclcpp::Publisher<vssp_debag_msgs::msg::Header>::SharedPtr header_pub;
-	rclcpp::Publisher<vssp_debag_msgs::msg::RangeHeader>::SharedPtr range_header_pub;
-	rclcpp::Publisher<vssp_debag_msgs::msg::AuxHeader>::SharedPtr aux_header_pub;
-	rclcpp::Publisher<vssp_debag_msgs::msg::Aux>::SharedPtr aux_pub;
-	rclcpp::Publisher<vssp_debag_msgs::msg::XYZI>::SharedPtr xyzi_pub;
 	
 
 	YVTcommunication(
@@ -165,6 +154,20 @@ public:
   	{
     
   	}
+
+protected:
+
+   vssp_debag_msgs::msg::Header header_;
+   vssp_debag_msgs::msg::RangeHeader range_header_;
+   vssp_debag_msgs::msg::AuxHeader aux_header_;
+   vssp_debag_msgs::msg::Aux aux_;
+   vssp_debag_msgs::msg::XYZI xyzi_;
+   
+   rclcpp::Publisher<vssp_debag_msgs::msg::Header>::SharedPtr header_pub;
+   rclcpp::Publisher<vssp_debag_msgs::msg::RangeHeader>::SharedPtr range_header_pub;
+   rclcpp::Publisher<vssp_debag_msgs::msg::AuxHeader>::SharedPtr aux_header_pub;
+   rclcpp::Publisher<vssp_debag_msgs::msg::Aux>::SharedPtr aux_pub;
+   rclcpp::Publisher<vssp_debag_msgs::msg::XYZI>::SharedPtr xyzi_pub;
 	
 };//YVTcommunication
 
