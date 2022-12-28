@@ -132,7 +132,8 @@ public:
     		header_->send_time_ms = header.send_time_ms;
     		header_pub->publish(header_);
   	}
-  	void RangeHeader_publish(const vssp::RangeHeader& range_header)
+  	void RangeHeader_publish(const vssp::RangeHeader& range_header, 
+				 const vssp::RangeHeaderV2R1& range_header_v2r1)
   	{
     		range_header_->header_length = range_header.header_length;
     		range_header_->line_head_timestamp_ms = range_header.line_head_timestamp_ms;
