@@ -14,11 +14,6 @@
 class YVTcommunication: public rclcpp::Node
 {		
 public:
-	boost::asio::io_service io_;
-  	boost::asio::system_timer timer_;
-	vssp::VsspDriver driver_;
-	
-	
 
 	YVTcommunication(
 		const std::string & node_name,
@@ -157,6 +152,10 @@ public:
 
 protected:
 
+   boost::asio::io_service io_;
+   boost::asio::system_timer timer_;
+   vssp::VsspDriver driver_;
+   
    vssp_debag_msgs::msg::Header header_;
    vssp_debag_msgs::msg::RangeHeader range_header_;
    vssp_debag_msgs::msg::AuxHeader aux_header_;
