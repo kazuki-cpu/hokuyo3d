@@ -110,7 +110,6 @@ public:
       			timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));
     		}
   	}
-	
   	void spin()
   	{
     		timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));
@@ -122,7 +121,7 @@ public:
     		timer_.cancel();
     		RCLCPP_INFO(get_logger(),"Connection closed");
   	}
-	void Header_publish(vssp_debag_msgs::msg::Header::SharedPtr header_)
+	void Header_publish(const vssp::Header& header)
   	{
     		header_->mark = header.mark;
     		header_->type = header.type;
@@ -133,16 +132,7 @@ public:
     		header_->send_time_ms = header.send_time_ms;
     		header_pub->publish(header_);
   	}
-  	void RangeHeader_publish(vssp_debag_msgs::msg::AuxHeader::SharedPtr aux_header_)
-  	{
-    		aux_header_->header_length = aux_header.header_length;
-    		aux_header_->timestamp_ms = aux_header.timestamp_ms;
-    		aux_header_->data_bitfield = aux_header.data_bitfield;
-    		aux_header_->data_count = aux_header.data_count;
-    		aux_header_->data_ms = aux_header.data_ms;
-    		aux_header_pub->publish(aux_header_);
-  	}
-  	void AuxHeader_publish(vssp_debag_msgs::msg::RangeHeader::SharedPtr range_header_)
+  	void RangeHeader_publish(const vssp::RangeHeader& range_header)
   	{
     		range_header_->header_length = range_header.header_length;
     		range_header_->line_head_timestamp_ms = range_header.line_head_timestamp_ms;
@@ -157,11 +147,20 @@ public:
     		range_header_->vertical_interlace = range_header_v2r1.vertical_interlace;
     		range_header_pub->publish(range_header_);
   	}
-  	void XYZI_publish(vssp_debag_msgs::msg::XYZI::SharedPtr xyzi_)
+  	void AuxHeader_publish(const vssp::AuxHeader& aux_header)
+  	{
+    		aux_header_->header_length = aux_header.header_length;
+    		aux_header_->timestamp_ms = aux_header.timestamp_ms;
+    		aux_header_->data_bitfield = aux_header.data_bitfield;
+    		aux_header_->data_count = aux_header.data_count;
+    		aux_header_->data_ms = aux_header.data_ms;
+    		aux_header_pub->publish(aux_header_);
+  	}
+  	void XYZI_publish(const boost::shared_array<vssp::XYZI>& points)
   	{
     
   	}
-  	void Aux_publish(vssp_debag_msgs::msg::Aux::SharedPtr aux_)
+  	void Aux_publish(const boost::shared_array<vssp::Aux>& auxs)
   	{
     
   	}
