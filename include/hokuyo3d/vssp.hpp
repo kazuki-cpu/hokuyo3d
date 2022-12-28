@@ -38,15 +38,12 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/shared_array.hpp>
 #include <boost/algorithm/string.hpp>
-#include <chrono>//変更9.17
-
+#include <chrono>
 #include <vector>
 #include <string>
-
 #include <hokuyo3d/vsspdefs.hpp>
-
 #include <functional>
-#include <boost/bind/arg.hpp>
+#include <boost/bind/srg.hpp>
 
 namespace std {
 
@@ -65,9 +62,6 @@ namespace vssp
 class VsspDriver
 {
 private:
-  boost::asio::io_service io_service_;
-  boost::asio::ip::tcp::socket socket_;
-  boost::asio::system_timer timer_;
   bool closed_;
   AuxFactorArray aux_factor_;
   std::function<void(const vssp::Header&,
@@ -76,7 +70,6 @@ private:
   std::function<void(const vssp::AuxHeader&)> debag_auxheader_;
   std::function<void(const boost::shared_array<vssp::XYZI>&)> debag_xyzi_;
   std::function<void(const boost::shared_array<vssp::Aux>&)> debag_aux_;
-  
   boost::shared_array<const double> tbl_h_;
   std::vector<boost::shared_array<const TableSincos>> tbl_v_;
   bool tbl_h_loaded_;
@@ -85,6 +78,10 @@ private:
   boost::asio::streambuf buf_;
 
 public:
+  boost::asio::io_service io_service_;
+  boost::asio::ip::tcp::socket socket_;
+  boost::asio::system_timer timer_;
+  
   VsspDriver()
     : socket_(io_service_)
     , timer_(io_service_)
@@ -474,7 +471,7 @@ private:
               }
               if (!success)
                 break;
-              cb_point_(header, range_header, range_index, index, points);
+              debag_xyzi_(points);
               
             }
             break;
@@ -506,7 +503,7 @@ private:
                 length -= sizeof(int32_t) * offset;
               }
               if (cb_aux_)
-                cb_aux_(header, aux_header, auxs);
+                debag_aux_(auxs);
             }
             break;
           default:
