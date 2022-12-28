@@ -3,6 +3,7 @@
 #include <string>
 
 #include <boost/asio.hpp>
+#include <boost/asio/system_timer.hpp>
 #include <hokuyo3d/vssp.hpp>
 
 #include <vssp_debag_msgs/msg/Aux.hpp>
