@@ -70,7 +70,8 @@ private:
   boost::asio::system_timer timer_;
   bool closed_;
   AuxFactorArray aux_factor_;
-  std::function<void(const vssp::Header&)> debag_header_;
+  std::function<void(const vssp::Header&,
+                     const vssp::RangeHeaderV2R1& range_header_v2r1)> debag_header_;
   std::function<void(const vssp::RangeHeader&)> debag_rangeheader_;    
   std::function<void(const vssp::AuxHeader&)> debag_auxheader_;
   std::function<void(const boost::shared_array<vssp::XYZI>&)> debag_xyzi_;
@@ -290,7 +291,8 @@ private:
       const vssp::Header header = *boost::asio::buffer_cast<const vssp::Header*>(buf_.data());
       
       //header data publish
-      Header_publish(header_);
+      if (debag_header_)
+           debag_header_(header);
       
       if (header.mark != vssp::VSSP_MARK)
       {
@@ -430,7 +432,8 @@ private:
               }
               
               //rangeheader data publish
-              RangeHeader_publish(range_header_);
+              if (debag_rangeheader_)
+                debag_rangeheader_(range_header, range_header_v2r1);
    
               
               buf_.consume(range_header.header_length);
@@ -472,6 +475,7 @@ private:
               if (!success)
                 break;
               cb_point_(header, range_header, range_index, index, points);
+              
             }
             break;
           case TYPE_AX:
@@ -481,6 +485,7 @@ private:
               const vssp::AuxHeader aux_header = *boost::asio::buffer_cast<const vssp::AuxHeader*>(buf_.data());
               // auxheader data publish
               AuxHeader_publish(aux_header_);
+              
               
               
               buf_.consume(aux_header.header_length);
