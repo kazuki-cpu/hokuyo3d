@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>vssp_debag</name>
+  <name>vsspdebag</name>
   <version>1.0.3</version>
   <description>ROS2 driver node for HOKUYO 3D LIDARs</description>
   <maintainer email="Kazuki-Fujiwara@outlook.com">kindai university</maintainer>
