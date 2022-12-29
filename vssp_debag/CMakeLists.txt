@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(hokuyo3d)
+project(vssp_debag)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -14,17 +14,12 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(vssp_debag_msgs REQUIRED)
-find_package(builtin_interfaces REQUIRED)
 find_package(Boost REQUIRED system)
-
 
 include_directories(
   include 
   ${Boost_INCLUDE_DIRS}
 )
-
-add_library(hokuyo3d_driver SHARED src/hokuyo3d_driver.cpp)
-target_compile_definitions(hokuyo3d_driver PRIVATE "HOKUYO3D_BUILDING_DLL")
 
 target_include_directories(hokuyo3d_driver
   PUBLIC
@@ -32,51 +27,26 @@ target_include_directories(hokuyo3d_driver
     $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(hokuyo3d_driver ${Boost_LIBRARIES})
-ament_target_dependencies(hokuyo3d_driver
-  rclcpp
-  rclcpp_components
-  sensor_msgs
-  builtin_interfaces
-  )
-rclcpp_components_register_nodes(hokuyo3d_driver "Hokuyo3d::Hokuyo3dNode")
-
-add_executable(hokuyo3d src/hokuyo3d.cpp)
-target_link_libraries(hokuyo3d 
-  hokuyo3d_driver
+add_executable(vssp_debag src/vssp_debag.cpp)
+target_link_libraries(vssp_debag 
   ${Boost_LIBRARIES})
-ament_target_dependencies(hokuyo3d
+ament_target_dependencies(vssp_debag
   rclcpp
   class_loader
-  sensor_msgs)
+  vssp_debag_msgs)
 
-ament_export_targets(export_hokuyo3d_driver HAS_LIBRARY_TARGET)
 
 ament_export_dependencies(rclcpp)
-ament_export_dependencies(rclcpp_components)
-ament_export_dependencies(sensor_msgs)
-
+ament_export_dependencies(vssp_debag_msgs)
 
 ament_export_include_directories(include)
-ament_export_libraries(hokuyo3d_driver)
 
 install(
   DIRECTORY include/
   DESTINATION include
 )
 install(
-  DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME}
-)
-install(
-  TARGETS hokuyo3d_driver
-  EXPORT export_hokuyo3d_driver
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include)
-install(
-  TARGETS hokuyo3d
+  TARGETS vssp_debag
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
