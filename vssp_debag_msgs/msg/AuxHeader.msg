@@ -1,5 +1,5 @@
-uint16_t header_length
-uint32_t timestamp_ms
-uint32_t data_bitfield
-uint8_t data_count
-uint8_t data_ms
+uint16 header_length
+uint32 timestamp_ms
+uint32 data_bitfield
+uint8 data_count
+uint8 data_ms
