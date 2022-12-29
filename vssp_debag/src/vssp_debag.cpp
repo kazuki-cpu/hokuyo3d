@@ -1,6 +1,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include <chrono>
 #include <string>
+#include <mutex> 
+#include <thread> 
 
 #include <boost/asio.hpp>
 #include <boost/asio/system_timer.hpp>
@@ -9,8 +11,8 @@
 #include <vssp_debag_msgs/msg/Aux.hpp>
 #include <vssp_debag_msgs/msg/AuxHeader.hpp>
 #include <vssp_debag_msgs/msg/Header.hpp>
-#include <vssp_debag_msgs/msg/RangeHeader.hpp>
-#include <vssp_debag_msgs/msg/XYZI.hpp>
+//#include <vssp_debag_msgs/msg/RangeHeader.hpp>
+//#include <vssp_debag_msgs/msg/XYZI.hpp>
 
 class YVTcommunication: public rclcpp::Node
 {		
