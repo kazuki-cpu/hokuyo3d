@@ -52,14 +52,13 @@ namespace Hokuyo3d
 {
 
 void Hokuyo3dNode::cbPoint(
-      const vssp::Header& header,
       const vssp::RangeHeader& range_header,
       const vssp::RangeIndex& range_index,
       const boost::shared_array<uint16_t>& index,
       const boost::shared_array<vssp::XYZI>& points)//12/2変更
   {
-    if (timestamp_base_ == rclcpp::Time(0, 0))
-      return;
+    //if (timestamp_base_ == rclcpp::Time(0, 0))
+      //return;
     // Pack scan data
     
     if (enable_pc_)
@@ -67,7 +66,7 @@ void Hokuyo3dNode::cbPoint(
       if (cloud_.points.size() == 0)
       {
         // Start packing PointCloud message
-        pc_stamp = timestamp_base_ + rclcpp::Duration(range_header.line_head_timestamp_ms * 0.001);
+        pc_stamp = this->now();
         cloud_.header.frame_id = frame_id_;
         cloud_.header.stamp = pc_stamp;//timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
       }
@@ -92,7 +91,7 @@ void Hokuyo3dNode::cbPoint(
       if (cloud2_.data.size() == 0)
       {
         // Start packing PointCloud2 message
-        pc2_stamp = timestamp_base_ + rclcpp::Duration(range_header.line_head_timestamp_ms * 0.001);
+        pc2_stamp = this->now();
         cloud2_.header.frame_id = frame_id_;
         cloud2_.header.stamp = pc2_stamp; //timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
         cloud2_.row_step = 0;
@@ -157,12 +156,11 @@ void Hokuyo3dNode::cbPoint(
     }
   }
   void Hokuyo3dNode::cbError(
-      const vssp::Header& header,
       const std::string& message)
   {
     RCLCPP_ERROR(get_logger(), "%s", message.c_str());
   }
-  void Hokuyo3dNode::cbPing(
+  /*void Hokuyo3dNode::cbPing(
       const vssp::Header& header,
       const system_clock::time_point& time_read)
   {
@@ -173,7 +171,7 @@ void Hokuyo3dNode::cbPoint(
     const rclcpp::Duration delay =
         (rclcpp::Duration(now) - rclcpp::Duration(ping_time.sec, ping_time.nanosec) - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
     const timestamp_base_ = time_ping_ + delay - rclcpp::Duration(header.received_time_ms * 0.001);
-   
+  */ 
     /*
     timestamp_base_buffer_.push_back(base);
     if (timestamp_base_buffer_.size() > 5)
@@ -190,17 +188,16 @@ void Hokuyo3dNode::cbPoint(
       timestamp_base_ = timestamp_base_ + rclcpp::Duration(new_timestamp_base.sec - old_timestamp_base.sec, new_timestamp_base.nanosec - old_timestamp_base.nanosec)* 0.1;
     }
     */
-    RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds());//12/3変更
-  }
+    /*RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds());//12/3変更
+  }*/
   
   void Hokuyo3dNode::cbAux(
-      const vssp::Header& header,
       const vssp::AuxHeader& aux_header,
       const boost::shared_array<vssp::Aux>& auxs)
   {
     if (timestamp_base_ == rclcpp::Time(0, 0))
       return;
-    rclcpp::Time stamp = timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms)); // timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms));
+    rclcpp::Time stamp = this->now(); // timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms));
 
     if ((aux_header.data_bitfield & (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC)) ==
         (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC))
@@ -280,8 +277,8 @@ void Hokuyo3dNode::cbPoint(
   }
   Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
   : Node("hokuyo3d", options)
-    , timestamp_base_(0, 0)
-    , timer_(io_, milliseconds(500))//std::chrono::
+    //, timestamp_base_(0, 0)
+    , timer_(io_, milliseconds(500))
   {
 
     horizontal_interlace_ = this->declare_parameter<int>("horizontal_interlace", 4);
@@ -313,10 +310,10 @@ void Hokuyo3dNode::cbPoint(
 
     driver_.setTimeout(2.0);
     RCLCPP_INFO(this->get_logger(), "Connecting to %s", ip_.c_str());
-    driver_.registerCallback(std::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4, _5));
-    driver_.registerAuxCallback(std::bind(&Hokuyo3dNode::cbAux, this, _1, _2, _3));
+    driver_.registerCallback(std::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4));
+    driver_.registerAuxCallback(std::bind(&Hokuyo3dNode::cbAux, this, _1, _2));
     //driver_.registerPingCallback(std::bind(&Hokuyo3dNode::cbPing, this, _1, _2));
-    driver_.registerErrorCallback(std::bind(&Hokuyo3dNode::cbError, this, _1, _2));
+    driver_.registerErrorCallback(std::bind(&Hokuyo3dNode::cbError, this, _1));
     field_ = 0;
     frame_ = 0;
     line_ = 0;
@@ -432,7 +429,7 @@ void Hokuyo3dNode::cbPoint(
   void Hokuyo3dNode::ping()
   {
     driver_.requestPing();
-    time_ping_ = this->now();
+    //time_ping_ = this->now();
   }
  
 }
