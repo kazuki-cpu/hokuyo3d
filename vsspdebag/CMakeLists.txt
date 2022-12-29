@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(vssp_debag)
+project(vsspdebag)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -21,10 +21,10 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 
-add_executable(vssp_debag src/vssp_debag.cpp)
-target_link_libraries(vssp_debag 
+add_executable(vsspdebag src/vsspdebag.cpp)
+target_link_libraries(vsspdebag 
   ${Boost_LIBRARIES})
-ament_target_dependencies(vssp_debag
+ament_target_dependencies(vsspdebag
   rclcpp
   class_loader
   vsspdebag_msgs)
@@ -40,7 +40,7 @@ install(
   DESTINATION include
 )
 install(
-  TARGETS vssp_debag
+  TARGETS vsspdebag
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
