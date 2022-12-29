@@ -7,7 +7,7 @@
   <maintainer email="Kazuki-Fujiwara@outlook.com">kindai university</maintainer>
   <license>Apache License 2.0</license>
 
-  <author email="git@killbots.net">Geoffrey Biggs</author>
+  <author email="Kazuki-Fujiwara@outlook.com"></author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
