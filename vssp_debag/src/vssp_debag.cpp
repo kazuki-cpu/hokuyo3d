@@ -6,11 +6,11 @@
 
 #include <boost/asio.hpp>
 #include <boost/asio/system_timer.hpp>
-#include <hokuyo3d/vssp.hpp>
+#include <vsspdebag/vssp.hpp>
 
 #include <vsspdebag_msgs/msg/AuxHeader.hpp>
 #include <vsspdebag_msgs/msg/Header.hpp>
-#include <vssp_debag_msgs/msg/RangeHeader.hpp>
+#include <vsspdebag_msgs/msg/RangeHeader.hpp>
 
 class YVTcommunication: public rclcpp::Node
 {
