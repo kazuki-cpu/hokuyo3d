@@ -26,7 +26,6 @@ target_link_libraries(vsspdebag
   ${Boost_LIBRARIES})
 ament_target_dependencies(vsspdebag
   rclcpp
-  class_loader
   vsspdebag_msgs)
 
 
