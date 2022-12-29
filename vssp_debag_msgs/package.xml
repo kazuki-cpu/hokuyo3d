@@ -5,7 +5,7 @@
   <version>1.0.0</version>
   <description>Vssp protocol messages</description>
   <maintainer email="Kazuki-Fujiwara@outlook.com">kindai university</maintainer>
-  <license>BSD</license>
+  <license>Apache License 2.0</license>
 
   <author email="Kazuki-Fujiwara@outlook.com"</author>
 
