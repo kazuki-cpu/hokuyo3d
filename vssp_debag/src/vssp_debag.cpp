@@ -8,14 +8,13 @@
 #include <boost/asio/system_timer.hpp>
 #include <hokuyo3d/vssp.hpp>
 
-#include <vssp_debag_msgs/msg/Aux.hpp>
-#include <vssp_debag_msgs/msg/AuxHeader.hpp>
-#include <vssp_debag_msgs/msg/Header.hpp>
-//#include <vssp_debag_msgs/msg/RangeHeader.hpp>
-//#include <vssp_debag_msgs/msg/XYZI.hpp>
+#include <vsspdebag_msgs/msg/AuxHeader.hpp>
+#include <vsspdebag_msgs/msg/Header.hpp>
+#include <vssp_debag_msgs/msg/RangeHeader.hpp>
 
 class YVTcommunication: public rclcpp::Node
-{		
+{
+
 public:
 
 	YVTcommunication(
@@ -33,18 +32,13 @@ public:
 		header_pub = this->create_publisher<vssp_debag_msgs::msg::Header>("header", 10);
 		range_header_pub = this->create_publisher<vssp_debag_msgs::msg::RangeHeader>("range_header", 10);
 		aux_header_pub = this->create_publisher<vssp_debag_msgs::msg::AuxHeader>("aux_header", 10);
-		//aux_pub = this->create_publisher<vssp_debag_msgs::msg::Aux>("aux", 10);
-		//xyzi_pub = this->create_publisher<vssp_debag_msgs::msg::XYZI>("xyzi", 10);
 		
 		//register callback function
 		driver_.registerHeaderCallback(std::bind(&YVTcommunication::Header_publish, this, _1));
 		driver_.registerRangeHeaderCallback(std::bind(&YVTcommunication::RangeHeader_publish, this, _1));
 		driver_.registerAuxHeaderCallback(std::bind(&YVTcommunication::AuxHeader_publish, this, _1));
-		//driver_.registerXYZICallback(std::bind(&YVTcommunication::XYZI_publish, this, _1));
-		//driver_.registerAuxCallback(std::bind(&YVTcommunication::Aux_publish, this, _1));
   
   		std::lock_guard<std::mutex> lock(connect_mutex_);
-		
   		tcp_ip_connect(ip_, port_);
 		spin();
 	}
@@ -148,17 +142,13 @@ protected:
    vssp::VsspDriver driver_;
    std::mutex connect_mutex_;
    
-   vssp_debag_msgs::msg::Header header_;
-   vssp_debag_msgs::msg::RangeHeader range_header_;
-   vssp_debag_msgs::msg::AuxHeader aux_header_;
-   vssp_debag_msgs::msg::Aux aux_;
-   vssp_debag_msgs::msg::XYZI xyzi_;
-   
+   vsspdebag_msgs::msg::Header header_;
+   vsspdebag_msgs::msg::RangeHeader range_header_;
+   vsspdebag_msgs::msg::AuxHeader aux_header_;
+  
    rclcpp::Publisher<vssp_debag_msgs::msg::Header>::SharedPtr header_pub;
    rclcpp::Publisher<vssp_debag_msgs::msg::RangeHeader>::SharedPtr range_header_pub;
    rclcpp::Publisher<vssp_debag_msgs::msg::AuxHeader>::SharedPtr aux_header_pub;
-   rclcpp::Publisher<vssp_debag_msgs::msg::Aux>::SharedPtr aux_pub;
-   rclcpp::Publisher<vssp_debag_msgs::msg::XYZI>::SharedPtr xyzi_pub;
 	
 };//YVTcommunication
 
