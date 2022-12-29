@@ -240,7 +240,7 @@ private:
   {
     boost::shared_ptr<std::string> data(new std::string(cmd));//stdでもいい？
     boost::asio::async_write(socket_, boost::asio::buffer(*data),
-                             std::bind(&VsspDriver::onSend, this, boost::asio::placeholders::error, data));
+                             std::bind(&VsspDriver::onSend, this, boost::asio::placeholders::error));
   }
   void onTimeoutConnect(const boost::system::error_code& error)
   {
@@ -271,7 +271,7 @@ private:
     }
     cb_connect_(true);
   }
-  void onSend(const boost::system::error_code& error, boost::shared_ptr<std::string> data)
+  void onSend(const boost::system::error_code& error)
   {
     if (error)
     {
