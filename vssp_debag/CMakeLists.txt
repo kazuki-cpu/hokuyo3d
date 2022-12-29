@@ -13,7 +13,7 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(vssp_debag_msgs REQUIRED)
+find_package(vsspdebag_msgs REQUIRED)
 find_package(Boost REQUIRED system)
 
 include_directories(
