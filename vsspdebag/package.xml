@@ -3,11 +3,11 @@
 <package format="3">
   <name>vsspdebag</name>
   <version>1.0.3</version>
-  <description>ROS2 driver node for HOKUYO 3D LIDARs</description>
+  <description>vssp communication debag program in Ros2</description>
   <maintainer email="Kazuki-Fujiwara@outlook.com">kindai university</maintainer>
   <license>BSD</license>
 
-  <author email="Kazuki-Fujiwara@outlook.com">Kazuki Fujiwara</author>
+  <author email="Kazuki-Fujiwara@outlook.com">Kazuki</author>
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>rclcpp</depend>
   <depend>vsspdebag_msgs</depend>
