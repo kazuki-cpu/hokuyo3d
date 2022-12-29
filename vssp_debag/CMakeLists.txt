@@ -21,23 +21,17 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 
-target_include_directories(hokuyo3d_driver
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-
 add_executable(vssp_debag src/vssp_debag.cpp)
 target_link_libraries(vssp_debag 
   ${Boost_LIBRARIES})
 ament_target_dependencies(vssp_debag
   rclcpp
   class_loader
-  vssp_debag_msgs)
+  vsspdebag_msgs)
 
 
 ament_export_dependencies(rclcpp)
-ament_export_dependencies(vssp_debag_msgs)
+ament_export_dependencies(vsspdebag_msgs)
 
 ament_export_include_directories(include)
 
