@@ -361,7 +361,7 @@ private:
               const std::string data(boost::asio::buffer_cast<const char*>(buf_.data()));
               std::string message(data, 0, header.length - header.header_length - 1);
               if (cb_error_)
-                cb_error_(header, message);
+                cb_error_(message);
             }
             break;
           default:
@@ -444,8 +444,8 @@ private:
             break;
           case TYPE_PNG:
             // Response to ping command
-            if (cb_ping_)
-              cb_ping_(header, time_read);
+            //if (cb_ping_)
+              //cb_ping_(header, time_read);
             break;
           case TYPE_RI:
           case TYPE_RO:
@@ -502,7 +502,7 @@ private:
               }
               if (!success)
                 break;
-              cb_point_(header, range_header, range_index, index, points);
+              cb_point_(range_header, range_index, index, points);
             }
             break;
           case TYPE_AX:
@@ -528,7 +528,7 @@ private:
                 length -= sizeof(int32_t) * offset;
               }
               if (cb_aux_)
-                cb_aux_(header, aux_header, auxs);
+                cb_aux_(aux_header, auxs);
             }
             break;
           default:
