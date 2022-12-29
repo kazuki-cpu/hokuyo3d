@@ -13,10 +13,13 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
-rosidl_generate_interfaces(${PROJECT_NAME}
+set(MSG_FILES
   "msg/AuxHeader.msg"
   "msg/Header.msg"
   "msg/RangeHeader.msg")
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${MSG_FILES})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
