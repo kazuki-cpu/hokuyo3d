@@ -14,11 +14,9 @@ find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/Aux.msg"
   "msg/AuxHeader.msg"
   "msg/Header.msg"
-  "msg/RangeHeader.msg"
-  "msg/XYZI.msg")
+  "msg/RangeHeader.msg")
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
