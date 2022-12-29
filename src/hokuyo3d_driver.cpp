@@ -195,8 +195,8 @@ void Hokuyo3dNode::cbPoint(
       const vssp::AuxHeader& aux_header,
       const boost::shared_array<vssp::Aux>& auxs)
   {
-    if (timestamp_base_ == rclcpp::Time(0, 0))
-      return;
+    //if (timestamp_base_ == rclcpp::Time(0, 0))
+      //return;
     rclcpp::Time stamp = this->now(); // timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms));
 
     if ((aux_header.data_bitfield & (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC)) ==
