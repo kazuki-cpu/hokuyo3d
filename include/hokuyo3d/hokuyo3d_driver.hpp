@@ -64,16 +64,16 @@ public:
   explicit Hokuyo3dNode(const rclcpp::NodeOptions & options);
   ~Hokuyo3dNode(void);
   
-  void cbPoint(const vssp::Header& header,
+  void cbPoint(
       const vssp::RangeHeader& range_header,
       const vssp::RangeIndex& range_index,
       const boost::shared_array<uint16_t>& index,
       const boost::shared_array<vssp::XYZI>& points);
-  void cbError(const vssp::Header& header,
+  void cbError(
       const std::string& message);
-  void cbPing(const vssp::Header& header,
-      const std::chrono::system_clock::time_point& time_read);
-  void cbAux(const vssp::Header& header,
+  /*void cbPing(const vssp::Header& header,
+      const std::chrono::system_clock::time_point& time_read);*/
+  void cbAux(
       const vssp::AuxHeader& aux_header,
       const boost::shared_array<vssp::Aux>& auxs);
   void cbConnect(bool success);
@@ -101,8 +101,8 @@ protected:
   bool allow_jump_back_;
   std::mutex connect_mutex_;
 
-  rclcpp::Time time_ping_; 
-  rclcpp::Time timestamp_base_; 
+  //rclcpp::Time time_ping_; 
+  //rclcpp::Time timestamp_base_; 
   //std::deque<rclcpp::Time> timestamp_base_buffer_; 
   builtin_interfaces::msg::Time imu_stamp_last_; 
   //rclcpp::Time mag_stamp_last_; 
