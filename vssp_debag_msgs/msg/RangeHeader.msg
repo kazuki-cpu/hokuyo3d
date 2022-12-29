@@ -7,5 +7,5 @@ uint8 frame
 uint8 field
 uint16 line
 uint16 spot
-uint8 vertical_field;
-uint8 vertical_interlace;
+uint8 vertical_field
+uint8 vertical_interlace
