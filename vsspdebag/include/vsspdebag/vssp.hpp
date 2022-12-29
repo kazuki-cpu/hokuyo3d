@@ -27,8 +27,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HOKUYO3D__VSSP_HPP_
-#define HOKUYO3D__VSSP_HPP_
+#ifndef VSSPDEBAG__VSSP_HPP_
+#define VSSPDEBAG__VSSP_HPP_
 
 #include <boost/asio.hpp>
 #include <boost/asio/system_timer.hpp>
@@ -41,7 +41,7 @@
 #include <chrono>
 #include <vector>
 #include <string>
-#include <hokuyo3d/vsspdefs.hpp>
+#include <vsspdebag/vsspdefs.hpp>
 #include <functional>
 #include <boost/bind/srg.hpp>
 
@@ -68,8 +68,6 @@ private:
                      const vssp::RangeHeaderV2R1& range_header_v2r1)> debag_header_;
   std::function<void(const vssp::RangeHeader&)> debag_rangeheader_;    
   std::function<void(const vssp::AuxHeader&)> debag_auxheader_;
-  std::function<void(const boost::shared_array<vssp::XYZI>&)> debag_xyzi_;
-  std::function<void(const boost::shared_array<vssp::Aux>&)> debag_aux_;
   boost::shared_array<const double> tbl_h_;
   std::vector<boost::shared_array<const TableSincos>> tbl_v_;
   bool tbl_h_loaded_;
@@ -103,14 +101,6 @@ public:
   void registerAuxHeaderCallback(decltype(debag_auxheader_) debag)
   {
     debag_auxheader_ = debag;
-  }
-  void registerXYZICallback(decltype(debag_xyzi_) debag)
-  {
-    debag_xyzi_ = debag;
-  }
-  void registerAuxCallback(decltype(debag_aux_) debag)
-  {
-    debag_aux_ = debag;
   }
   void setAutoReset(const bool enable)
   {
@@ -471,7 +461,6 @@ private:
               }
               if (!success)
                 break;
-              debag_xyzi_(points);
               
             }
             break;
@@ -481,10 +470,10 @@ private:
               // Decode range data Header
               const vssp::AuxHeader aux_header = *boost::asio::buffer_cast<const vssp::AuxHeader*>(buf_.data());
               // auxheader data publish
-              AuxHeader_publish(aux_header_);
+              if (aux_header_)
+                AuxHeader_publish(aux_header_);
               
-              
-              
+                            
               buf_.consume(aux_header.header_length);
               length -= aux_header.header_length;
 
@@ -502,8 +491,6 @@ private:
                 buf_.consume(sizeof(int32_t) * offset);
                 length -= sizeof(int32_t) * offset;
               }
-              if (cb_aux_)
-                debag_aux_(auxs);
             }
             break;
           default:
