@@ -43,7 +43,7 @@
 #include <string>
 #include <vsspdebag/vsspdefs.hpp>
 #include <functional>
-#include <boost/bind/srg.hpp>
+#include <boost/bind/arg.hpp>
 
 namespace std {
 
