@@ -21,7 +21,7 @@ public:
 		const std::string & node_name,
 		const rclcpp::NodeOptions & options = rclcpp::NodeOptions()
 	): rclcpp::Node{node_name, options}
-	  ,timer_(io_, std::chrono::milliseconds(500))
+	  ,timer_(io_service_, std::chrono::milliseconds(500))
 	{
 		int horizontal_interlace_ = 4;
 		int vertical_interlace_ = 1;
@@ -54,7 +54,7 @@ public:
 
 	void tcp_ip_connect(const char* ip, const unsigned int port)
 	{
-		boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip), port);
+		boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(ip_), port_);
 		timer_.expires_from_now(std::chrono::milliseconds(2000));
     		timer_.async_wait(std::bind(&VsspDriver::onTimeoutConnect, driver_, boost::asio::placeholders::error));
     		socket_.async_connect(endpoint, std::bind(&YVTcommunication::vssp_connect, this, boost::asio::placeholders::error));
