@@ -24,14 +24,14 @@ public:
 	  ,timer_(io_, std::chrono::milliseconds(500))
 	{
 		int horizontal_interlace_ = 4;
-		int horizontal_interlace_ = 1;
+		int vertical_interlace_ = 1;
 		std::string ip_ = "192.168.11.100";
 		int port_ = 10940;	
 		
 		//publisher establish
-		header_pub = this->create_publisher<vssp_debag_msgs::msg::Header>("header", 10);
-		range_header_pub = this->create_publisher<vssp_debag_msgs::msg::RangeHeader>("range_header", 10);
-		aux_header_pub = this->create_publisher<vssp_debag_msgs::msg::AuxHeader>("aux_header", 10);
+		header_pub = this->create_publisher<vsspdebag_msgs::msg::Header>("header", 10);
+		range_header_pub = this->create_publisher<vsspdebag_msgs::msg::RangeHeader>("range_header", 10);
+		aux_header_pub = this->create_publisher<vsspdebag_msgs::msg::AuxHeader>("aux_header", 10);
 		
 		//register callback function
 		driver_.registerHeaderCallback(std::bind(&YVTcommunication::Header_publish, this, _1));
@@ -86,15 +86,15 @@ public:
       			timer_.expires_at(
          			timer_.expires_at() +
           			std::chrono::milliseconds(500));
-      			timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));
+      			timer_.async_wait(std::bind(&YVTcommunication::cbTimer, this, _1));
     		}
   	}
   	void spin()
   	{
-    		timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));
+    		timer_.async_wait(std::bind(&YVTcommunication::cbTimer, this, _1));
     		std::thread thread(
         	std::bind(
-  			static_cast<std::size_t (boost::asio::io_service::*)()>(&boost::asio::io_service::run), &io_));
+  			static_cast<std::size_t (boost::asio::io_service::*)()>(&boost::asio::io_service::run), &io_service_));
 
     		driver_.spin();
     		timer_.cancel();
@@ -146,9 +146,9 @@ protected:
    vsspdebag_msgs::msg::RangeHeader range_header_;
    vsspdebag_msgs::msg::AuxHeader aux_header_;
   
-   rclcpp::Publisher<vssp_debag_msgs::msg::Header>::SharedPtr header_pub;
-   rclcpp::Publisher<vssp_debag_msgs::msg::RangeHeader>::SharedPtr range_header_pub;
-   rclcpp::Publisher<vssp_debag_msgs::msg::AuxHeader>::SharedPtr aux_header_pub;
+   rclcpp::Publisher<vsspdebag_msgs::msg::Header>::SharedPtr header_pub;
+   rclcpp::Publisher<vsspdebag_msgs::msg::RangeHeader>::SharedPtr range_header_pub;
+   rclcpp::Publisher<vsspdebag_msgs::msg::AuxHeader>::SharedPtr aux_header_pub;
 	
 };//YVTcommunication
 
@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
 {
 	rclcpp::init(argc, argv);
 	
-	auto node = rclcpp::Node::make_shared<YVTcommunication>("vssp_debag");
+	auto node = rclcpp::Node::make_shared<YVTcommunication>("vsspdebag");
 	
 	rclcpp::executors::SingleThreadedExecutor executor;
 	executor.add_node(node);
