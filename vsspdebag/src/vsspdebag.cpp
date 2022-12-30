@@ -8,9 +8,9 @@
 #include <boost/asio/system_timer.hpp>
 #include <vsspdebag/vssp.hpp>
 
-#include <vsspdebag_msgs/msg/AuxHeader.hpp>
-#include <vsspdebag_msgs/msg/Header.hpp>
-#include <vsspdebag_msgs/msg/RangeHeader.hpp>
+#include <vsspdebag_msgs/msg/aux_header.hpp>
+#include <vsspdebag_msgs/msg/header.hpp>
+#include <vsspdebag_msgs/msg/range_header.hpp>
 
 class YVTcommunication: public rclcpp::Node
 {
