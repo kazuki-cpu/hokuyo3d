@@ -87,7 +87,6 @@ public:
     , aux_factor_(AUX_FACTOR_DEFAULT)
     , tbl_h_loaded_(false)
     , tbl_v_loaded_(false)
-    , timeout_(std::chrono::seconds(1))
   {
   }
   void registerHeaderCallback(decltype(debag_header_) debag)
