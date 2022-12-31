@@ -23,10 +23,10 @@ public:
 	): rclcpp::Node{node_name, options}
 	  ,timer_(io_service_, std::chrono::milliseconds(500))
 	{
-		int horizontal_interlace_ = 4;
-		int vertical_interlace_ = 1;
-		std::string ip_ = "192.168.11.100";
-		int port_ = 10940;	
+		horizontal_interlace_ = 4;
+		vertical_interlace_ = 1;
+		ip_ = "192.168.11.100";
+		port_ = 10940;	
 		
 		//publisher establish
 		header_pub = this->create_publisher<vsspdebag_msgs::msg::Header>("header", 10);
@@ -138,6 +138,11 @@ public:
   	}
 
 protected:
+
+   int horizontal_interlace_;
+   int vertical_interlace_;
+   std::string ip_;
+   int port_;
 
    vssp::VsspDriver driver_;
    std::mutex connect_mutex_;
