@@ -27,15 +27,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <chrono> 
+#include <boost/asio.hpp>
+#include <chrono>
+#include <string>
 #include <memory> 
 #include <thread> 
 #include <mutex> 
-#include <boost/asio.hpp>
-
 #include <algorithm>
 //#include <deque>
-#include <string>
 
 #include <rclcpp/rclcpp.hpp> 
 #include <builtin_interfaces/msg/time.hpp> 
@@ -46,7 +45,7 @@
 #include <hokuyo3d/vssp.hpp>
 
 using namespace std::placeholders;
-using namespace std::chrono;//12/2追加
+using namespace std::chrono;
 
 namespace Hokuyo3d
 {
@@ -264,9 +263,7 @@ void Hokuyo3dNode::cbPoint(
       driver_.setVerticalInterlace(vertical_interlace_);
       driver_.requestVerticalTable(vertical_interlace_);
       driver_.requestData(true, true);
-
       driver_.requestAuxData();
-      RCLCPP_INFO(this->get_logger(), "running receive");
       driver_.receivePackets();
       RCLCPP_INFO(get_logger(), "Communication started");
     }
@@ -280,14 +277,15 @@ void Hokuyo3dNode::cbPoint(
     //, timestamp_base_(0, 0)
     , timer_(io_, milliseconds(500))
   {
-
+     
+    enable_pc_ = this->declare_parameter<bool>("enable_pc", false);
+    enable_pc2_ = this->declare_parameter<bool>("enable_pc2", true);
     horizontal_interlace_ = this->declare_parameter<int>("horizontal_interlace", 4);
     vertical_interlace_ = this->declare_parameter<int>("vertical_interlace", 1);
     ip_ = this->declare_parameter<std::string>("ip", "192.168.11.100");
     port_ = this->declare_parameter<int>("port", 10940);
     frame_id_ = this->declare_parameter<std::string>("frame_id", "hokuyo3d");
     imu_frame_id_ = this->declare_parameter<std::string>("imu_frame_id", frame_id_ + "_imu");
-    //mag_frame_id_ = this->declare_parameter<std::string>("mag_frame_id", frame_id_ + "_mag");
     range_min_ = this->declare_parameter<double>("range_min", 0.0);
     set_auto_reset_ = true;
     auto_reset_ = this->declare_parameter<bool>("auto_reset", false);
@@ -325,27 +323,19 @@ void Hokuyo3dNode::cbPoint(
     cloud2_.height = 1;
     cloud2_.is_bigendian = false;
     cloud2_.is_dense = false;
-    
-    
-    RCLCPP_INFO(this->get_logger(), "setup");
      
     sensor_msgs::PointCloud2Modifier pc2_modifier(cloud2_);
     pc2_modifier.setPointCloud2Fields(4, "x", 1, sensor_msgs::msg::PointField::FLOAT32, "y", 1,
                                       sensor_msgs::msg::PointField::FLOAT32, "z", 1, sensor_msgs::msg::PointField::FLOAT32,
-                                      "intensity", 1, sensor_msgs::msg::PointField::FLOAT32);
-    
+                                      "intensity", 1, sensor_msgs::msg::PointField::FLOAT32);    
 
     pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 5);
-
-    enable_pc_ = false;
-    enable_pc2_ = true;
     //ros::SubscriberStatusCallback cb_con = std::bind(&Hokuyo3dNode::cbSubscriber, this);
 
-    std::lock_guard<std::mutex> lock(connect_mutex_);//変更9.17
+    std::lock_guard<std::mutex> lock(connect_mutex_);
     pub_pc_ = this->create_publisher<sensor_msgs::msg::PointCloud>("hokuyo_cloud", 5);
     pub_pc2_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("hokuyo_cloud2", 5);
 
-    RCLCPP_INFO(this->get_logger(), "setup");
     // Start communication with the sensor
     driver_.connect(ip_.c_str(), port_, std::bind(&Hokuyo3dNode::cbConnect, this, _1));
     spin();
@@ -413,16 +403,12 @@ void Hokuyo3dNode::cbPoint(
   }
   void Hokuyo3dNode::spin()
   {
-    printf("spin\n");
     timer_.async_wait(std::bind(&Hokuyo3dNode::cbTimer, this, _1));
     std::thread thread(
         std::bind(
   static_cast<std::size_t (boost::asio::io_service::*)()>(&boost::asio::io_service::run), &io_));//12/2変更
 
-    //ros::AsyncSpinner spinner(1);
-    //spinner.start();
     driver_.spin();
-    //spinner.stop();
     timer_.cancel();
     RCLCPP_INFO(get_logger(),"Connection closed");
   }
