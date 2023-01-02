@@ -3,7 +3,7 @@
 
 #include "hokuyo3d/hokuyo3d_driver.hpp"
 
-int main(int argc, char * argv[])//**?
+int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
   rclcpp::executors::SingleThreadedExecutor exe;
