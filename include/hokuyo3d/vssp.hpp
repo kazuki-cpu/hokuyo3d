@@ -38,15 +38,12 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/shared_array.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/bind/arg.hpp>
 #include <chrono>
-
 #include <vector>
 #include <string>
-
-#include <hokuyo3d/vsspdefs.hpp>
-
 #include <functional>
-#include <boost/bind/arg.hpp>
+#include <hokuyo3d/vsspdefs.hpp>
 
 namespace std {
 
