@@ -47,7 +47,7 @@ using namespace std::chrono;
 namespace Hokuyo3d
 {
 
-Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
+  Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
   : Node("hokuyo3d", options)
     //, timestamp_base_(0, 0)
     , timer_(io_, milliseconds(500))
@@ -114,6 +114,7 @@ Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
     driver_.connect(ip_.c_str(), port_, std::bind(&Hokuyo3dNode::cbConnect, this, _1));
     spin();
   }
+  
   Hokuyo3dNode::~Hokuyo3dNode()
   {
     driver_.requestAuxData(false);
@@ -122,7 +123,30 @@ Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
     driver_.poll();
     RCLCPP_INFO(this->get_logger(), "Communication stoped");
   }
-      
+  
+  void Hokuyo3dNode::cbConnect(bool success)
+  {
+    if (success)
+    {
+      RCLCPP_INFO(get_logger(), "Connection established");
+      ping();
+      if (set_auto_reset_)
+        driver_.setAutoReset(auto_reset_);
+      driver_.setHorizontalInterlace(horizontal_interlace_);
+      driver_.requestHorizontalTable();
+      driver_.setVerticalInterlace(vertical_interlace_);
+      driver_.requestVerticalTable(vertical_interlace_);
+      driver_.requestData(true, true);
+      driver_.requestAuxData();
+      driver_.receivePackets();
+      RCLCPP_INFO(get_logger(), "Communication started");
+    }
+    else
+    {
+      RCLCPP_ERROR(get_logger(), "Connection failed");
+    }
+  }
+  
   void Hokuyo3dNode::cbPoint(
       const vssp::RangeHeader& range_header,
       const vssp::RangeIndex& range_index,
@@ -297,28 +321,6 @@ Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
         stamp = stamp + rclcpp::Duration(milliseconds(aux_header.data_ms));
         imu_.header.stamp =  stamp;//12/5変更 変更前"imu_.header.stamp +=rclcpp::Duration(aux_header.data_ms * 0.001)"
       }
-    }
-  }
-  void Hokuyo3dNode::cbConnect(bool success)
-  {
-    if (success)
-    {
-      RCLCPP_INFO(get_logger(), "Connection established");
-      ping();
-      if (set_auto_reset_)
-        driver_.setAutoReset(auto_reset_);
-      driver_.setHorizontalInterlace(horizontal_interlace_);
-      driver_.requestHorizontalTable();
-      driver_.setVerticalInterlace(vertical_interlace_);
-      driver_.requestVerticalTable(vertical_interlace_);
-      driver_.requestData(true, true);
-      driver_.requestAuxData();
-      driver_.receivePackets();
-      RCLCPP_INFO(get_logger(), "Communication started");
-    }
-    else
-    {
-      RCLCPP_ERROR(get_logger(), "Connection failed");
     }
   }
       
