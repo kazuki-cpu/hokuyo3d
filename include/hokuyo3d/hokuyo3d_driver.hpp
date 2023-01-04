@@ -83,10 +83,10 @@ public:
 
 protected:
   
+  vssp::VsspDriver driver_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud>::SharedPtr pub_pc_; 
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_pc2_; 
   rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_imu_; 
-  vssp::VsspDriver driver_;
   sensor_msgs::msg::PointCloud cloud_; 
   sensor_msgs::msg::PointCloud2 cloud2_; 
   sensor_msgs::msg::Imu imu_; 
