@@ -226,7 +226,7 @@ public:
 private:
   void send(const std::string cmd)
   {
-    boost::shared_ptr<std::string> data(new std::string(cmd));//stdでもいい？
+    boost::shared_ptr<std::string> data(new std::string(cmd));
     boost::asio::async_write(socket_, boost::asio::buffer(*data),
                              std::bind(&VsspDriver::onSend, this, boost::asio::placeholders::error));
   }
@@ -452,8 +452,7 @@ private:
               vssp::RangeHeaderV2R1 range_header_v2r1 = RANGE_HEADER_V2R1_DEFAULT;
               if (range_header.header_length >= 24)
               {
-                range_header_v2r1 = *boost::asio::buffer_cast<const vssp::RangeHeaderV2R1*>(
-                    buf_.data() + sizeof(vssp::RangeHeader));
+                range_header_v2r1 = *boost::asio::buffer_cast<const vssp::RangeHeaderV2R1*>(buf_.data() + sizeof(vssp::RangeHeader));
               }
               buf_.consume(range_header.header_length);
               length -= range_header.header_length;
