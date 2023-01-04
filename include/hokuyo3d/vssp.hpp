@@ -73,17 +73,14 @@ private:
       const vssp::RangeIndex&,
       const boost::shared_array<uint16_t>&,
       const boost::shared_array<vssp::XYZI>&)> cb_point_;
-      //const std::chrono::system_clock::time_point&)> cb_point_;
   std::function<void(
       const vssp::AuxHeader&,
       const boost::shared_array<vssp::Aux>&)> cb_aux_;
-      //const std::chrono::system_clock::time_point&)> cb_aux_;
   /*std::function<void(
       const vssp::Header&,
       const std::chrono::system_clock::time_point&)> cb_ping_;*/
   std::function<void(
       const std::string&)> cb_error_;
-      //const std::chrono::system_clock::time_point&)> cb_error_;
   std::function<void(bool)> cb_connect_;
   boost::shared_array<const double> tbl_h_;
   std::vector<boost::shared_array<const TableSincos>> tbl_v_;
@@ -91,7 +88,6 @@ private:
   bool tbl_v_loaded_;
   std::vector<bool> tbl_vn_loaded_;
   std::chrono::milliseconds timeout_;
-
   boost::asio::streambuf buf_;
 
 public:
@@ -135,8 +131,7 @@ public:
   /*void registerPingCallback(decltype(cb_ping_) cb)
   {
     cb_ping_ = cb;
-  }
-  */
+  }*/
   void setAutoReset(const bool enable)
   {
     if (enable)
