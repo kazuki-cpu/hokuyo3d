@@ -44,16 +44,16 @@ static const uint32_t STATUS_COMMAND_OUT_OF_RANGE = ('1' << 0) | ('0' << 8) | ('
 static const uint32_t STATUS_COMMUNICATION_FAILURE = ('2' << 0) | ('0' << 8) | ('1' << 16) | (0xA << 24);
 static const uint32_t STATUS_UNKNOWN_ERROR = ('3' << 0) | ('0' << 8) | ('1' << 16) | (0xA << 24);
 
-static const uint32_t TYPE_GET = ('G' << 0) | ('E' << 8) | ('T' << 16) | (':' << 24); //パラメータの取得
-static const uint32_t TYPE_SET = ('S' << 0) | ('E' << 8) | ('T' << 16) | (':' << 24); //パラメータの設定
-static const uint32_t TYPE_DAT = ('D' << 0) | ('A' << 8) | ('T' << 16) | (':' << 24); //データ開始/停止
-static const uint32_t TYPE_VER = ('V' << 0) | ('E' << 8) | ('R' << 16) | (':' << 24); //
-static const uint32_t TYPE_PNG = ('P' << 0) | ('N' << 8) | ('G' << 16) | (':' << 24); //
-static const uint32_t TYPE_ERR = ('E' << 0) | ('R' << 8) | ('R' << 16) | (':' << 24); //エラー情報
-static const uint32_t TYPE_RI = ('_' << 0) | ('r' << 8) | ('i' << 16) | (':' << 24);  //ri形式データ
-static const uint32_t TYPE_RO = ('_' << 0) | ('r' << 8) | ('o' << 16) | (':' << 24);  //
-static const uint32_t TYPE_AX = ('_' << 0) | ('a' << 8) | ('x' << 16) | (':' << 24);  //
-static const uint32_t TYPE_ER = ('_' << 0) | ('e' << 8) | ('r' << 16) | (':' << 24);  //
+static const uint32_t TYPE_GET = ('G' << 0) | ('E' << 8) | ('T' << 16) | (':' << 24); 
+static const uint32_t TYPE_SET = ('S' << 0) | ('E' << 8) | ('T' << 16) | (':' << 24); 
+static const uint32_t TYPE_DAT = ('D' << 0) | ('A' << 8) | ('T' << 16) | (':' << 24); 
+static const uint32_t TYPE_VER = ('V' << 0) | ('E' << 8) | ('R' << 16) | (':' << 24); 
+static const uint32_t TYPE_PNG = ('P' << 0) | ('N' << 8) | ('G' << 16) | (':' << 24); 
+static const uint32_t TYPE_ERR = ('E' << 0) | ('R' << 8) | ('R' << 16) | (':' << 24); 
+static const uint32_t TYPE_RI = ('_' << 0) | ('r' << 8) | ('i' << 16) | (':' << 24);  
+static const uint32_t TYPE_RO = ('_' << 0) | ('r' << 8) | ('o' << 16) | (':' << 24);  
+static const uint32_t TYPE_AX = ('_' << 0) | ('a' << 8) | ('x' << 16) | (':' << 24);  
+static const uint32_t TYPE_ER = ('_' << 0) | ('e' << 8) | ('r' << 16) | (':' << 24);  
 
 enum AuxId
 {
@@ -266,4 +266,4 @@ static const AuxFactorArray AUX_FACTOR_DEFAULT =
 
 }  // namespace vssp
 
-#endif  // VSSPDEFS_HPP_
+#endif  // HOKUYO3D__VSSPDEFS_HPP_
