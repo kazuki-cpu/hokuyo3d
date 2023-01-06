@@ -104,7 +104,6 @@ namespace Hokuyo3d
                                       "intensity", 1, sensor_msgs::msg::PointField::FLOAT32);    
 
     pub_imu_ = this->create_publisher<sensor_msgs::msg::Imu>("imu", 5);
-    //ros::SubscriberStatusCallback cb_con = std::bind(&Hokuyo3dNode::cbSubscriber, this);
 
     std::lock_guard<std::mutex> lock(connect_mutex_);
     pub_pc_ = this->create_publisher<sensor_msgs::msg::PointCloud>("hokuyo_cloud", 5);
@@ -256,36 +255,6 @@ namespace Hokuyo3d
   {
     RCLCPP_ERROR(get_logger(), "%s", message.c_str());
   }
-  /*void Hokuyo3dNode::cbPing(
-      const vssp::Header& header,
-      const system_clock::time_point& time_read)
-  {
-    
-    milliseconds now = duration_cast<milliseconds>(time_read.time_since_epoch());//12/12変更
-    builtin_interfaces::msg::Time ping_time = time_ping_;
-
-    const rclcpp::Duration delay =
-        (rclcpp::Duration(now) - rclcpp::Duration(ping_time.sec, ping_time.nanosec) - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
-    const timestamp_base_ = time_ping_ + delay - rclcpp::Duration(header.received_time_ms * 0.001);
-  */ 
-    /*
-    timestamp_base_buffer_.push_back(base);
-    if (timestamp_base_buffer_.size() > 5)
-      timestamp_base_buffer_.pop_front();
-
-    auto sorted_timstamp_base = timestamp_base_buffer_;
-    std::sort(sorted_timstamp_base.begin(), sorted_timstamp_base.end());
-    
-    if (timestamp_base_ == rclcpp::Time(0,0)){//12/12変更
-      timestamp_base_ = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
-    }else{
-      builtin_interfaces::msg::Time old_timestamp_base = timestamp_base_;
-      builtin_interfaces::msg::Time new_timestamp_base = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
-      timestamp_base_ = timestamp_base_ + rclcpp::Duration(new_timestamp_base.sec - old_timestamp_base.sec, new_timestamp_base.nanosec - old_timestamp_base.nanosec)* 0.1;
-    }
-    */
-    /*RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds());//12/3変更
-  }*/
   
   void Hokuyo3dNode::cbAux(
       const vssp::AuxHeader& aux_header,
@@ -323,32 +292,6 @@ namespace Hokuyo3d
       }
     }
   }
-      
-/*  void Hokuyo3dNode::cbSubscriber()
-  {
-    std::lock_guard<std::mutex> lock(connect_mutex_);//変更9.17
-    if (pub_pc_.getNumSubscribers() > 0)
-    {
-      enable_pc_ = true;
-      ROS_DEBUG("PointCloud output enabled");
-    }
-    else
-    {
-      enable_pc_ = false;
-      ROS_DEBUG("PointCloud output disabled");
-    }
-    if (pub_pc2_.getNumSubscribers() > 0)
-    {
-      enable_pc2_ = true;
-      ROS_DEBUG("PointCloud2 output enabled");
-    }
-    else
-    {
-      enable_pc2_ = false;
-      RCLCPP_DEBUG("PointCloud2 output disabled");
-    }
-  }
-*/
 
   bool Hokuyo3dNode::poll()
   {
@@ -392,7 +335,36 @@ namespace Hokuyo3d
     driver_.requestPing();
     //time_ping_ = this->now();
   }
- 
+  /*void Hokuyo3dNode::cbPing(
+      const vssp::Header& header,
+      const system_clock::time_point& time_read)
+  {
+    
+    milliseconds now = duration_cast<milliseconds>(time_read.time_since_epoch());//12/12変更
+    builtin_interfaces::msg::Time ping_time = time_ping_;
+
+    const rclcpp::Duration delay =
+        (rclcpp::Duration(now) - rclcpp::Duration(ping_time.sec, ping_time.nanosec) - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
+    const timestamp_base_ = time_ping_ + delay - rclcpp::Duration(header.received_time_ms * 0.001);
+  */ 
+    /*
+    timestamp_base_buffer_.push_back(base);
+    if (timestamp_base_buffer_.size() > 5)
+      timestamp_base_buffer_.pop_front();
+
+    auto sorted_timstamp_base = timestamp_base_buffer_;
+    std::sort(sorted_timstamp_base.begin(), sorted_timstamp_base.end());
+    
+    if (timestamp_base_ == rclcpp::Time(0,0)){//12/12変更
+      timestamp_base_ = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
+    }else{
+      builtin_interfaces::msg::Time old_timestamp_base = timestamp_base_;
+      builtin_interfaces::msg::Time new_timestamp_base = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
+      timestamp_base_ = timestamp_base_ + rclcpp::Duration(new_timestamp_base.sec - old_timestamp_base.sec, new_timestamp_base.nanosec - old_timestamp_base.nanosec)* 0.1;
+    }
+    */
+    /*RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds());//12/3変更
+  }*/
 }
 
 #include "rclcpp_components/register_node_macro.hpp"
