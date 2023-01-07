@@ -46,7 +46,6 @@ using namespace std::chrono;
 
 namespace Hokuyo3d
 {
-
   Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
   : Node("hokuyo3d", options)
     //, timestamp_base_(0, 0)
