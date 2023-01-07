@@ -61,29 +61,27 @@ public:
   explicit Hokuyo3dNode(const rclcpp::NodeOptions & options);
   ~Hokuyo3dNode(void);
   
-  void cbPoint(
-      const vssp::RangeHeader& range_header,
+  void cbPoint(const vssp::RangeHeader& range_header,
       const vssp::RangeIndex& range_index,
       const boost::shared_array<uint16_t>& index,
       const boost::shared_array<vssp::XYZI>& points);
-  void cbError(
-      const std::string& message);
-  /*void cbPing(const vssp::Header& header,
-      const std::chrono::system_clock::time_point& time_read);*/
-  void cbAux(
-      const vssp::AuxHeader& aux_header,
+  void cbAux(const vssp::AuxHeader& aux_header,
       const boost::shared_array<vssp::Aux>& auxs);
+  void cbError(const std::string& message);
   void cbConnect(bool success);
-  //void cbSubscriber();
+  void spin();
   bool poll();
   void cbTimer(const boost::system::error_code& error);
-  void spin();
   void ping();
-  
+  /*void cbPing(const vssp::Header& header,
+                const std::chrono::system_clock::time_point& time_read);*/
 
 protected:
   
   vssp::VsspDriver driver_;
+  boost::asio::io_service io_;
+  boost::asio::system_timer timer_;
+  
   rclcpp::Publisher<sensor_msgs::msg::PointCloud>::SharedPtr pub_pc_; 
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_pc2_; 
   rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_imu_; 
@@ -91,22 +89,14 @@ protected:
   sensor_msgs::msg::PointCloud2 cloud2_; 
   sensor_msgs::msg::Imu imu_; 
 
-  bool enable_pc_;
-  bool enable_pc2_;
-  bool allow_jump_back_;
-  std::mutex connect_mutex_;
-
-  //rclcpp::Time time_ping_; 
-  //rclcpp::Time timestamp_base_; 
-  //std::deque<rclcpp::Time> timestamp_base_buffer_; 
   rclcpp::Time pc_stamp;
   rclcpp::Time pc2_stamp;
   builtin_interfaces::msg::Time cloud_stamp_last_;
   builtin_interfaces::msg::Time cloud2_stamp_last_; 
   builtin_interfaces::msg::Time imu_stamp_last_; 
-
-  boost::asio::io_service io_;
-  boost::asio::system_timer timer_;
+  //rclcpp::Time time_ping_; 
+  //rclcpp::Time timestamp_base_; 
+  //std::deque<rclcpp::Time> timestamp_base_buffer_; 
 
   int field_;
   int frame_;
@@ -121,6 +111,8 @@ protected:
   PublishCycle cycle_;
   std::string ip_;
   int port_;
+  bool enable_pc_;
+  bool enable_pc2_;
   int horizontal_interlace_;
   int vertical_interlace_;
   double range_min_;
@@ -128,6 +120,8 @@ protected:
   std::string imu_frame_id_;
   bool auto_reset_;
   bool set_auto_reset_;
+  bool allow_jump_back_;
+  std::mutex connect_mutex_;
 
 };
   
