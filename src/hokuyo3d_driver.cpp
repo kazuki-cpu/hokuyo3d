@@ -342,7 +342,6 @@ namespace Hokuyo3d
       const vssp::Header& header,
       const system_clock::time_point& time_read)
   {
-    
     milliseconds now = duration_cast<milliseconds>(time_read.time_since_epoch());
     builtin_interfaces::msg::Time ping_time = time_ping_;
 
@@ -353,7 +352,6 @@ namespace Hokuyo3d
     timestamp_base_buffer_.push_back(base);
     if (timestamp_base_buffer_.size() > 5)
       timestamp_base_buffer_.pop_front();
-
     auto sorted_timstamp_base = timestamp_base_buffer_;
     std::sort(sorted_timstamp_base.begin(), sorted_timstamp_base.end());
     
