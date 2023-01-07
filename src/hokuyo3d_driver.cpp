@@ -50,8 +50,7 @@ namespace Hokuyo3d
   : Node("hokuyo3d", options)
     //, timestamp_base_(0, 0)
     , timer_(io_, milliseconds(500))
-  {
-     
+  {     
     enable_pc_ = this->declare_parameter<bool>("enable_pc", false);
     enable_pc2_ = this->declare_parameter<bool>("enable_pc2", true);
     horizontal_interlace_ = this->declare_parameter<int>("horizontal_interlace", 4);
