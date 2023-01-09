@@ -73,8 +73,8 @@ public:
   bool poll();
   void cbTimer(const boost::system::error_code& error);
   void ping();
-  /*void cbPing(const vssp::Header& header,
-                const std::chrono::system_clock::time_point& time_read);*/
+  void cbPing(const vssp::Header& header,
+      const std::chrono::system_clock::time_point& time_read);
 
 protected:
   
@@ -94,8 +94,8 @@ protected:
   builtin_interfaces::msg::Time cloud_stamp_last_;
   builtin_interfaces::msg::Time cloud2_stamp_last_; 
   builtin_interfaces::msg::Time imu_stamp_last_; 
-  //rclcpp::Time time_ping_; 
-  //rclcpp::Time timestamp_base_; 
+  rclcpp::Time time_ping_; 
+  rclcpp::Time timestamp_base_; 
   //std::deque<rclcpp::Time> timestamp_base_buffer_; 
 
   int field_;
