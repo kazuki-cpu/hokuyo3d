@@ -48,7 +48,7 @@ namespace Hokuyo3d
 {
   Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
   : Node("hokuyo3d", options)
-    //, timestamp_base_(0, 0)
+    , timestamp_base_(0, 0)
     , timer_(io_, milliseconds(500))
   {     
     enable_pc_ = this->declare_parameter<bool>("enable_pc", false);
@@ -228,8 +228,8 @@ namespace Hokuyo3d
       const vssp::AuxHeader& aux_header,
       const boost::shared_array<vssp::Aux>& auxs)
   {
-    //if (timestamp_base_ == rclcpp::Time(0, 0))
-      //return;
+    if (timestamp_base_ == rclcpp::Time(0, 0))
+      return;
     rclcpp::Time stamp = this->now(); // timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms));
 
     if ((aux_header.data_bitfield & (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC)) ==
@@ -333,10 +333,10 @@ namespace Hokuyo3d
   void Hokuyo3dNode::ping()
   {
     driver_.requestPing();
-    //time_ping_ = this->now();
+    auto time_ping_ = system_clock::now();
   }
   
-  /*void Hokuyo3dNode::cbPing(
+  void Hokuyo3dNode::cbPing(
       const vssp::Header& header,
       const system_clock::time_point& time_read)
   {
@@ -361,7 +361,7 @@ namespace Hokuyo3d
       timestamp_base_ = timestamp_base_ + rclcpp::Duration(new_timestamp_base.sec - old_timestamp_base.sec, new_timestamp_base.nanosec - old_timestamp_base.nanosec)* 0.1;
     }
     RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds());
-  }*/
+  }
   
 }
 
