@@ -76,9 +76,9 @@ private:
   std::function<void(
       const vssp::AuxHeader&,
       const boost::shared_array<vssp::Aux>&)> cb_aux_;
-  /*std::function<void(
+  std::function<void(
       const vssp::Header&,
-      const std::chrono::system_clock::time_point&)> cb_ping_;*/
+      const std::chrono::system_clock::time_point&)> cb_ping_;
   std::function<void(
       const std::string&)> cb_error_;
   std::function<void(bool)> cb_connect_;
@@ -128,10 +128,10 @@ public:
   {
     cb_aux_ = cb;
   }
-  /*void registerPingCallback(decltype(cb_ping_) cb)
+  void registerPingCallback(decltype(cb_ping_) cb)
   {
     cb_ping_ = cb;
-  }*/
+  }
   void setAutoReset(const bool enable)
   {
     if (enable)
