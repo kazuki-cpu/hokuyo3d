@@ -89,8 +89,8 @@ protected:
   sensor_msgs::msg::PointCloud2 cloud2_; 
   sensor_msgs::msg::Imu imu_; 
 
-  rclcpp::Time pc_stamp;
-  rclcpp::Time pc2_stamp;
+  //rclcpp::Time pc_stamp;
+  //rclcpp::Time pc2_stamp;
   builtin_interfaces::msg::Time cloud_stamp_last_;
   builtin_interfaces::msg::Time cloud2_stamp_last_; 
   builtin_interfaces::msg::Time imu_stamp_last_; 
