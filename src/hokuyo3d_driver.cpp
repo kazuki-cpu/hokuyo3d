@@ -125,8 +125,8 @@ namespace Hokuyo3d
       const boost::shared_array<uint16_t>& index,
       const boost::shared_array<vssp::XYZI>& points)
   {
-    //if (timestamp_base_ == rclcpp::Time(0, 0))
-      //return;
+    if (timestamp_base_ == rclcpp::Time(0, 0))
+      return;
     // Pack scan data
     
     if (enable_pc_)
@@ -134,9 +134,9 @@ namespace Hokuyo3d
       if (cloud_.points.size() == 0)
       {
         // Start packing PointCloud message
-        pc_stamp = this->now();
+        //pc_stamp = this->now();
         cloud_.header.frame_id = frame_id_;
-        cloud_.header.stamp = pc_stamp;//timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
+        cloud_.header.stamp = timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
       }
       // Pack PointCloud message
       for (int i = 0; i < index[range_index.nspots]; i++)
@@ -159,9 +159,9 @@ namespace Hokuyo3d
       if (cloud2_.data.size() == 0)
       {
         // Start packing PointCloud2 message
-        pc2_stamp = this->now();
+        //pc2_stamp = this->now();
         cloud2_.header.frame_id = frame_id_;
-        cloud2_.header.stamp = pc2_stamp; //timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
+        cloud2_.header.stamp = timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
         cloud2_.row_step = 0;
         cloud2_.width = 0;
       }
@@ -190,7 +190,7 @@ namespace Hokuyo3d
     {
       if (enable_pc_)
       {
-        if (pc_stamp < cloud_stamp_last_ && !allow_jump_back_)
+        if (cloud_.header.stamp < cloud_stamp_last_ && !allow_jump_back_)
         {
           RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed cloud");
         }
@@ -205,7 +205,7 @@ namespace Hokuyo3d
       if (enable_pc2_)
       {
         cloud2_.data.resize(cloud2_.width * cloud2_.point_step);
-        if (pc2_stamp < cloud2_stamp_last_ && !allow_jump_back_)
+        if (cloud2_.header.stamp < cloud2_stamp_last_ && !allow_jump_back_)
         {
           RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed cloud2");
         }
@@ -230,7 +230,7 @@ namespace Hokuyo3d
   {
     if (timestamp_base_ == rclcpp::Time(0, 0))
       return;
-    rclcpp::Time stamp = this->now(); // timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms));
+    rclcpp::Time stamp = timestamp_base_ + rclcpp::Duration(milliseconds(aux_header.timestamp_ms));
 
     if ((aux_header.data_bitfield & (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC)) ==
         (vssp::AX_MASK_ANGVEL | vssp::AX_MASK_LINACC))
