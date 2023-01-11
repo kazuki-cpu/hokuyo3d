@@ -341,8 +341,9 @@ namespace Hokuyo3d
       const system_clock::time_point& time_read)
   {
     milliseconds now = duration_cast<milliseconds>(time_read.time_since_epoch());
+    builtin_interfaces::msg::Time ping_time = time_ping_;
 
-    const rclcpp::Duration delay = (rclcpp::Duration(now) - rclcpp::Duration(time_ping_.seconds,time_ping_.nanoseconds) - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
+    const rclcpp::Duration delay = (rclcpp::Duration(now) - rclcpp::Duration(ping_time.sec, ping_time.nanosec) - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
     timestamp_base_ = time_ping_ + delay - rclcpp::Duration(header.received_time_ms * 0.001);
   
     /*timestamp_base_buffer_.push_back(base);
