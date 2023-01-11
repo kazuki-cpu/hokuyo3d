@@ -94,7 +94,7 @@ protected:
   rclcpp::Time cloud_stamp_last_;
   rclcpp::Time cloud2_stamp_last_; 
   rclcpp::Time imu_stamp_last_; 
-  std::chrono::system_clock::time_point time_ping_; 
+  rclcpp::Time time_ping_; 
   rclcpp::Time timestamp_base_; 
   //std::deque<rclcpp::Time> timestamp_base_buffer_; 
 
