@@ -333,7 +333,7 @@ namespace Hokuyo3d
   void Hokuyo3dNode::ping()
   {
     driver_.requestPing();
-    time_ping_ = system_clock::now();
+    time_ping_ = this->now();
   }
   
   void Hokuyo3dNode::cbPing(
@@ -341,10 +341,9 @@ namespace Hokuyo3d
       const system_clock::time_point& time_read)
   {
     milliseconds now = duration_cast<milliseconds>(time_read.time_since_epoch());
-    milliseconds ping_time = duration_cast<milliseconds>(time_ping_.time_since_epoch());
 
-    const rclcpp::Duration delay = (rclcpp::Duration(now) - rclcpp::Duration(ping_time) - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
-    const timestamp_base_ = time_ping + delay - rclcpp::Duration(header.received_time_ms * 0.001);
+    const rclcpp::Duration delay = (rclcpp::Duration(now) - time_ping_ - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
+    timestamp_base_ = time_ping_ + delay - rclcpp::Duration(header.received_time_ms * 0.001);
   
     /*timestamp_base_buffer_.push_back(base);
     if (timestamp_base_buffer_.size() > 5)
