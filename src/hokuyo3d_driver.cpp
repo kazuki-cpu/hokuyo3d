@@ -190,7 +190,7 @@ namespace Hokuyo3d
     {
       if (enable_pc_)
       {
-        if (cloud_.header.stamp < cloud_stamp_last_ && !allow_jump_back_)
+        if (cloud_stamp_last_ > cloud_.header.stamp && !allow_jump_back_)
         {
           RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed cloud");
         }
@@ -205,7 +205,7 @@ namespace Hokuyo3d
       if (enable_pc2_)
       {
         cloud2_.data.resize(cloud2_.width * cloud2_.point_step);
-        if (cloud2_.header.stamp < cloud2_stamp_last_ && !allow_jump_back_)
+        if (cloud2_stamp_last_ > cloud2_.header.stamp && !allow_jump_back_)
         {
           RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed cloud2");
         }
