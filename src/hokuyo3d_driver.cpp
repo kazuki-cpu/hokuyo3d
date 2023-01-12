@@ -343,7 +343,7 @@ namespace Hokuyo3d
     milliseconds now = duration_cast<milliseconds>(time_read.time_since_epoch());
     milliseconds ping_time = duration_cast<milliseconds>(time_ping_.time_since_epoch());
     
-    const rclcpp::Duration delay = rclcpp::Duration(now - ping_time) 
+    const rclcpp::Duration delay = rclcpp::Duration(now - ping_time);
     const builtin_interfaces::msg::Time dt = rclcpp::Time(0,0) + delay;
       //- rclcpp::Duration(milliseconds(header.send_time_ms - header.received_time_ms)); 
     //timestamp_base_ = time_ping_ + delay * 0.5 - rclcpp::Duration(header.received_time_ms * 0.001);
@@ -361,7 +361,7 @@ namespace Hokuyo3d
       builtin_interfaces::msg::Time new_timestamp_base = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
       timestamp_base_ = timestamp_base_ + rclcpp::Duration(new_timestamp_base.sec - old_timestamp_base.sec, new_timestamp_base.nanosec - old_timestamp_base.nanosec)* 0.1;
     }*/
-    RCLCPP_INFO("delay: %d.%09d", dt.sec, dt.nanosec);
+    RCLCPP_INFO(this->get_logger(), "delay: %d.%09d", dt.sec, dt.nanosec);
   }
   
 }
