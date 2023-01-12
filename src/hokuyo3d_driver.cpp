@@ -333,7 +333,7 @@ namespace Hokuyo3d
   void Hokuyo3dNode::ping()
   {
     driver_.requestPing();
-    time_ping_ = system_clock.now()//this->now();
+    time_ping_ = system_clock::now()//this->now();
   }
   
   void Hokuyo3dNode::cbPing(
