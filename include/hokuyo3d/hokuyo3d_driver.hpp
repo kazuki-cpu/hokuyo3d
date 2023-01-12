@@ -79,8 +79,6 @@ public:
 protected:
   
   vssp::VsspDriver driver_;
-  boost::asio::io_service io_;
-  boost::asio::system_timer timer_;
   
   rclcpp::Publisher<sensor_msgs::msg::PointCloud>::SharedPtr pub_pc_; 
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_pc2_; 
@@ -98,6 +96,9 @@ protected:
   rclcpp::Time timestamp_base_; 
   //std::deque<rclcpp::Time> timestamp_base_buffer_;
 
+  boost::asio::io_service io_;
+  boost::asio::system_timer timer_;
+  
   int field_;
   int frame_;
   int line_;
