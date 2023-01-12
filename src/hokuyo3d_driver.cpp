@@ -333,7 +333,7 @@ namespace Hokuyo3d
   void Hokuyo3dNode::ping()
   {
     driver_.requestPing();
-    time_ping_ = this->now();
+    time_ping_ = system_clock.now()//this->now();
   }
   
   void Hokuyo3dNode::cbPing(
@@ -341,10 +341,11 @@ namespace Hokuyo3d
       const system_clock::time_point& time_read)
   {
     milliseconds now = duration_cast<milliseconds>(time_read.time_since_epoch());
-    builtin_interfaces::msg::Time ping_time = time_ping_;
-
-    const rclcpp::Duration delay = (rclcpp::Duration(now) - rclcpp::Duration(ping_time.sec, ping_time.nanosec) - rclcpp::Duration(header.send_time_ms * 0.001 - header.received_time_ms * 0.001)) * 0.5;
-    timestamp_base_ = time_ping_ + delay - rclcpp::Duration(header.received_time_ms * 0.001);
+    milliseconds ping_time = duration_cast<milliseconds>(time_ping_.time_since_epoch());
+    
+    const rclcpp::Duration delay = rclcpp::Duration(now - ping_time) 
+      //- rclcpp::Duration(milliseconds(header.send_time_ms - header.received_time_ms)); 
+    //timestamp_base_ = time_ping_ + delay * 0.5 - rclcpp::Duration(header.received_time_ms * 0.001);
   
     /*timestamp_base_buffer_.push_back(base);
     if (timestamp_base_buffer_.size() > 5)
@@ -359,7 +360,7 @@ namespace Hokuyo3d
       builtin_interfaces::msg::Time new_timestamp_base = sorted_timstamp_base[sorted_timstamp_base.size() / 2];
       timestamp_base_ = timestamp_base_ + rclcpp::Duration(new_timestamp_base.sec - old_timestamp_base.sec, new_timestamp_base.nanosec - old_timestamp_base.nanosec)* 0.1;
     }*/
-    RCLCPP_DEBUG(get_logger(), "timestamp_base: %lf", timestamp_base_.seconds());
+    RCLCPP_INFO("delay: %d.%d", delay.sec, delay.nanosec);
   }
   
 }
