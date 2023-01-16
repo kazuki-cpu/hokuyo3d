@@ -80,7 +80,7 @@ namespace Hokuyo3d
 
     driver_.setTimeout(2.0);
     RCLCPP_INFO(this->get_logger(), "Connecting to %s", ip_.c_str());
-    driver_.registerCallback(std::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4));
+    driver_.registerCallback(std::bind(&Hokuyo3dNode::cbPoint, this, _1, _2, _3, _4, _5));
     driver_.registerAuxCallback(std::bind(&Hokuyo3dNode::cbAux, this, _1, _2));
     //driver_.registerPingCallback(std::bind(&Hokuyo3dNode::cbPing, this, _1, _2));
     driver_.registerErrorCallback(std::bind(&Hokuyo3dNode::cbError, this, _1));
@@ -123,12 +123,15 @@ namespace Hokuyo3d
       const vssp::RangeHeader& range_header,
       const vssp::RangeIndex& range_index,
       const boost::shared_array<uint16_t>& index,
-      const boost::shared_array<vssp::XYZI>& points)
+      const boost::shared_array<vssp::XYZI>& points,
+      const system_clock::time_point& time_read)
   {
     //if (timestamp_base_ == rclcpp::Time(0, 0))
       //return;
     // Pack scan data
-    
+    milliseconds read_time = duration_cast<milliseconds>(time_read.time_since_epoch());
+    builtin_interfaces::msg::Time read = rclcpp::Time(0,0) + rclcpp::Duration(read_time);
+    double dt = (pc2_stamp - read).nanoseconds();
     if (enable_pc_)
     {
       if (cloud_.points.size() == 0)
@@ -164,6 +167,11 @@ namespace Hokuyo3d
         cloud2_.header.stamp = pc2_stamp; //timestamp_base_ + rclcpp::Duration(milliseconds(range_header.line_head_timestamp_ms));
         cloud2_.row_step = 0;
         cloud2_.width = 0;
+        
+        milliseconds read_time = duration_cast<milliseconds>(time_read.time_since_epoch());
+        builtin_interfaces::msg::Time read = rclcpp::Time(0,0) + rclcpp::Duration(read_time);
+        double dt = (pc2_stamp - read).nanoseconds();
+        RCLCPP_INFO(get_logger(), "dt:%if", dt);
       }
       // Pack PointCloud2 message
       cloud2_.data.resize((cloud2_.width + index[range_index.nspots]) * cloud2_.point_step);
