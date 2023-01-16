@@ -48,7 +48,7 @@ namespace Hokuyo3d
 {
   Hokuyo3dNode::Hokuyo3dNode(const rclcpp::NodeOptions & options)
   : Node("hokuyo3d", options)
-    , timestamp_base_(0, 0)
+    //, timestamp_base_(0, 0)
     , timer_(io_, milliseconds(500))
   {     
     enable_pc_ = this->declare_parameter<bool>("enable_pc", false);
