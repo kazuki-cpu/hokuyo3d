@@ -72,7 +72,8 @@ private:
       const vssp::RangeHeader&,
       const vssp::RangeIndex&,
       const boost::shared_array<uint16_t>&,
-      const boost::shared_array<vssp::XYZI>&)> cb_point_;
+      const boost::shared_array<vssp::XYZI>&,
+      const std::chrono::system_clock::time_point&)> cb_point_;
   std::function<void(
       const vssp::AuxHeader&,
       const boost::shared_array<vssp::Aux>&)> cb_aux_;
