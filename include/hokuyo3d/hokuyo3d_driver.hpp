@@ -64,7 +64,8 @@ public:
   void cbPoint(const vssp::RangeHeader& range_header,
       const vssp::RangeIndex& range_index,
       const boost::shared_array<uint16_t>& index,
-      const boost::shared_array<vssp::XYZI>& points);
+      const boost::shared_array<vssp::XYZI>& points,
+      const std::chrono::system_clock::time_point& time_read);
   void cbAux(const vssp::AuxHeader& aux_header,
       const boost::shared_array<vssp::Aux>& auxs);
   void cbError(const std::string& message);
