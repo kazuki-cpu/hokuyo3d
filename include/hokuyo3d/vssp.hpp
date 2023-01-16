@@ -298,7 +298,7 @@ private:
   }
   void onRead(const boost::system::error_code& error)
   {
-    //const auto time_read = std::chrono::system_clock::now();
+    const auto time_read = std::chrono::system_clock::now();
     if (error == boost::asio::error::eof)
     {
       // Connection closed_
@@ -493,7 +493,7 @@ private:
               }
               if (!success)
                 break;
-              cb_point_(range_header, range_index, index, points);
+              cb_point_(range_header, range_index, index, points, time_read);
             }
             break;
           case TYPE_AX:
