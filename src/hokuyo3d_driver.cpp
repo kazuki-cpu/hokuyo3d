@@ -129,9 +129,6 @@ namespace Hokuyo3d
     //if (timestamp_base_ == rclcpp::Time(0, 0))
       //return;
     // Pack scan data
-    milliseconds read_time = duration_cast<milliseconds>(time_read.time_since_epoch());
-    builtin_interfaces::msg::Time read = rclcpp::Time(0,0) + rclcpp::Duration(read_time);
-    double dt = (pc2_stamp - read).nanoseconds();
     if (enable_pc_)
     {
       if (cloud_.points.size() == 0)
