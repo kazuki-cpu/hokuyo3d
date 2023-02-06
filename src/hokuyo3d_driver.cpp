@@ -212,7 +212,6 @@ namespace Hokuyo3d
         else
         {
           pub_pc2_->publish(cloud2_);
-          RCLCPP_INFO(get_logger(), "time");
         }
         cloud2_stamp_last_ = cloud2_.header.stamp;
         cloud2_.data.clear();
@@ -249,7 +248,7 @@ namespace Hokuyo3d
         imu_.linear_acceleration.z = auxs[i].lin_acc.z;
         if (stamp < imu_stamp_last_ && !allow_jump_back_)
         {
-          //RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed imu");
+          RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed imu");
         }
         else
         {
