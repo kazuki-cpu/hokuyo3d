@@ -212,7 +212,7 @@ namespace Hokuyo3d
         else
         {
           pub_pc2_->publish(cloud2_);
-          RCLCPP_INFO(get_logger(), "time");
+          //RCLCPP_INFO(get_logger(), "time");
         }
         cloud2_stamp_last_ = cloud2_.header.stamp;
         cloud2_.data.clear();
@@ -249,14 +249,14 @@ namespace Hokuyo3d
         imu_.linear_acceleration.z = auxs[i].lin_acc.z;
         if (stamp < imu_stamp_last_ && !allow_jump_back_)
         {
-          //RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed imu");
+          RCLCPP_INFO(get_logger(), "Dropping timestamp jump backed imu");
         }
         else
         {
           pub_imu_->publish(imu_);
         }
         imu_stamp_last_ = imu_.header.stamp;
-        stamp = stamp + rclcpp::Duration(milliseconds(aux_header.data_ms));
+        stamp = stamp + rclcpp::Duration(aux_header.data_ms * 0.001);
         imu_.header.stamp =  stamp;//12/5変更 変更前"imu_.header.stamp +=rclcpp::Duration(aux_header.data_ms * 0.001)"
       }
     }
